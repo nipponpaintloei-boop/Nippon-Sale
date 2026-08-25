@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>NIPPON SALE — บันทึกยอดขายสี Nippon Paint</title>
+<link rel="icon" href="/favicon-32.png" sizes="32x32">
+<link rel="icon" href="/favicon-16.png" sizes="16x16">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#181a17">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NIPPON SALE">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#181a17;
+    --surface:#22251f;
+    --surface2:#2b2e26;
+    --line: rgba(237,234,226,0.09);
+    --paper:#edeae2;
+    --paper-dim: rgba(237,234,226,0.58);
+    --paper-faint: rgba(237,234,226,0.34);
+    --ochre:#d9a441;
+    --ochre-ink:#3a2c0c;
+    --teal:#4a8a83;
+    --clay:#c1533a;
+    --moss:#7a9b57;
+    --radius: 16px;
+    --disp: 'Kanit', sans-serif;
+    --body: 'IBM Plex Sans Thai', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--ink);color:var(--paper);font-family:var(--body);}
+  body{
+    min-height:100vh;
+    padding-bottom:88px;
+    background-image:
+      radial-gradient(ellipse 600px 300px at 15% -5%, rgba(217,164,65,0.10), transparent),
+      radial-gradient(ellipse 500px 300px at 100% 10%, rgba(74,138,131,0.08), transparent);
+  }
+  ::selection{background:var(--ochre); color:var(--ochre-ink);}
+  button, input, select{font-family:inherit;}
+  input:focus, select:focus, button:focus-visible{outline:2px solid var(--ochre); outline-offset:2px;}
+
+  header.top{
+    padding:22px 18px 14px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-mark{
+    width:38px;height:38px;border-radius:10px;
+    background:linear-gradient(155deg, var(--ochre), #b5822c);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--disp); font-weight:800; font-size:15px; color:var(--ochre-ink);
+    box-shadow:0 3px 0 rgba(0,0,0,0.25);
+  }
+  .brand-text .name{font-family:var(--disp); font-weight:700; font-size:19px; letter-spacing:0.2px;}
+  .brand-text .sub{font-size:11px; color:var(--paper-dim); margin-top:1px;}
+  .icon-btn{
+    width:38px;height:38px;border-radius:10px;border:1px solid var(--line);
+    background:var(--surface); color:var(--paper-dim); display:flex;align-items:center;justify-content:center;
+    font-size:16px; cursor:pointer;
+  }
+  .hdr-actions{display:flex; gap:8px;}
+
+  main{padding:0 16px; max-width:560px; margin:0 auto;}
+  .view{display:none;}
+  .view.active{display:block; animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  .gauge-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:20px 18px;
+    display:flex; align-items:center; gap:18px;
+    margin-bottom:14px;
+  }
+  .can-wrap{flex-shrink:0; width:74px;}
+  .can-label{
+    text-align:center; font-family:var(--disp); font-weight:700; font-size:13px;
+    margin-top:6px; color:var(--ochre);
+  }
+  .gauge-info{flex:1; min-width:0;}
+  .gauge-info .eyebrow{font-size:11px; letter-spacing:0.6px; color:var(--paper-dim); text-transform:uppercase;}
+  .gauge-info .big{
+    font-family:var(--disp); font-weight:700; font-size:26px; line-height:1.1; margin-top:2px;
+    display:flex; align-items:baseline; gap:6px; flex-wrap:wrap;
+  }
+  .gauge-info .big .unit{font-size:14px; font-weight:500; color:var(--paper-dim);}
+  .gauge-info .target-row{
+    display:flex; justify-content:space-between; font-size:12px; color:var(--paper-dim);
+    margin-top:10px; font-family:var(--mono);
+  }
+  .gauge-info .target-row button{
+    background:none;border:none;color:var(--teal); font-family:var(--mono); font-size:12px; cursor:pointer; padding:0;
+    text-decoration:underline; text-underline-offset:2px;
+  }
+
+  .sec-title{
+    font-family:var(--disp); font-weight:600; font-size:14px; letter-spacing:0.3px;
+    color:var(--paper-dim); margin:22px 2px 10px; text-transform:uppercase;
+    display:flex; align-items:center; gap:8px; justify-content:space-between;
+  }
+  .sec-title .t{display:flex; align-items:center; gap:8px;}
+  .sec-title .dot{width:6px;height:6px;border-radius:50%;background:var(--ochre);}
+  .sec-title .link-btn{
+    background:none;border:none;color:var(--teal); font-family:var(--body); font-size:11.5px; cursor:pointer;
+    text-decoration:underline; text-underline-offset:2px; text-transform:none; letter-spacing:0;
+  }
+
+  .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .stat-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px;
+  }
+  .stat-card .lbl{font-size:11.5px; color:var(--paper-dim);}
+  .stat-card .val{font-family:var(--mono); font-weight:700; font-size:19px; margin-top:5px;}
+  .stat-card .val.small{font-size:16px;}
+  .stat-card .val.good{color:var(--moss);}
+  .stat-card .val.warn{color:var(--ochre);}
+
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin-bottom:12px;}
+  label.field{display:block; margin-bottom:14px;}
+  label.field .lbl{font-size:12.5px; color:var(--paper-dim); margin-bottom:6px; display:block;}
+  input[type=text], input[type=number], input[type=date], select{
+    width:100%; background:var(--surface2); border:1px solid var(--line); color:var(--paper);
+    border-radius:10px; padding:12px 12px; font-size:15px;
+  }
+  select{appearance:none; -webkit-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%23edeae2' stroke-opacity='0.5' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 12px center;
+  }
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
+  .search-wrap{position:relative;}
+  .suggest{
+    position:absolute; z-index:20; top:calc(100% + 4px); left:0; right:0;
+    background:var(--surface2); border:1px solid var(--line); border-radius:12px;
+    max-height:260px; overflow-y:auto; box-shadow:0 12px 30px rgba(0,0,0,0.4);
+  }
+  .suggest-item{padding:11px 13px; font-size:14px; border-bottom:1px solid var(--line); cursor:pointer;}
+  .suggest-item:last-child{border-bottom:none;}
+  .suggest-item:active, .suggest-item.hl{background:rgba(217,164,65,0.14);}
+  .suggest-item .meta{font-size:11.5px; color:var(--paper-dim); margin-top:2px; font-family:var(--mono);}
+
+  .price-chip{
+    display:inline-flex; align-items:center; gap:6px; background:var(--surface2);
+    border:1px solid var(--line); border-radius:999px; padding:6px 12px; font-family:var(--mono);
+    font-size:13px; color:var(--ochre); margin-top:2px;
+  }
+
+  .total-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding-top:14px; margin-top:4px; border-top:1px dashed var(--line);
+  }
+  .total-row .lbl{font-family:var(--disp); font-weight:600; font-size:14px;}
+  .total-row .val{font-family:var(--mono); font-weight:700; font-size:22px; color:var(--ochre);}
+
+  .btn{
+    width:100%; border:none; border-radius:12px; padding:14px; font-family:var(--disp);
+    font-weight:700; font-size:15.5px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .btn-primary{background:var(--ochre); color:var(--ochre-ink);}
+  .btn-primary:active{transform:scale(0.98);}
+  .btn-ghost{background:var(--surface2); color:var(--paper); border:1px solid var(--line); margin-top:8px;}
+  .btn-danger-ghost{background:transparent; color:var(--clay); border:1px solid rgba(193,83,58,0.4);}
+  .btn-sm{width:auto; padding:9px 14px; font-size:13px; border-radius:10px;}
+  .btn-teal{background:var(--teal); color:#0d211f;}
+
+  .list-row{
+    display:flex; align-items:center; gap:12px; padding:12px 4px; border-bottom:1px solid var(--line);
+  }
+  .list-row:last-child{border-bottom:none;}
+  .rank{
+    width:26px;height:26px;border-radius:8px;background:var(--surface2); flex-shrink:0;
+    display:flex;align-items:center;justify-content:center; font-family:var(--mono); font-size:12px; color:var(--paper-dim);
+  }
+  .list-row .info{flex:1; min-width:0;}
+  .list-row .name{font-size:13.5px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .list-row .sub{font-size:11.5px; color:var(--paper-dim); margin-top:2px; font-family:var(--mono);}
+  .list-row .amt{font-family:var(--mono); font-weight:700; font-size:13.5px; color:var(--ochre); flex-shrink:0;}
+  .list-row .del-btn{
+    background:none; border:none; color:var(--paper-faint); font-size:15px; cursor:pointer; flex-shrink:0; padding:4px 2px;
+  }
+  .list-row .del-btn:active{color:var(--clay);}
+
+  .swatch{width:10px;height:10px;border-radius:3px; flex-shrink:0;}
+
+  .filter-chips{display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; margin-bottom:12px;}
+  .chip{
+    flex-shrink:0; padding:8px 14px; border-radius:999px; border:1px solid var(--line);
+    background:var(--surface); font-size:12.5px; color:var(--paper-dim); cursor:pointer; white-space:nowrap;
+    display:flex; align-items:center; gap:6px;
+  }
+  .chip.active{background:var(--ochre); color:var(--ochre-ink); border-color:var(--ochre); font-weight:600;}
+  .subtab-row{display:flex; gap:8px; margin-bottom:14px; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:4px;}
+  .subtab-row .stbtn{flex:1; text-align:center; padding:9px 6px; border-radius:9px; font-size:12.5px; font-weight:600; color:var(--paper-dim); cursor:pointer;}
+  .subtab-row .stbtn.active{background:var(--ochre); color:var(--ochre-ink);}
+
+  .stock-row{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:12px 14px; margin-bottom:8px;
+    display:flex; align-items:center; gap:12px; cursor:pointer;
+  }
+  .stock-row:active{background:var(--surface2);}
+  .stock-row .info{flex:1; min-width:0;}
+  .stock-row .name{font-size:13.5px; font-weight:500;}
+  .stock-row .meta{font-size:11.5px; color:var(--paper-dim); margin-top:2px; font-family:var(--mono);}
+  .status-tag{
+    font-size:11px; font-family:var(--mono); font-weight:700; padding:5px 9px; border-radius:8px; flex-shrink:0; text-align:center;
+  }
+  .status-ok{background:rgba(122,155,87,0.16); color:var(--moss);}
+  .status-low{background:rgba(217,164,65,0.16); color:var(--ochre);}
+  .status-out{background:rgba(237,234,226,0.1); color:var(--paper-dim);}
+  .status-over{background:rgba(193,83,58,0.16); color:var(--clay);}
+
+  .empty{
+    text-align:center; padding:34px 10px; color:var(--paper-faint); font-size:13px;
+  }
+
+  /* tier table */
+  .tier-table{background:var(--surface); border:1px solid var(--line); border-radius:16px; overflow:hidden; margin-bottom:12px;}
+  .tier-row{display:flex; align-items:center; gap:10px; padding:12px 14px; border-bottom:1px solid var(--line);}
+  .tier-row:last-child{border-bottom:none;}
+  .tier-row.pass{background:rgba(122,155,87,0.08);}
+  .tier-pct{
+    width:44px; flex-shrink:0; font-family:var(--mono); font-weight:700; font-size:13px;
+    text-align:center; padding:4px 0; border-radius:8px; background:var(--surface2); color:var(--paper-dim);
+  }
+  .tier-row.reached .tier-pct{background:var(--moss); color:#10200a;}
+  .tier-body{flex:1; min-width:0;}
+  .tier-body .amt{font-family:var(--mono); font-size:12.5px; color:var(--paper);}
+  .tier-body .gap{font-size:11px; color:var(--paper-dim); margin-top:2px;}
+  .tier-badge{font-size:10.5px; flex-shrink:0; font-family:var(--mono); font-weight:700; padding:4px 8px; border-radius:7px;}
+  .tier-badge.done{background:rgba(122,155,87,0.18); color:var(--moss);}
+  .tier-badge.pend{background:rgba(237,234,226,0.08); color:var(--paper-faint);}
+  .pass-note{font-size:11px; color:var(--paper-dim); text-align:center; padding:8px 4px 2px;}
+
+  /* history */
+  .day-group{margin-bottom:16px;}
+  .day-group .dhead{
+    display:flex; justify-content:space-between; align-items:baseline; margin:0 2px 6px;
+    font-family:var(--disp); font-size:13px; font-weight:600; color:var(--ochre);
+  }
+  .day-group .dhead .dsum{font-family:var(--mono); font-size:12px; color:var(--paper-dim); font-weight:400;}
+
+  /* yearly chart */
+  .chart-card{background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:18px 14px 10px; margin-bottom:14px;}
+  .bars{display:flex; align-items:flex-end; gap:6px; height:150px; padding:0 2px;}
+  .bar-col{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; min-width:0;}
+  .bar-col .bar{width:100%; max-width:26px; border-radius:5px 5px 2px 2px; background:var(--surface2); transition:height .4s ease; position:relative;}
+  .bar-col .bar.best{background:var(--moss);}
+  .bar-col .bar.worst{background:var(--clay);}
+  .bar-col .bar.has{background:var(--ochre);}
+  .bar-col .bar.future{background:var(--surface2); border:1px dashed var(--line);}
+  .bar-col .mlabel{font-size:9.5px; color:var(--paper-dim); margin-top:6px; font-family:var(--mono); text-align:center;}
+  .bar-col .mval{font-size:8.5px; color:var(--paper-faint); margin-top:1px; font-family:var(--mono);}
+  .legend-row{display:flex; gap:14px; justify-content:center; margin-top:12px; font-size:11px; color:var(--paper-dim);}
+  .legend-row .lg{display:flex; align-items:center; gap:5px;}
+  .legend-row .sw{width:9px;height:9px;border-radius:3px;}
+
+  /* product edit rows */
+  .prod-row{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:12px 14px; margin-bottom:8px; display:flex; align-items:center; gap:12px;}
+  .prod-row .info{flex:1; min-width:0;}
+  .prod-row .name{font-size:13.5px; font-weight:500;}
+  .prod-row .meta{font-size:11.5px; color:var(--paper-dim); margin-top:2px; font-family:var(--mono);}
+  .prod-row .edit-btn{background:var(--surface2); border:1px solid var(--line); color:var(--teal); font-size:12px; border-radius:9px; padding:8px 11px; cursor:pointer; flex-shrink:0;}
+
+  nav.tabs{
+    position:fixed; bottom:0; left:0; right:0; z-index:30;
+    background:rgba(24,26,23,0.92); backdrop-filter:blur(14px);
+    border-top:1px solid var(--line);
+    display:flex; padding:7px 4px calc(7px + env(safe-area-inset-bottom));
+  }
+  nav.tabs button{
+    flex:1; background:none; border:none; color:var(--paper-faint);
+    display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 0; cursor:pointer;
+    font-size:9.5px; font-family:var(--body);
+  }
+  nav.tabs button .ic{font-size:18px;}
+  nav.tabs button.active{color:var(--ochre);}
+
+  .toast{
+    position:fixed; left:50%; bottom:96px; transform:translateX(-50%) translateY(20px);
+    background:var(--ochre); color:var(--ochre-ink); padding:11px 20px; border-radius:12px;
+    font-family:var(--disp); font-weight:600; font-size:13.5px; opacity:0; pointer-events:none;
+    transition:all .25s ease; z-index:50; white-space:nowrap; box-shadow:0 10px 24px rgba(0,0,0,0.35); max-width:90vw; overflow:hidden; text-overflow:ellipsis;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  .modal-bg{
+    position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:60; display:none;
+    align-items:flex-end; justify-content:center;
+  }
+  .modal-bg.show{display:flex;}
+  .modal{
+    background:var(--surface); border-radius:20px 20px 0 0; padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+    width:100%; max-width:560px; border:1px solid var(--line); border-bottom:none; max-height:88vh; overflow-y:auto;
+  }
+  .modal h3{font-family:var(--disp); margin:0 0 14px; font-size:16px;}
+  .modal p.hint{font-size:12.5px; color:var(--paper-dim); line-height:1.6; margin:-6px 0 14px;}
+  .audit-row{padding:10px 4px;border-bottom:1px solid var(--line);font-size:12px;}
+  .audit-row:last-child{border-bottom:none;}
+  .audit-row .meta{font-size:10.5px;color:var(--paper-faint);margin-top:3px;font-family:var(--mono);}
+  .history-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+  .history-tools input{margin:0;}
+
+  /* ================= AUTH GATE ================= */
+  .auth-gate{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(12,14,12,.96);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+  .auth-gate.show{display:flex}
+  .auth-card{width:min(420px,100%);background:var(--surface);border:1px solid rgba(237,234,226,.12);border-radius:24px;padding:28px 22px 22px;box-shadow:0 24px 80px rgba(0,0,0,.45)}
+  .auth-brand{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+  .auth-brand .brand-mark{width:48px;height:48px;border-radius:13px;font-family:var(--disp);font-weight:800;font-size:17px}
+  .auth-title{font-family:var(--disp);font-size:26px;font-weight:800;line-height:1.1}
+  .auth-subtitle{font-size:12px;color:var(--paper-dim);margin-top:4px}
+  .auth-label{display:block;font-size:12px;color:var(--paper-dim);margin:14px 0 6px}
+  .auth-input{width:100%;margin:0!important;background:var(--surface2)!important;border:1px solid var(--line)!important;color:var(--paper)!important;border-radius:12px!important;padding:13px 14px!important;font-size:16px!important}
+  .auth-submit{width:100%;margin-top:18px!important;padding:13px!important;border-radius:12px!important;font-weight:700;font-size:15px!important;background:var(--ochre)!important;color:var(--ochre-ink)!important;border:none!important}
+  .auth-submit:disabled{opacity:.55}
+  .auth-status{min-height:20px;margin-top:12px;font-size:12px;line-height:1.5;color:var(--paper-dim);text-align:center}
+  .auth-status.error{color:#e98a76}.auth-status.success{color:#9fc37b}
+  .auth-note{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);font-size:11px;line-height:1.55;color:var(--paper-faint);text-align:center}
+  .auth-user{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border:1px solid var(--line);border-radius:999px;color:var(--paper-dim);font-size:11px;margin-bottom:10px}
+
+</style>
+</head>
+<body>
+<div class="auth-gate" id="authGate" aria-modal="true" role="dialog">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="brand-mark">NS</div>
+      <div>
+        <div class="auth-title">NIPPON SALE</div>
+        <div class="auth-subtitle">เข้าสู่ระบบเพื่อใช้งานแอป</div>
+      </div>
+    </div>
+    <label class="auth-label" for="authUsername">Username</label>
+    <input class="auth-input" id="authUsername" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="เช่น admin">
+    <label class="auth-label" for="authPassword">Password</label>
+    <input class="auth-input" id="authPassword" type="password" autocomplete="current-password" placeholder="••••••••">
+    <button class="auth-submit" id="authSubmitBtn">เข้าสู่ระบบ</button>
+    <div class="auth-status" id="authStatus"></div>
+    <div class="auth-note">ระบบล็อกอินใช้ Supabase Auth · บัญชีผู้ใช้สร้างโดยผู้ดูแลระบบ</div>
+  </div>
+</div>
+<header class="top">
+  <div class="brand">
+    <div class="brand-mark">NS</div>
+    <div class="brand-text">
+      <div class="name">NIPPON SALE</div>
+      <div class="sub">Nippon Paint · Global House เลย</div>
+    </div>
+  </div>
+  <div class="auth-user">👤 <span id="authUserBadge">ผู้ใช้</span></div>
+  <div class="hdr-actions">
+    <button class="icon-btn" id="shareBtn" title="คัดลอกสรุปยอดขายวันนี้">🔗</button>
+    <button class="icon-btn" id="resetBtn" title="ตั้งค่า / ล้างข้อมูล">⚙</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ VIEW: ENTRY ============ -->
+  <section class="view active" id="view-entry">
+    <div class="gauge-card">
+      <div class="can-wrap">
+        <svg viewBox="0 0 74 92" width="74" height="92">
+          <defs>
+            <clipPath id="canClip"><rect x="10" y="18" width="54" height="68" rx="6"/></clipPath>
+            <linearGradient id="fillGrad" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0%" stop-color="#b5822c"/>
+              <stop offset="100%" stop-color="#e9be6c"/>
+            </linearGradient>
+          </defs>
+          <rect x="10" y="18" width="54" height="68" rx="6" fill="none" stroke="rgba(237,234,226,0.28)" stroke-width="2"/>
+          <g clip-path="url(#canClip)">
+            <rect id="canFill" x="10" y="86" width="54" height="0" fill="url(#fillGrad)"/>
+          </g>
+          <rect x="24" y="10" width="26" height="10" rx="2" fill="rgba(237,234,226,0.28)"/>
+        </svg>
+        <div class="can-label" id="canPct">0%</div>
+      </div>
+      <div class="gauge-info">
+        <div class="eyebrow">ยอดขายเดือนนี้</div>
+        <div class="big"><span id="monthTotal">0</span><span class="unit">บาท</span></div>
+        <div class="target-row">
+          <span>เป้า <span id="targetVal">0</span> บาท</span>
+          <button id="editTargetBtn">แก้ไขเป้า</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-title"><span class="t"><span class="dot"></span>บันทึกยอดขาย</span></div>
+    <div class="card">
+      <label class="field">
+        <span class="lbl">วันที่ขาย</span>
+        <input type="date" id="saleDate">
+      </label>
+      <label class="field search-wrap">
+        <span class="lbl">ค้นหาสินค้า</span>
+        <input type="text" id="productSearch" placeholder="พิมพ์ชื่อสินค้า...">
+        <div class="suggest" id="suggestBox" style="display:none;"></div>
+      </label>
+      <div class="row2">
+        <label class="field">
+          <span class="lbl">ขนาด</span>
+          <select id="sizeSelect" disabled><option>เลือกสินค้าก่อน</option></select>
+        </label>
+        <label class="field">
+          <span class="lbl">เบส (Base)</span>
+          <select id="baseSelect" disabled><option>—</option></select>
+        </label>
+      </div>
+      <div class="price-chip" id="priceChip" style="display:none;">฿<span id="priceVal">0</span> / หน่วย</div>
+      <div class="row2" style="margin-top:14px;">
+        <label class="field">
+          <span class="lbl">รหัสสี (ถ้ามี)</span>
+          <input type="text" id="colorCode" placeholder="เช่น A5006">
+        </label>
+        <label class="field">
+          <span class="lbl">ราคาแม่สี (บาท)</span>
+          <input type="number" id="tintPrice" placeholder="0">
+        </label>
+      </div>
+      <label class="field">
+        <span class="lbl">จำนวน</span>
+        <input type="number" id="qty" value="1" min="1">
+      </label>
+      <div class="total-row">
+        <div class="lbl">รวมทั้งหมด</div>
+        <div class="val" id="totalVal">0 บาท</div>
+      </div>
+      <button class="btn btn-primary" id="saveSaleBtn" style="margin-top:16px;">✓ บันทึกยอดขาย</button>
+    </div>
+
+    <div class="sec-title"><span class="t"><span class="dot"></span>รายการวันนี้</span></div>
+    <div class="card" id="recentList" style="padding:6px 12px;">
+      <div class="empty">ยังไม่มีรายการขายวันนี้</div>
+    </div>
+  </section>
+
+  <!-- ============ VIEW: HISTORY ============ -->
+  <section class="view" id="view-history">
+    <div class="subtab-row">
+      <div class="stbtn active" data-hist="day">📅 รายวัน</div>
+      <div class="stbtn" data-hist="month">🗓️ รายเดือน</div>
+    </div>
+
+    <div id="histDayPanel">
+      <label class="field">
+        <span class="lbl">เลือกวันที่ต้องการดูย้อนหลัง</span>
+        <input type="date" id="histDate">
+      </label>
+      <div class="stat-grid" style="margin-bottom:14px;">
+        <div class="stat-card">
+          <div class="lbl">ยอดขายวันนั้น</div>
+          <div class="val" id="histDayTotal">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="lbl">จำนวนรายการ</div>
+          <div class="val" id="histDayCount">0</div>
+        </div>
+      </div>
+      <div class="card" id="histDayList" style="padding:6px 12px;"></div>
+    </div>
+
+    <div id="histMonthPanel" style="display:none;">
+      <label class="field">
+        <span class="lbl">เลือกเดือนที่ต้องการดูย้อนหลัง</span>
+        <select id="histMonth"></select>
+      </label>
+      <div class="history-tools">
+        <input type="text" id="histMonthSearch" placeholder="ค้นหาสินค้า / SKU / รหัสสี...">
+        <select id="histMonthSort"><option value="dateDesc">ล่าสุดก่อน</option><option value="dateAsc">เก่าสุดก่อน</option><option value="amountDesc">ยอดสูง→ต่ำ</option><option value="amountAsc">ยอดต่ำ→สูง</option></select>
+      </div>
+      <div class="stat-grid" style="margin-bottom:14px;">
+        <div class="stat-card">
+          <div class="lbl">ยอดขายรวมเดือนนี้</div>
+          <div class="val small" id="histMonthTotal">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="lbl">จำนวนรายการทั้งเดือน</div>
+          <div class="val" id="histMonthCount">0</div>
+        </div>
+      </div>
+      <div id="histMonthList"></div>
+    </div>
+  </section>
+
+  <!-- ============ VIEW: DASHBOARD ============ -->
+  <section class="view" id="view-dash">
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="lbl">ยอดขายวันนี้</div>
+        <div class="val" id="dashToday">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="lbl">จำนวนที่ขายวันนี้ (ชิ้น)</div>
+        <div class="val" id="dashTodayQty">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="lbl">ยอดขายเดือนนี้</div>
+        <div class="val small" id="dashMonth">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="lbl">Ach% เดือนนี้</div>
+        <div class="val" id="dashPct">0%</div>
+      </div>
+    </div>
+
+    <div class="sec-title"><span class="t"><span class="dot"></span>🎯 เป้าหมาย 5 ระดับ — <span id="dashMonthLbl"></span></span></div>
+    <div class="tier-table" id="tierTable"></div>
+    <div class="pass-note">* ผ่านเกณฑ์เมื่อทำยอดถึงระดับ 80% ของเป้าหมายสูงสุด</div>
+
+    <div class="sec-title"><span class="t"><span class="dot"></span>🏆 ขายดีที่สุด (เดือนนี้)</span></div>
+    <div class="card" id="topSellers" style="padding:6px 12px;">
+      <div class="empty">ยังไม่มีข้อมูลยอดขายเดือนนี้</div>
+    </div>
+
+    <div class="sec-title"><span class="t"><span class="dot"></span>⚠️ สินค้าควรเติมสต็อกด่วน</span></div>
+    <div class="card" id="restockAlert" style="padding:6px 12px;"></div>
+  </section>
+
+  <!-- ============ VIEW: STOCK / PRODUCTS ============ -->
+  <section class="view" id="view-stock">
+    <div class="subtab-row">
+      <div class="stbtn active" data-stk="stock">📦 สต็อก</div>
+      <div class="stbtn" data-stk="products">🏷️ สินค้า/ราคา</div>
+    </div>
+
+    <div id="stockPanel">
+      <label class="field">
+        <input type="text" id="stockSearch" placeholder="ค้นหาสินค้าในสต็อก...">
+      </label>
+      <div class="filter-chips" id="stockFilters">
+        <div class="chip active" data-f="all">ทั้งหมด</div>
+        <div class="chip" data-f="over">🔴 ขายเกินสต็อก</div>
+        <div class="chip" data-f="out">⚪ หมด</div>
+        <div class="chip" data-f="low">🟡 ใกล้หมด</div>
+        <div class="chip" data-f="ok">🟢 ปกติ</div>
+      </div>
+      <div id="stockList"></div>
+    </div>
+
+    <div id="productsPanel" style="display:none;">
+      <label class="field">
+        <input type="text" id="productSearch2" placeholder="ค้นหาสินค้า...">
+      </label>
+      <button class="btn btn-teal" id="addProductBtn" style="margin-bottom:14px;">＋ เพิ่มสินค้าใหม่</button>
+      <div id="productsList"></div>
+    </div>
+  </section>
+
+  <!-- ============ VIEW: YEARLY ============ -->
+  <section class="view" id="view-yearly">
+    <div class="stat-grid" style="margin-bottom:4px;">
+      <div class="stat-card">
+        <div class="lbl">ยอดขายรวมทั้งปี <span id="yearLbl"></span></div>
+        <div class="val small" id="yearTotal">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="lbl">ค่าเฉลี่ยยอดขาย/เดือน</div>
+        <div class="val small" id="yearAvg">0</div>
+      </div>
+    </div>
+
+    <div class="sec-title"><span class="t"><span class="dot"></span>ยอดขายรายเดือน</span></div>
+    <div class="chart-card">
+      <div class="bars" id="yearBars"></div>
+      <div class="legend-row">
+        <div class="lg"><span class="sw" style="background:var(--moss);"></span>เดือนขายดีที่สุด</div>
+        <div class="lg"><span class="sw" style="background:var(--clay);"></span>เดือนขายตกสุด</div>
+        <div class="lg"><span class="sw" style="background:var(--ochre);"></span>เดือนอื่นๆ</div>
+      </div>
+    </div>
+
+    <div class="sec-title"><span class="t"><span class="dot"></span>สรุปรายเดือน</span></div>
+    <div class="card" id="yearMonthList" style="padding:6px 12px;"></div>
+  </section>
+
+</main>
+
+<nav class="tabs">
+  <button class="active" data-view="entry"><span class="ic">🧾</span>บันทึกขาย</button>
+  <button data-view="history"><span class="ic">🗓️</span>ประวัติ</button>
+  <button data-view="dash"><span class="ic">📊</span>แดชบอร์ด</button>
+  <button data-view="stock"><span class="ic">📦</span>สต็อก/สินค้า</button>
+  <button data-view="yearly"><span class="ic">📈</span>ทั้งปี</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<!-- modal: edit target -->
+<div class="modal-bg" id="targetModalBg">
+  <div class="modal">
+    <h3>ตั้งเป้าหมายยอดขาย</h3>
+    <label class="field">
+      <span class="lbl">เดือน</span>
+      <select id="targetMonthSelect"></select>
+    </label>
+    <label class="field">
+      <span class="lbl">เป้าหมาย 100% (บาท)</span>
+      <input type="number" id="targetInput">
+    </label>
+    <p class="hint">ระบบจะคำนวณเป้าย่อยที่ 95% / 90% / 85% / 80% ให้อัตโนมัติ — ผ่านเกณฑ์ที่ 80%</p>
+    <button class="btn btn-primary" id="saveTargetBtn">บันทึกเป้าหมาย</button>
+  </div>
+</div>
+
+<!-- modal: add/edit product -->
+<div class="modal-bg" id="productModalBg">
+  <div class="modal">
+    <h3 id="productModalTitle">เพิ่มสินค้าใหม่</h3>
+    <input type="hidden" id="prodEditIdx" value="-1">
+    <label class="field">
+      <span class="lbl">ชื่อสินค้า</span>
+      <input type="text" id="prodName" placeholder="เช่น WEATHERBOND (กึ่งเงา)">
+    </label>
+    <div class="row2">
+      <label class="field">
+        <span class="lbl">ขนาด</span>
+        <input type="text" id="prodSize" placeholder="เช่น 2.5 GL">
+      </label>
+      <label class="field">
+        <span class="lbl">เบส (Base)</span>
+        <input type="text" id="prodBase" placeholder="เช่น A (ถ้ามี)">
+      </label>
+    </div>
+    <div class="row2">
+      <label class="field">
+        <span class="lbl">SKU (ถ้ามี)</span>
+        <input type="text" id="prodSku" placeholder="รหัสบาร์โค้ด">
+      </label>
+      <label class="field">
+        <span class="lbl">ราคาต่อหน่วย (บาท)</span>
+        <input type="number" id="prodPrice" placeholder="0">
+      </label>
+    </div>
+    <label class="field" id="prodInitWrap">
+      <span class="lbl">สต็อกตั้งต้น (ชิ้น)</span>
+      <input type="number" id="prodInit" placeholder="0">
+    </label>
+    <button class="btn btn-primary" id="saveProductBtn">บันทึกสินค้า</button>
+    <button class="btn btn-danger-ghost" id="deleteProductBtn" style="display:none;">ลบสินค้านี้</button>
+  </div>
+</div>
+
+<!-- modal: stock actions -->
+<div class="modal-bg" id="stockModalBg">
+  <div class="modal">
+    <h3 id="stockModalName">สินค้า</h3>
+    <p class="hint" id="stockModalMeta"></p>
+    <div class="subtab-row">
+      <div class="stbtn active" data-sm="in">📥 รับสินค้าเข้า</div>
+      <div class="stbtn" data-sm="fix">🛠️ แก้ไขสต็อกตั้งต้น</div>
+    </div>
+    <div id="stockInPanel">
+      <label class="field">
+        <span class="lbl">จำนวนที่รับเข้าเพิ่ม (ชิ้น)</span>
+        <input type="number" id="stockInQty" placeholder="0">
+      </label>
+      <button class="btn btn-primary" id="stockInSaveBtn">บันทึกรับสินค้าเข้า</button>
+    </div>
+    <div id="stockFixPanel" style="display:none;">
+      <p class="hint">กรอกจำนวนที่นับได้จริงจากการนับสต็อก ระบบจะปรับยอดคงเหลือในระบบให้ตรงกับที่นับได้</p>
+      <label class="field">
+        <span class="lbl">จำนวนที่นับได้จริงตอนนี้ (ชิ้น)</span>
+        <input type="number" id="stockFixQty" placeholder="0">
+      </label>
+      <button class="btn btn-primary" id="stockFixSaveBtn">ปรับยอดสต็อกให้ตรง</button>
+      <button class="btn btn-ghost" id="stockAuditBtn">📋 ประวัติการปรับสต็อก</button>
+    </div>
+  </div>
+</div>
+
+<!-- modal: stock audit -->
+<div class="modal-bg" id="auditModalBg">
+  <div class="modal">
+    <h3>📋 ประวัติการปรับสต็อก</h3>
+    <div id="auditList"></div>
+    <button class="btn btn-ghost" id="closeAuditBtn">ปิด</button>
+  </div>
+</div>
+
+<!-- modal: settings/reset -->
+<div class="modal-bg" id="resetModalBg">
+  <div class="modal">
+    <h3>⚙ ตั้งค่า</h3>
+    <div class="auth-user" style="margin-bottom:14px">👤 <span id="settingsUserName">ผู้ใช้</span></div>
+    <p class="hint">ข้อมูลทั้งหมด (ยอดขาย, สต็อก, สินค้า, เป้าหมาย) ถูกเก็บไว้ในเครื่อง/บัญชีนี้เท่านั้น ข้อมูลย้อนหลังตั้งแต่ ม.ค.–ส.ค. 2569 ถูกดึงมาจากไฟล์ Excel ต้นฉบับให้แล้ว</p>
+    <button class="btn btn-teal" id="exportBtn">⬇️ ส่งออก Excel (.xlsx)</button>
+    <button class="btn btn-ghost" id="importBtn">⬆️ กู้คืน Backup (.xls)</button>
+    <input type="file" id="importFile" accept=".xls,.html,.htm" style="display:none">
+    <button class="btn btn-ghost" id="setPinBtn">🔐 ตั้ง / เปลี่ยน PIN</button>
+    <button class="btn btn-danger-ghost" id="confirmResetBtn">รีเซ็ตกลับเป็นค่าเริ่มต้นจากไฟล์ต้นฉบับ</button>
+    <button class="btn btn-danger-ghost" id="authLogoutBtn">ออกจากระบบ</button>
+    <button class="btn btn-ghost" id="closeSettingsBtn">ปิด</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="/supabase-config.js"></script>
+<script src="/auth.js"></script>
+<script>
+/* ================= SEED DATA (from uploaded workbook) ================= */
+/* PRODUCTS_SEED: [sku, name, size, base, price, initStock, inflow, soldCumulative(as of Aug 25 2569), remain] */
+const PRODUCTS_SEED = [["8851286681115","WEATHERBOND (กึ่งเงา)","1 GL","A",1130,6.0,0,16,-10],["8851286681252","WEATHERBOND (กึ่งเงา)","1 GL","B",1090,1.0,0,3,-2],["8851286681290","WEATHERBOND (กึ่งเงา)","1 GL","C",1040,1.0,0,9,-8],["8851286681344","WEATHERBOND (กึ่งเงา)","1 GL","D",900,1.0,0,9,-8],["8851286633619","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,50.0,0,139,-89],["8851286633626","WEATHERBOND (กึ่งเงา)","2.5 GL","B",2390,5.0,0,20,-15],["8851286633633","WEATHERBOND (กึ่งเงา)","2.5 GL","C",2290,7.0,0,13,-6],["8851286633640","WEATHERBOND (กึ่งเงา)","2.5 GL","D",2060,4.0,0,11,-7],["8851286633572","WEATHERBOND (เนียน)","2.5 GL","A",2250,8.0,0,13,-5],["8851286675695","AirCare (กึ่งเงา)","1 GL","A",980,0.0,0,0,0],["8851286675732","AirCare (กึ่งเงา)","2.5 GL","A",2070,9.0,0,47,-38],["8851286683850","AirCare (เนียน)","1 GL","A",900,1.0,0,2,-1],["8851286683867","AirCare (เนียน)","2.5 GL","A",2020,5.0,0,10,-5],["8851286522821","HYBRIDESHIELD (กึ่งเงา) ภายใน","1 GL","A",710,3.0,0,3,0],["8851286523934","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,14.0,0,47,-33],["8851286523576","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,9.0,0,21,-12],["8851286523583","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","B",770,4.0,0,3,1],["8851286523590","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","C",730,1.0,0,5,-4],["8851286523804","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","D",640,3.0,0,13,-10],["8851286523811","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,40.0,0,127,-87],["8851286523828","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","B",1710,7.0,0,7,0],["8851286523835","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","C",1690,5.0,0,23,-18],["8851286523842","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","D",1630,4.0,0,12,-8],["8851286522050","HYBRIDESHIELD (ด้าน)","1 GL","A",730,11.0,0,1,10],["","HYBRIDESHIELD (ด้าน)","2.5 GL","A",1620,7.0,0,1,6],["8851286472645","VINILEX (กึ่งเงา) ภายนอก","1 GL","A",740,3.0,0,2,1],["8851286472676","VINILEX (กึ่งเงา) ภายนอก","1 GL","B",700,1.0,0,1,0],["8851286472713","VINILEX (กึ่งเงา) ภายนอก","1 GL","C",680,1.0,0,1,0],["8851286472737","VINILEX (กึ่งเงา) ภายนอก","1 GL","D",550,1.0,0,2,-1],["8851286472669","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","A",1490,5.0,0,29,-24],["8851286472683","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","B",1460,6.0,0,1,5],["8851286472720","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","C",1380,5.0,0,3,2],["8851286472744","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","D",1180,6.0,0,4,2],["8851286094472","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","A",500,5.0,0,9,-4],["8851286094496","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","B",480,3.0,0,3,0],["8851286094519","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","C",450,5.0,0,2,3],["","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","D",400,4.0,0,2,2],["8852186036128","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,33.0,0,32,1],["8852186036135","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","B",1110,6.0,0,1,5],["8852186036142","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","C",1050,1.0,0,6,-5],["8852186036159","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","D",900,5.0,0,1,4],["8851286094489","SUPER SERVE (กึ่งเงา) ภายนอก","5 GL","A",2300,22.0,0,12,10],["8852186006671","SUPER SERVE (ด้าน) ภายใน","1 GL","A",330,3.0,0,0,3],["8852186036173","SUPER SERVE (ด้าน) ภายใน","2.5 GL","A",460,2.0,0,0,2],["8852186006749","SUPER SERVE (ด้าน) ภายนอก","1 GL","A",400,2.0,0,4,-2],["8852186006770","SUPER SERVE (ด้าน) ภายนอก","1 GL","B",370,3.0,0,1,2],["8852186006794","SUPER SERVE (ด้าน) ภายนอก","1 GL","C",360,0.0,0,0,0],["8852186006817","SUPER SERVE (ด้าน) ภายนอก","1 GL","D",300,0.0,0,1,-1],["8852186036562","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","A",910,4.0,0,12,-8],["","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","B",865,0.0,0,0,0],["","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","C",830,0.0,0,1,-1],["","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","D",680,0.0,0,0,0],["","JUNIOR99 ภายนอก (9506)","1 GL","",300,0,0,0,0],["8851286180359","JUNIOR99 ภายนอก (9506)","5 GL","",1050,1.0,0,6,-5],["","JUNIOR99 ภายนอก (900)","1 GL","",300,0,0,1,-1],["8851286180533","JUNIOR99 ภายนอก (900)","5 GL","",1050,3.0,0,5,-2],["","JUNIOR99 ภายใน (9106)","1 GL","",300,0,0,1,-1],["8851286180151","JUNIOR99 ภายใน (9106)","5 GL","",860,1.0,0,6,-5],["8851286180205","JUNIOR99 ภายใน (300)","1 GL","",300,3.0,0,2,1],["8851286180212","JUNIOR99 ภายใน (300)","5 GL","",860,1.0,0,8,-7],["8851286533537","สีท้าฝ้า HYBRIDESHIELD (777C)","1 GL","",540,2.0,0,4,-2],["8851286533544","สีท้าฝ้า HYBRIDESHIELD (777C)","5 GL","",2200,3.0,0,6,-3],["8851286533551","สีท้าฝ้า HYBRIDESHIELD (999C)","1 GL","",540,3.0,0,3,0],["8851286533568","สีท้าฝ้า HYBRIDESHIELD (999C)","5 GL","",2200,6.0,0,13,-7],["8852186318194","สีทาฝ้า SUPER SERVE  (S800)","1 GL","",350,5.0,0,5,0],["8852186318507","สีทาฝ้า SUPER SERVE  (S800)","5 GL","",1440,1.0,0,7,-6],["8852186318170","สีทาฝ้า SUPER SERVE (S700)","1 GL","",350,1.0,0,2,-1],["8852186318187","สีทาฝ้า SUPER SERVE (S700)","5 GL","",1440,2.0,0,4,-2],["8851286207346","สีทาฝ้า JUNIOR99 (S700)","1 GL","",225,5.0,0,1,4],["8851286207339","สีทาฝ้า JUNIOR99 (S700)","5 GL","",900,1.0,0,5,-4],["8851286207704","สีทาฝ้า JUNIOR99 (S800)","1 GL","",225,0.0,0,3,-3],["8851286207711","สีทาฝ้า JUNIOR99 (S800)","5 GL","",900,4.0,0,12,-8],["8851286383163","รองพื้น WEATHERBOND 5100","5 GL","",3190,5.0,0,12,-7],["8851286141299","รองพื้น VINILEX ","1 GL","",635,3.0,0,5,-2],["8851286141305","รองพื้น VINILEX ","5 GL","",2550,9.0,0,28,-19],["8851286018676","รองพื้น SUPER SERVE ","5 GL","",1790,19.0,0,26,-7],["8851286180540","รองพื้น JUNIOR99 (น้ำ)","1 GL","",325,5.0,0,7,-2],["8851286180557","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,11.0,0,34,-23],["8851286233802","รองพื้นอเนกประสงค์ FLEXISEAL","1 GL","",650,8.0,0,1,7],["8851286448237","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,7.0,0,19,-12],["8851286233819","รองพื้นอเนกประสงค์ FLEXISEAL","5 GL","",2190,21.0,0,6,15],["8851286094663","รองพื้น Quick Sealer","1 GL","",740,6.0,0,12,-6],["8851286094670","รองพื้น Quick Sealer","2.5 GL","",1800,7.0,0,13,-6],["8851286094687","รองพื้น Quick Sealer","5 GL","",3190,5.0,0,15,-10],["8852186521426","รองพื้น Quick Coat","1 GL","",740,5.0,0,9,-4],["8852186523628","รองพื้น Quick Coat","2.5 GL","",1690,16.0,0,17,-1],["8852186521914","รองพื้น Quick Coat","5 GL","",2690,9.0,0,19,-10],["8851286459998","ร้องพื้น Excel","1 GL","",800,2.0,0,3,-1],["8851286460000","ร้องพื้น Excel","5 GL","",3150,8.0,0,6,2],["8851286520971","รองพื้นปูนเก่า JUNIOR99","1 GL","",425,3.0,0,2,1],["8851286521008","รองพื้นปูนเก่า JUNIOR100","5 GL","",1980,1.0,0,0,1],["","รองพื้นกันสนิม JUNIOR99 (แดง)","1 GL","",400,0,0,0,0],["","รองพื้นกันสนิม JUNIOR99 (แดง)","5 GL","",1980,0,0,0,0],["","รองพื้นกันสนิม JUNIOR99 (เทา)","1 GL","",400,0,0,3,-3],["","รองพื้นกันสนิม JUNIOR99 (เทา)","5 GL","",1980,0,0,2,-2],["","สีทาหลังคา ROOF PAINT ","1 GL","",490,10.0,0,26,-16],["8852186347071","Roof Seal กันซึมดาดฟ้า (ขาว)","4 KG","",690,4.0,0,0,4],["8852186349068","Roof Seal กันซึมดาดฟ้า (เทาเข้ม)","4 KG","",690,4.0,0,1,3],["8852186347064","Roof Seal กันซึมดาดฟ้า (ขาว)","20 KG","",2890,4.0,0,1,3],["8852186349075","Roof Seal กันซึมดาดฟ้า (เทาเข้ม)","20 KG","",2890,3.0,0,2,1],["8851286094311","สีน้ำมัน All in 1 S914","1 GL","",720,6.0,0,19,-13],["8851286094229","สีน้ำมัน All in 1 S914","1/4 GL","",225,4.0,0,11,-7],["8851286094144","สีน้ำมัน All in 1 F914","1 GL","",690,1.0,0,27,-26],["","สีน้ำมัน All in 1 F914","1/4 GL","",225,0,0,0,0],["8851286094151","สีน้ำมัน All in 1 S900","1/4 GL","",225,2.0,0,11,-9],["","สีน้ำมัน All in 1 S900","1 GL","",720,0,0,17,-17],["8851286094335","สีน้ำมัน All in 1 S910","1 GL","",720,5.0,0,6,-1],["8851286094236","สีน้ำมัน All in 1 S912","1/4 GL","",225,8.0,0,2,6],["8851286094328","สีน้ำมัน All in 1 S912","1 GL","",720,2.0,0,1,1],["","สีน้ำมัน All in 1 S138","1 GL","",720,0,0,2,-2],["8851286094267","สีน้ำมัน All in 1 S138","1/4 GL","",225,3.0,0,10,-7],["","สีน้ำมัน JUNIOR99 [9711]","1 GL","",0,0,0,0,0],["","สีน้ำมัน JUNIOR99 [9736]","1 GL","",0,0,0,0,0],["","สีน้ำมัน JUNIOR99 [9727]","1 GL","",0,0,0,0,0],["","สีน้ำมัน JUNIOR99 [9700]","1 GL","",520,0,0,0,0],["","สีน้ำมัน JUNIOR99 [9741]","1 GL","",0,0,0,0,0],["","สีน้ำมัน BODELAG","1 GL","A",880,3.0,0,6,-3],["","สีน้ำมัน BODELAG","1 GL","B",0,0,0,0,0],["","สีน้ำมัน BODELAG","1 GL","C",0,0,0,0,0],["8851286079059","สีน้ำมัน BODELAG","1 GL","D",760,1.0,0,5,-4],["","สีน้ำมัน BODELAG","2.5 GL","A",2070,0,0,2,-2],["","สีน้ำมัน BODELAG","2.5 GL","B",0,0,0,0,0],["","สีน้ำมัน BODELAG","2.5 GL","C",0,0,0,0,0],["8851286079097","สีน้ำมัน BODELAG","2.5 GL","D",1830,4.0,0,3,1],["8852186427421","AQUA Epoxy","1 Set","A",2310,4.0,0,0,4],["8852186427438","AQUA Epoxy","1 Set","B",2310,4.0,0,3,1],["8852186427445","AQUA Epoxy","1 Set","C",1800,4.0,0,0,4],["8852186427452","AQUA Epoxy","1 Set","D",1800,2.0,0,2,0],["8852186427636","รองพื้น AQUA Epoxy","1 Set","",1950,3.0,0,1,2],["","สีสร้างลาย Momento Loft","1 Set","",2450,1.0,0,0,1],["","กันซึม A100","1 GL","",640,3.0,0,16,-13],["","กันซึม A200","1 GL","",760,5.0,0,11,-6],["","อะคริลิค Wall Filler","5 KG","",260,6.0,0,9,-3],["","สีสเปรย์กระป๋อง PYLAC","1 กป","",98,10.0,0,11,-1],["","สีสเปรย์กระป๋อง LAZER","1 กป","",58,10.0,0,120,-110],["","รายได้แม่สี (ฉีดเพิ่ม)","","",0,5.0,0,11,-6],["","อื่นๆ","","",0,0,0,11,-11]];
+/* SALES_SEED: [date, name, size, base, price, colorCode, tintPrice, qty, total, sku]  — full history Jan–Aug 2569 from Excel */
+const SALES_SEED = [["2026-01-01","อื่นๆ","","",0,"",129856,1,129856,""],["2026-01-17","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"A5006",7.8,4,9991.2,"8851286633619"],["2026-01-17","รองพื้น WEATHERBOND 5100","5 GL","",3190,"",0,1,3190,"8851286383163"],["2026-01-17","สีทาฝ้า SUPER SERVE (S700)","5 GL","",1440,"",0,1,1440,"8852186318187"],["2026-01-17","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"A5006",7.8,1,2497.8,"8851286633619"],["2026-01-17","WEATHERBOND (กึ่งเงา)","1 GL","B",1090,"8288",113,1,1203,"8851286681252"],["2026-01-17","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,"",0,1,1350,"8851286448237"],["2026-01-17","สีทาฝ้า SUPER SERVE  (S800)","5 GL","",1440,"",0,1,1440,"8852186318507"],["2026-01-18","สีทาฝ้า SUPER SERVE (S700)","1 GL","",350,"SS800",0,1,350,"8852186318170"],["2026-01-18","สีน้ำมัน All in 1 S914","1/4 GL","",225,"S900",0,1,225,"8851286094229"],["2026-01-18","สีน้ำมัน All in 1 S914","1 GL","",720,"S914",0,1,720,"8851286094311"],["2026-01-19","รองพื้น WEATHERBOND 5100","5 GL","",3190,"",0,2,6380,"8851286383163"],["2026-01-19","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"A5006",7.8,4,9991.2,"8851286633619"],["2026-01-19","AirCare (กึ่งเงา)","2.5 GL","A",2070,"A5006 ",8.2,4,8312.8,"8851286675732"],["2026-01-19","สีท้าฝ้า HYBRIDESHIELD (999C)","5 GL","",2200,"",0,1,2200,"8851286533568"],["2026-01-19","WEATHERBOND (กึ่งเงา)","2.5 GL","B",2390,"",268.7,1,2658.7,"8851286633626"],["2026-01-19","VINILEX (กึ่งเงา) ภายนอก","1 GL","D",550,"",437,1,987,"8851286472737"],["2026-01-20","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"001",16.5,1,1756.5,"8851286523811"],["2026-01-20","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1978",58.4,1,1798.4,"8851286523811"],["2026-01-20","สีท้าฝ้า HYBRIDESHIELD (777C)","1 GL","",540,"777C",0,1,540,"8851286533537"],["2026-01-20","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1978",58.4,1,1798.4,"8851286523811"],["2026-01-20","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","B",1710,"1266",2043,2,7506,"8851286523828"],["2026-01-21","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"3021",5.9,2,3491.8,"8851286523811"],["2026-01-21","สีท้าฝ้า HYBRIDESHIELD (999C)","5 GL","",2200,"999",0,1,2200,"8851286533568"],["2026-01-21","สีทาฝ้า JUNIOR99 (ด้านพิเศษ)","1 GL","",0,"800",0,1,0,""],["2026-01-21","ร้องพื้น Excel","5 GL","",3150,"",0,1,3150,"8851286460000"],["2026-01-21","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"3021",5.9,4,6983.6,"8851286523811"],["2026-01-22","WEATHERBOND (กึ่งเงา)","1 GL","D",900,"A9000",170,1,1070,"8851286681344"],["2026-01-22","WEATHERBOND (กึ่งเงา)","2.5 GL","D",2060,"A9000",404,1,2464,"8851286633640"],["2026-01-22","สีท้าฝ้า HYBRIDESHIELD (999C)","5 GL","",2200,"999",0,1,2200,"8851286533568"],["2026-01-22","รองพื้นกันสนิม JUNIOR99","1/4 GL","",0,"",0,1,0,""],["2026-01-23","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"3068",40.9,1,2530.9,"8851286633619"],["2026-01-23","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"3088",266,1,2756,"8851286633619"],["2026-01-23","AirCare (กึ่งเงา)","2.5 GL","A",2070,"A5006",8.2,2,4156.4,"8851286675732"],["2026-01-23","รองพื้น SUPER SERVE ","5 GL","",1790,"",0,1,1790,"8851286018676"],["2026-01-23","รองพื้น WEATHERBOND 5100","5 GL","",3190,"",0,1,3190,"8851286383163"],["2026-01-23","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"",0,1,1580,"8851286523934"],["2026-01-23","รองพื้น VINILEX ","5 GL","",2550,"",0,1,2550,"8851286141305"],["2026-01-23","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"A5006",6.2,1,1746.2,"8851286523811"],["2026-01-23","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"-",1394,1,3134,"8851286523811"],["2026-01-24","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1001",8.6,1,1748.6,"8851286523811"],["2026-01-24","สีน้ำมัน BODELAG","1 GL","D",760,"3008",178.7,1,938.7,"8851286079059"],["2026-01-24","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1001",11.8,4,10007.2,"8851286633619"],["2026-01-24","WEATHERBOND (กึ่งเงา)","2.5 GL","C",2290,"3008",167.9,1,2457.9,"8851286633633"],["2026-01-24","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"A5006 ",6.2,1,1746.2,"8851286523811"],["2026-01-24","รองพื้น Quick Sealer","1 GL","",740,"",0,1,740,"8851286094663"],["2026-01-24","WEATHERBOND (กึ่งเงา)","2.5 GL","C",2290,"3008",167.9,1,2457.9,"8851286633633"],["2026-01-24","กันซึม A100","1 GL","",640,"",0,2,1280,""],["2026-01-24","รองพื้น JUNIOR99 (น้ำ)","1 GL","",325,"",0,1,325,"8851286180540"],["2026-01-24","WEATHERBOND (กึ่งเงา)","2.5 GL","B",2390,"1980",154,1,2544,"8851286633626"],["2026-01-25","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"A5006",5,1,1195,"8852186036128"],["2026-01-26","รองพื้น SUPER SERVE ","1 GL","",0,"",0,1,0,"8851286018676"],["2026-01-26","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"2425P",22.6,2,2425.2,"8852186036128"],["2026-01-26","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-01-26","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,"",0,1,1350,"8851286448237"],["2026-01-26","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,2,116,""],["2026-01-26","JUNIOR99 ภายนอก (900)","5 GL","",1050,"",0,3,3150,"8851286180533"],["2026-01-26","สีทาหลังคา ROOF PAINT ","1 GL","",490,"3180",0,2,980,""],["2026-01-27","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","A",910,"0310",10.7,1,920.7,"8852186036562"],["2026-01-27","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-01-28","รองพื้น Quick Sealer","5 GL","",3190,"",0,1,3190,"8851286094687"],["2026-01-28","สีทาหลังคา ROOF PAINT ","1 GL","",490,"3012",0,1,490,""],["2026-01-28","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,2,2260,"8851286180557"],["2026-01-28","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"2987",149,4,5356,"8852186036128"],["2026-01-28","กันซึม A100","1 GL","",640,"",0,1,640,""],["2026-01-28","รองพื้น Quick Sealer","5 GL","",3190,"",0,1,3190,"8851286094687"],["2026-01-28","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,"",0,1,1350,"8851286448237"],["2026-01-29","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,1,58,""],["2026-01-29","สีน้ำมัน All in 1 S900","1 GL","",720,"",0,3,2160,""],["2026-01-29","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"2987",177.7,1,1917.7,"8851286523811"],["2026-01-29","รองพื้นอเนกประสงค์ FLEXISEAL","1 GL","",650,"",0,1,650,"8851286233802"],["2026-01-29","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"",0,1,1740,"8851286523811"],["2026-01-29","รองพื้น Quick Sealer","1 GL","",740,"",0,1,740,"8851286094663"],["2026-01-30","รองพื้น Quick Sealer","5 GL","",3190,"",0,1,3190,"8851286094687"],["2026-01-30","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"",11,2,5002,"8851286633619"],["2026-01-30","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"",265,1,2755,"8851286633619"],["2026-01-30","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"",0,2,2380,"8852186036128"],["2026-01-30","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","D",400,"",319,1,719,""],["2026-01-30","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","D",400,"",592,1,992,""],["2026-01-30","สีสเปรย์กระป๋อง PYLAC","1 กป","",98,"",0,3,294,""],["2026-01-30","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,1,58,""],["2026-01-30","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1978",58,1,1798,"8851286523811"],["2026-01-30","WEATHERBOND (กึ่งเงา)","1 GL","D",900,"A9000",169,1,1069,"8851286681344"],["2026-01-30","SUPER SERVE (กึ่งเงา) ภายนอก","5 GL","A",2300,"",0,2,4600,"8851286094489"],["2026-01-30","สีน้ำมัน All in 1 S900","1 GL","",720,"",0,4,2880,""],["2026-01-31","JUNIOR99 ภายใน (300)","5 GL","",860,"",0,1,860,"8851286180212"],["2026-01-31","สีน้ำมัน All in 1 S900","1 GL","",720,"",0,1,720,""],["2026-01-31","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","",0,"3369A",568.8,1,568.8,"8851286094472"],["2026-01-31","อื่นๆ","","",0,"",-13134,1,-13134,""],["2026-02-01","สีน้ำมัน All in 1 S900","1 GL","",720,"S900",0,1,720,""],["2026-02-01","สีน้ำมัน All in 1 S910","1 GL","",720,"S910",0,1,720,"8851286094335"],["2026-02-01","สีสเปรย์กระป๋อง LAZER","1/4 GL","",0,"",0,3,0,""],["2026-02-01","JUNIOR99 ภายใน (300)","1 GL","",300,"300",0,1,300,"8851286180205"],["2026-02-01","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"3067",476,1,2966,"8851286633619"],["2026-02-01","WEATHERBOND (กึ่งเงา)","1 GL","C",1040,"1989",158,1,1198,"8851286681290"],["2026-02-01","รองพื้น Quick Sealer","2.5 GL","",1800,"",0,1,1800,"8851286094670"],["2026-02-01","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","D",1630,"8045",2917.5,5,22737.5,"8851286523842"],["2026-02-01","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","C",1690,"1989D",413.2,1,2103.2,"8851286523835"],["2026-02-01","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"2164P",23,2,3526,"8851286523811"],["2026-02-02","สีท้าฝ้า HYBRIDESHIELD (999C)","5 GL","",2200,"999C",0,1,2200,"8851286533568"],["2026-02-02","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,"",0,1,1350,"8851286448237"],["2026-02-02","WEATHERBOND (กึ่งเงา)","2.5 GL","C",2290,"",419,1,2709,"8851286633633"],["2026-02-02","WEATHERBOND (เนียน)","2.5 GL","A",2250,"3253P",21,1,2271,"8851286633572"],["2026-02-02","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"",63,1,2553,"8851286633619"],["2026-02-02","WEATHERBOND (กึ่งเงา)","2.5 GL","D",2060,"",404,1,2464,"8851286633640"],["2026-02-02","สีทาหลังคา ROOF PAINT ","1 GL","",490,"3774",0,1,490,""],["2026-02-02","สีน้ำมัน All in 1 S900","1/4 GL","",225,"S900",0,1,225,"8851286094151"],["2026-02-02","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,"2987P",70.5,1,860.5,"8851286523576"],["2026-02-02","สีทาฝ้า JUNIOR99 (S800)","5 GL","",900,"800",0,1,900,"8851286207711"],["2026-02-02","สีท้าฝ้า HYBRIDESHIELD (777C)","5 GL","",2200,"777C",0,2,4400,"8851286533544"],["2026-02-02","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,"1050P",11.7,1,801.7,"8851286523576"],["2026-02-02","รองพื้น Quick Sealer","1 GL","",740,"",0,1,740,"8851286094663"],["2026-02-03","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"",0,1,1190,"8852186036128"],["2026-02-03","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"2987P",176,1,1916,"8851286523811"],["2026-02-03","สีน้ำมัน All in 1 S914","1 GL","",720,"914",0,2,1440,"8851286094311"],["2026-02-03","SUPER SERVE (กึ่งเงา) ภายนอก","5 GL","A",2300,"",10,1,2310,"8851286094489"],["2026-02-03","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","B",1110,"",229,1,1339,"8852186036135"],["2026-02-03","สีทาฝ้า SUPER SERVE  (S800)","5 GL","",1440,"",0,1,1440,"8852186318507"],["2026-02-03","รองพื้นอเนกประสงค์ FLEXISEAL","5 GL","",2190,"",0,1,2190,"8851286233819"],["2026-02-04","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1004",11.5,1,2501.5,"8851286633619"],["2026-02-05","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1004",11.5,1,2501.5,"8851286633619"],["2026-02-05","สีทาฝ้า JUNIOR99 (S700)","5 GL","",900,"",0,1,900,"8851286207339"],["2026-02-05","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1997",326.3,4,8265.2,"8851286523811"],["2026-02-05","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","C",1690,"1984",39.4,6,10376.4,"8851286523835"],["2026-02-05","รองพื้น Quick Sealer","5 GL","",3190,"",0,1,3190,"8851286094687"],["2026-02-05","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"2425P",22.5,1,1212.5,"8852186036128"],["2026-02-05","WEATHERBOND (เนียน)","2.5 GL","A",2250,"3253P",21,1,2271,"8851286633572"],["2026-02-05","สีน้ำมัน All in 1 F914","1 GL","",690,"สีดำ",0,1,690,"8851286094144"],["2026-02-05","SUPER SERVE (กึ่งเงา) ภายนอก","5 GL","A",2300,"8260",14.5,2,4629,"8851286094489"],["2026-02-05","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"8260",7.3,1,1197.3,"8852186036128"],["2026-02-05","รองพื้น VINILEX ","5 GL","",2550,"",0,2,5100,"8851286141305"],["2026-02-06","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,"",0,1,1350,"8851286448237"],["2026-02-06","รองพื้น Quick Sealer","2.5 GL","",1800,"",0,1,1800,"8851286094670"],["2026-02-06","AirCare (กึ่งเงา)","2.5 GL","A",2070,"",100.7,1,2170.7,"8851286675732"],["2026-02-06","สีน้ำมัน All in 1 F914","1 GL","",690,"สีดำ (ด้าน)",0,1,690,"8851286094144"],["2026-02-06","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"สีีบรอน",0,6,348,""],["2026-02-06","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"1004P",9.5,6,9537,"8851286523934"],["2026-02-07","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"0310",11.4,4,10005.6,"8851286633619"],["2026-02-07","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1041P",23.5,2,5027,"8851286633619"],["2026-02-07","รองพื้น VINILEX ","5 GL","",2550,"",0,1,2550,"8851286141305"],["2026-02-07","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,"",0,1,1350,"8851286448237"],["2026-02-07","สีท้าฝ้า HYBRIDESHIELD (999C)","1 GL","",540,"999",0,1,540,"8851286533551"],["2026-02-07","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","C",1380,"1541D",607.4,1,1987.4,"8851286472720"],["2026-02-08","สีน้ำมัน All in 1 F914","2.5 GL","",0,"914",0,1,0,"8851286094144"],["2026-02-08","รองพื้นกันสนิม JUNIOR99 (เทา)","1 GL","",400,"สีเทา",0,1,400,""],["2026-02-08","รองพื้นอเนกประสงค์ FLEXISEAL","5 GL","",2190,"",0,1,2190,"8851286233819"],["2026-02-08","สีท้าฝ้า HYBRIDESHIELD (777C)","5 GL","",2200,"777",0,1,2200,"8851286533544"],["2026-02-08","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"",0,1,1740,"8851286523811"],["2026-02-08","รองพื้น Quick Sealer","2.5 GL","",1800,"",0,1,1800,"8851286094670"],["2026-02-09","ร้องพื้น Excel","5 GL","",3150,"",0,1,3150,"8851286460000"],["2026-02-09","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"3056P",43,1,1783,"8851286523811"],["2026-02-09","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,"",0,1,1350,"8851286448237"],["2026-02-09","VINILEX (กึ่งเงา) ภายนอก","1 GL","A",740,"",0,1,740,"8851286472645"],["2026-02-09","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1978",73,5,12815,"8851286633619"],["2026-02-09","ร้องพื้น Excel","5 GL","",3150,"",0,1,3150,"8851286460000"],["2026-02-09","รองพื้น SUPER SERVE ","5 GL","",1790,"",0,2,3580,"8851286018676"],["2026-02-09","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","C",1690,"1679",627,2,4634,"8851286523835"],["2026-02-09","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","A",910,"",0,1,910,"8852186036562"],["2026-02-10","รองพื้น VINILEX ","5 GL","",2550,"",0,1,2550,"8851286141305"],["2026-02-10","สีสเปรย์กระป๋อง PYLAC","1 กป","",98,"230",0,1,98,""],["2026-02-11","สีน้ำมัน All in 1 F914","1 GL","",690,"914",0,1,690,"8851286094144"],["2026-02-11","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"266",0,10,580,""],["2026-02-11","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"210",0,3,174,""],["2026-02-11","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"2993P",130.4,1,2620.4,"8851286633619"],["2026-02-12","สีน้ำมัน All in 1 F914","1 GL","",690,"ดำด้าน",0,1,690,"8851286094144"],["2026-02-12","รองพื้น Quick Sealer","1 GL","",740,"",0,1,740,"8851286094663"],["2026-02-12","WEATHERBOND (กึ่งเงา)","1 GL","A",1130,"2473(แต่ง)",0,1,1130,"8851286681115"],["2026-02-12","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"1004P",9.6,1,1589.6,"8851286523934"],["2026-02-12","รองพื้น VINILEX ","1 GL","",635,"",0,1,635,"8851286141299"],["2026-02-13","สีน้ำมัน BODELAG","2.5 GL","D",1830,"3459",551,1,2381,"8851286079097"],["2026-02-13","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1002",28,1,1768,"8851286523811"],["2026-02-13","รองพื้น VINILEX ","5 GL","",2550,"",0,2,5100,"8851286141305"],["2026-02-13","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"",513,1,2253,"8851286523811"],["2026-02-13","รองพื้น Quick Sealer","1 GL","",740,"",0,1,740,"8851286094663"],["2026-02-14","สีน้ำมัน All in 1 F914","1 GL","",690,"914",0,1,690,"8851286094144"],["2026-02-14","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"123",2.8,1,1192.8,"8852186036128"],["2026-02-14","สีทาฝ้า JUNIOR99 (S800)","5 GL","",900,"800",0,2,1800,"8851286207711"],["2026-02-14","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1001",10,1,2500,"8851286633619"],["2026-02-14","WEATHERBOND (กึ่งเงา)","2.5 GL","B",2390,"1980",153.4,2,5086.8,"8851286633626"],["2026-02-14","รองพื้น Quick Sealer","2.5 GL","",1800,"",0,1,1800,"8851286094670"],["2026-02-14","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"1004",9.6,1,1589.6,"8851286523934"],["2026-02-14","สีสเปรย์กระป๋อง PYLAC","1 กป","",98,"216",0,1,98,""],["2026-02-14","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"สีดำ",0,2,116,""],["2026-02-15","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,"1383P",12.7,1,802.7,"8851286523576"],["2026-02-15","รองพื้น Quick Sealer","1 GL","",740,"",0,1,740,"8851286094663"],["2026-02-15","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"แดง",0,1,58,""],["2026-02-15","สีน้ำมัน BODELAG","2.5 GL","D",1830,"3459A",551.6,1,2381.6,"8851286079097"],["2026-02-15","รองพื้น WEATHERBOND 5100","5 GL","",3190,"",0,1,3190,"8851286383163"],["2026-02-15","WEATHERBOND (กึ่งเงา)","2.5 GL","C",2290,"3033D",419.3,2,5418.6,"8851286633633"],["2026-02-16","WEATHERBOND (เนียน)","2.5 GL","A",2250,"2146P",2.2,1,2252.2,"8851286633572"],["2026-02-16","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"1595",144,1,1334,"8852186036128"],["2026-02-16","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-02-16","สีน้ำมัน All in 1 S910","1 GL","",720,"910",0,1,720,"8851286094335"],["2026-02-16","กันซึม A100","1 GL","",640,"",0,1,640,""],["2026-02-16","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"ขาว",0,2,116,""],["2026-02-16","JUNIOR99 ภายนอก (900)","5 GL","",1050,"ขาว",0,1,1050,"8851286180533"],["2026-02-16","สีทาฝ้า JUNIOR99 (S800)","5 GL","",900,"ควันบุหรี่",0,1,900,"8851286207711"],["2026-02-16","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"ขาว",0,2,116,""],["2026-02-16","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"ดำ",0,2,116,""],["2026-02-16","WEATHERBOND (กึ่งเงา)","1 GL","D",900,"9000",169,1,1069,"8851286681344"],["2026-02-17","รายได้แม่สี (ฉีดเพิ่ม)","","",0,"",1200,1,1200,""],["2026-02-17","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"2146P",2.2,1,1742.2,"8851286523811"],["2026-02-17","AirCare (เนียน)","2.5 GL","A",2020,"2146P",1.7,1,2021.7,"8851286683867"],["2026-02-17","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","C",1690,"1756T",353.9,1,2043.9,"8851286523835"],["2026-02-17","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,"2512P",111.1,1,901.1,"8851286523576"],["2026-02-17","ร้องพื้น Excel","1 GL","",800,"",0,1,800,"8851286459998"],["2026-02-17","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,1,58,""],["2026-02-18","SUPER SERVE (กึ่งเงา) ภายนอก","5 GL","A",2300,"สีขาว(ไม่ผสม)",0,1,2300,"8851286094489"],["2026-02-18","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","A",910,"2472",20.4,1,930.4,"8852186036562"],["2026-02-18","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,1,58,""],["2026-02-18","AirCare (เนียน)","2.5 GL","A",2020,"2146P",2,1,2022,"8851286683867"],["2026-02-18","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"2827P",56,2,5092,"8851286633619"],["2026-02-18","ร้องพื้น Excel","5 GL","",3150,"",0,1,3150,"8851286460000"],["2026-02-18","สีน้ำมัน All in 1 F914","1 GL","",690,"",0,1,690,"8851286094144"],["2026-02-18","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"123",2,1,1192,"8852186036128"],["2026-02-18","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,2,116,""],["2026-02-18","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"5006",8,2,4996,"8851286633619"],["2026-02-18","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"3107",127,1,2617,"8851286633619"],["2026-02-18","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1088",17,1,2507,"8851286633619"],["2026-02-18","สีท้าฝ้า HYBRIDESHIELD (999C)","5 GL","",2200,"999",0,1,2200,"8851286533568"],["2026-02-18","สีน้ำมัน All in 1 F914","1 GL","",690,"",0,2,1380,"8851286094144"],["2026-02-19","ร้องพื้น Excel","1 GL","",800,"",0,-1,-800,"8851286459998"],["2026-02-20","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","A",500,"2987P",62,1,562,"8851286094472"],["2026-02-20","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","B",480,"2988T",112,2,1184,"8851286094496"],["2026-02-20","สีน้ำมัน All in 1 F914","1 GL","",690,"",0,1,690,"8851286094144"],["2026-02-20","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"123",2,1,1192,"8852186036128"],["2026-02-20","สีน้ำมัน BODELAG","1 GL","A",880,"3140T แต่ง",114.7,1,994.7,""],["2026-02-20","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"0310",12,1,2502,"8851286633619"],["2026-02-20","รองพื้น Quick Sealer","2.5 GL","",1800,"",0,1,1800,"8851286094670"],["2026-02-20","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"สีเหลือง",0,2,116,""],["2026-02-20","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"สีขาว",0,2,116,""],["2026-02-20","กันซึม A200","1 GL","",760,"",0,1,760,""],["2026-02-20","สีทาหลังคา ROOF PAINT ","1 GL","",490,"3011",0,1,490,""],["2026-02-20","SUPER SERVE (ด้าน) ภายนอก","1 GL","B",370,"8288",144.8,1,514.8,"8852186006770"],["2026-02-21","สีสเปรย์กระป๋อง LAZER","","",0,"L220",0,3,0,""],["2026-02-22","สีน้ำมัน All in 1 S914","1/4 GL","",225,"",0,1,225,"8851286094229"],["2026-02-22","WEATHERBOND (กึ่งเงา)","2.5 GL","B",2390,"3089T",158,1,2548,"8851286633626"],["2026-02-22","AirCare (กึ่งเงา)","2.5 GL","A",2070,"2993P",104,1,2174,"8851286675732"],["2026-02-22","กันซึม A200","","",0,"",0,1,0,""],["2026-02-22","สีทาฝ้า JUNIOR99 (S700)","5 GL","",900,"700",0,1,900,"8851286207339"],["2026-02-22","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1088",16,1,1756,"8851286523811"],["2026-02-22","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","B",1710,"2988",444,1,2154,"8851286523828"],["2026-02-22","รองพื้น Quick Sealer","2.5 GL","",1800,"",0,1,1800,"8851286094670"],["2026-02-22","สีน้ำมัน All in 1 S138","1 GL","",720,"138",0,1,720,""],["2026-02-22","WEATHERBOND (กึ่งเงา)","1 GL","A",1130,"1515",251,1,1381,"8851286681115"],["2026-02-22","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","B",1710,"2907",609,1,2319,"8851286523828"],["2026-02-22","รองพื้น Quick Sealer","2.5 GL","",1800,"",0,1,1800,"8851286094670"],["2026-02-23","อื่นๆ","","",0,"",2042,1,2042,""],["2026-02-24","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1004p",11,1,2501,"8851286633619"],["2026-02-24","WEATHERBOND (กึ่งเงา)","1 GL","A",1130,"1004",5,1,1135,"8851286681115"],["2026-02-24","ร้องพื้น Excel","1 GL","",800,"",0,1,800,"8851286459998"],["2026-02-24","AirCare (เนียน)","2.5 GL","A",2020,"21001",2,1,2022,"8851286683867"],["2026-02-25","สีน้ำมัน BODELAG","2.5 GL","A",2070,"3282P",7,1,2077,""],["2026-02-25","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"212",0,1,58,""],["2026-02-25","รองพื้นปูนเก่า JUNIOR99","1 GL","",425,"",0,1,425,"8851286520971"],["2026-02-25","สีทาหลังคา ROOF PAINT ","1 GL","",490,"3774",0,1,490,""],["2026-02-26","สีทาฝ้า SUPER SERVE  (S800)","1 GL","",350,"S800",0,1,350,"8852186318194"],["2026-02-26","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"A5006",6.2,1,1746.2,"8851286523811"],["2026-02-26","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-02-27","รองพื้น VINILEX ","5 GL","",2550,"",0,1,2550,"8851286141305"],["2026-02-27","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,4,232,""],["2026-02-27","รองพื้น SUPER SERVE ","5 GL","",1790,"",0,1,1790,"8851286018676"],["2026-02-28","รองพื้น VINILEX ","5 GL","",2550,"",0,2,5100,"8851286141305"],["2026-02-28","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"210",0,3,174,""],["2026-02-28","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"สีเหลือง",0,2,116,""],["2026-02-28","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"สีีขาว",0,2,116,""],["2026-02-28","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"3021",5,1,1195,"8852186036128"],["2026-02-28","JUNIOR99 ภายใน (300)","5 GL","",860,"300",0,1,860,"8851286180212"],["2026-02-28","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-02-28","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","B",770,"2406",573,1,1343,"8851286523583"],["2026-02-28","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","B",770,"1269",446,1,1216,"8851286523583"],["2026-02-28","สีสเปรย์กระป๋อง PYLAC","1 กป","",98,"แดง",0,2,196,""],["2026-02-28","สีสเปรย์กระป๋อง PYLAC","1 กป","",98,"สีใส",0,1,98,""],["2026-02-28","อื่นๆ","","",0,"",-24334,1,-24334,""],["2026-03-01","SUPER SERVE (กึ่งเงา) ภายนอก","5 GL","A",2300,"8260",14,1,2314,"8851286094489"],["2026-03-01","รองพื้น SUPER SERVE ","5 GL","",1790,"",0,1,1790,"8851286018676"],["2026-03-01","WEATHERBOND (เนียน)","2.5 GL","A",2250,"1971P",13,1,2263,"8851286633572"],["2026-03-01","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"3087P",74.1,2,5128.2,"8851286633619"],["2026-03-01","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"3107",100,1,1840,"8851286523811"],["2026-03-01","รองพื้น Quick Sealer","","",0,"",0,1,0,"8851286094663"],["2026-03-01","WEATHERBOND (กึ่งเงา)","2.5 GL","D",2060,"3450A",695,1,2755,"8851286633640"],["2026-03-01","รองพื้น SUPER SERVE ","5 GL","",1790,"",0,2,3580,"8851286018676"],["2026-03-01","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"ไม่ผสม",0,1,1190,"8852186036128"],["2026-03-02","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"8260",7,1,1197,"8852186036128"],["2026-03-02","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"A5006",7,3,7491,"8851286633619"],["2026-03-02","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"2253P",14,3,7512,"8851286633619"],["2026-03-02","WEATHERBOND (กึ่งเงา)","1 GL","D",900,"3150A",425,1,1325,"8851286681344"],["2026-03-02","สีทาหลังคา ROOF PAINT ","1 GL","",490,"3011",0,1,490,""],["2026-03-02","รองพื้นปูนเก่า JUNIOR99","1 GL","",425,"",0,1,425,"8851286520971"],["2026-03-02","WEATHERBOND (กึ่งเงา)","1 GL","D",900,"1966D",160,1,1060,"8851286681344"],["2026-03-02","WEATHERBOND (เนียน)","2.5 GL","A",2250,"A5006",8,1,2258,"8851286633572"],["2026-03-02","AirCare (เนียน)","2.5 GL","A",2020,"2212P",2,1,2022,"8851286683867"],["2026-03-02","AirCare (เนียน)","1 GL","A",900,"2212P",1,1,901,"8851286683850"],["2026-03-02","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,"",0,1,1350,"8851286448237"],["2026-03-03","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"",0,1,2490,"8851286633619"],["2026-03-03","WEATHERBOND (กึ่งเงา)","1 GL","D",900,"2059A",910,1,1810,"8851286681344"],["2026-03-03","WEATHERBOND (กึ่งเงา)","2.5 GL","B",2390,"8288",268,2,5316,"8851286633626"],["2026-03-03","AirCare (กึ่งเงา)","2.5 GL","A",2070,"2405A",156,4,8904,"8851286675732"],["2026-03-03","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","D",640,"3150",418,1,1058,"8851286523804"],["2026-03-03","รองพื้น Quick Sealer","5 GL","",3190,"",0,2,6380,"8851286094687"],["2026-03-03","รองพื้น Quick Sealer","2.5 GL","",1800,"",0,1,1800,"8851286094670"],["2026-03-05","สีทาหลังคา ROOF PAINT ","1 GL","",490,"ขาว",0,1,490,""],["2026-03-05","สีน้ำมัน All in 1 S914","1/4 GL","",225,"ดำกึ่งเงา",0,1,225,"8851286094229"],["2026-03-05","สีน้ำมัน All in 1 F914","1 GL","",690,"ดำด้าน",0,1,690,"8851286094144"],["2026-03-05","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"ดำ",0,3,174,""],["2026-03-05","รองพื้น Quick Sealer","2.5 GL","",1800,"",0,1,1800,"8851286094670"],["2026-03-05","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"2993P",91.8,2,3343.6,"8851286523934"],["2026-03-06","สีทาฝ้า JUNIOR99 (S700)","1 GL","",225,"700",0,1,225,"8851286207346"],["2026-03-07","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"214",0,1,58,""],["2026-03-07","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"220",0,1,58,""],["2026-03-07","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"226",0,1,58,""],["2026-03-07","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"211",0,1,58,""],["2026-03-07","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"200",0,1,58,""],["2026-03-07","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"0310",11,1,2501,"8851286633619"],["2026-03-07","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"3087",59,2,3598,"8851286523811"],["2026-03-07","สีน้ำมัน BODELAG","1 GL","A",880,"3087",20,2,1800,""],["2026-03-07","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,"",0,1,1350,"8851286448237"],["2026-03-07","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"1620",154,1,1344,"8852186036128"],["2026-03-08","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1041P",55,3,7635,"8851286633619"],["2026-03-08","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1989D",413,1,2153,"8851286523811"],["2026-03-08","รองพื้น VINILEX ","5 GL","",2550,"",0,1,2550,"8851286141305"],["2026-03-08","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"0310",11,1,2501,"8851286633619"],["2026-03-08","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"226",0,1,58,""],["2026-03-09","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","D",1630,"8558",545,1,2175,"8851286523842"],["2026-03-09","กันซึม A200","1 GL","",760,"",0,1,760,""],["2026-03-09","WEATHERBOND (กึ่งเงา)","1 GL","C",1040,"สูตรแต่ง",407,1,1447,"8851286681290"],["2026-03-09","รองพื้น VINILEX ","1 GL","",635,"",0,1,635,"8851286141299"],["2026-03-09","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"ดำ",0,1,58,""],["2026-03-10","สีน้ำมัน All in 1 F914","1 GL","",690,"ดำด้าน",0,1,690,"8851286094144"],["2026-03-11","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"แดง",0,1,58,""],["2026-03-11","AirCare (กึ่งเงา)","2.5 GL","A",2070,"8260",8.4,2,4156.8,"8851286675732"],["2026-03-11","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"A5006",6.2,3,5238.6,"8851286523811"],["2026-03-11","WEATHERBOND (กึ่งเงา)","2.5 GL","C",2290,"3084D",549.7,1,2839.7,"8851286633633"],["2026-03-12","สีทาฝ้า JUNIOR99 (S800)","5 GL","",900,"800",0,1,900,"8851286207711"],["2026-03-12","AirCare (กึ่งเงา)","2.5 GL","A",2070,"2405P",155.1,2,4450.2,"8851286675732"],["2026-03-12","สีน้ำมัน All in 1 S914","1/4 GL","",225,"ดำ(กึ่งเงา)",0,1,225,"8851286094229"],["2026-03-12","สีน้ำมัน All in 1 S900","1/4 GL","",225,"ขาว(กึ่งเงา)",0,1,225,"8851286094151"],["2026-03-12","สีน้ำมัน All in 1 S900","1 GL","",720,"ขาว(กึ่งเงา)",0,1,720,""],["2026-03-12","สีทาฝ้า JUNIOR99 (S800)","5 GL","",900,"800",0,1,900,"8851286207711"],["2026-03-12","สีทาฝ้า JUNIOR99 (S700)","5 GL","",900,"700",0,1,900,"8851286207339"],["2026-03-12","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-03-12","SUPER SERVE (กึ่งเงา) ภายนอก","5 GL","A",2300,"1971P",22.3,3,6966.9,"8851286094489"],["2026-03-12","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-03-13","สีน้ำมัน All in 1 S914","1/4 GL","",225,"",0,1,225,"8851286094229"],["2026-03-13","ร้องพื้น Excel","1 GL","",800,"",0,1,800,"8851286459998"],["2026-03-13","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","C",450,"2811D",49.1,1,499.1,"8851286094519"],["2026-03-13","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","C",1380,"1049D",2391,2,7542,"8851286472720"],["2026-03-13","สีสเปรย์กระป๋อง LAZER","","",0,"216",0,2,0,""],["2026-03-13","สีน้ำมัน All in 1 F914","1 GL","",690,"ดำ(ด้าน)",0,3,2070,"8851286094144"],["2026-03-14","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","D",640,"1456A",381,1,1021,"8851286523804"],["2026-03-14","สีสเปรย์กระป๋อง","","",0,"226",0,1,0,""],["2026-03-15","สีสเปรย์กระป๋อง","","",0,"ดำ(ด้าน)",0,1,0,""],["2026-03-15","สีสเปรย์กระป๋อง","","",0,"เขียว",0,1,0,""],["2026-03-15","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1971P",16,1,2506,"8851286633619"],["2026-03-15","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"2212P",3,1,2493,"8851286633619"],["2026-03-15","รองพื้น Quick Coat","5 GL","",2690,"",0,1,2690,"8852186521914"],["2026-03-15","AirCare (กึ่งเงา)","2.5 GL","A",2070,"21001",2,1,2072,"8851286675732"],["2026-03-15","AirCare (เนียน)","2.5 GL","A",2020,"21001",2,2,4044,"8851286683867"],["2026-03-15","HYBRIDESHIELD (กึ่งเงา) ภายใน","1 GL","A",710,"2389",8,1,718,"8851286522821"],["2026-03-15","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"1001",7,1,1197,"8852186036128"],["2026-03-15","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","A",910,"1004",8,1,918,"8852186036562"],["2026-03-15","ร้องพื้น Excel","5 GL","",3150,"",0,1,3150,"8851286460000"],["2026-03-15","สีน้ำมัน All in 1 S914","1 GL","",720,"914",0,1,720,"8851286094311"],["2026-03-16","สีน้ำมัน All in 1 S900","1/4 GL","",225,"ขาว(กึ่งเงา)",0,1,225,"8851286094151"],["2026-03-16","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"1515P",67,1,1647,"8851286523934"],["2026-03-17","AirCare (กึ่งเงา)","2.5 GL","A",2070,"1515",75,1,2145,"8851286675732"],["2026-03-17","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,"",0,1,1350,"8851286448237"],["2026-03-17","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"5006",7,2,4994,"8851286633619"],["2026-03-17","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","A",910,"5006",5,1,915,"8852186036562"],["2026-03-17","WEATHERBOND (กึ่งเงา)","1 GL","B",1090,"8288",113,1,1203,"8851286681252"],["2026-03-17","รองพื้น Quick Coat","5 GL","",2690,"",0,1,2690,"8852186521914"],["2026-03-17","สีท้าฝ้า HYBRIDESHIELD (999C)","1 GL","",540,"ควันบุหรี่",0,1,540,"8851286533551"],["2026-03-18","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,5,290,""],["2026-03-18","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,"",0,1,1350,"8851286448237"],["2026-03-18","รองพื้นกันสนิม JUNIOR99 (เทา)","1 GL","",400,"สีเทา",0,1,400,""],["2026-03-19","สีน้ำมัน BODELAG","1 GL","D",760,"1981A",180.1,1,940.1,"8851286079059"],["2026-03-19","สีน้ำมัน All in 1 S912","1/4 GL","",225,"เทา (กึ่งเงา)",0,2,450,"8851286094236"],["2026-03-20","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1984",39.4,1,1779.4,"8851286523811"],["2026-03-20","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"3107P",126.2,2,5232.4,"8851286633619"],["2026-03-20","WEATHERBOND (กึ่งเงา)","2.5 GL","B",2390,"8288",268.7,1,2658.7,"8851286633626"],["2026-03-20","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"",0,3,7470,"8851286633619"],["2026-03-20","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"A5006",7.8,3,7493.4,"8851286633619"],["2026-03-20","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"2253P",14.1,1,2504.1,"8851286633619"],["2026-03-20","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","C",1690,"1541D",607.4,4,9189.6,"8851286523835"],["2026-03-20","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","C",730,"1541D",243,1,973,"8851286523590"],["2026-03-20","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","D",640,"2358A",1138.1,1,1778.1,"8851286523804"],["2026-03-20","WEATHERBOND (เนียน)","2.5 GL","A",2250,"",0,1,2250,"8851286633572"],["2026-03-20","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","A",910,"",0,2,1820,"8852186036562"],["2026-03-20","รองพื้น Quick Coat","5 GL","",2690,"",0,2,5380,"8852186521914"],["2026-03-20","รองพื้น VINILEX ","1 GL","",635,"",0,1,635,"8851286141299"],["2026-03-20","WEATHERBOND (กึ่งเงา)","2.5 GL","D",2060,"1197A",2554.1,1,4614.1,"8851286633640"],["2026-03-20","รองพื้น VINILEX ","5 GL","",2550,"",0,1,2550,"8851286141305"],["2026-03-20","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,1,58,""],["2026-03-21","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1851P",65.9,1,1805.9,"8851286523811"],["2026-03-21","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","C",730,"1863D",453.3,1,1183.3,"8851286523590"],["2026-03-21","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-03-21","SUPER SERVE (ด้าน) ภายนอก","5 GL","",0,"ขาว",0,1,0,"8852186006749"],["2026-03-21","JUNIOR99 ภายใน (300)","5 GL","",860,"ขาว",0,2,1720,"8851286180212"],["2026-03-21","AirCare (เนียน)","1 GL","A",900,"",7,1,907,"8851286683850"],["2026-03-21","รองพื้น Quick Coat","1 GL","",740,"",0,1,740,"8852186521426"],["2026-03-21","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1022P",44,3,7602,"8851286633619"],["2026-03-21","WEATHERBOND (กึ่งเงา)","2.5 GL","D",2060,"3439A",984,2,6088,"8851286633640"],["2026-03-21","WEATHERBOND (กึ่งเงา)","1 GL","D",900,"1225A",761,1,1661,"8851286681344"],["2026-03-21","สีน้ำมัน All in 1 F914","1 GL","",690,"ดำ (ด้าน)",0,1,690,"8851286094144"],["2026-03-21","สีน้ำมัน All in 1 S914","1/4 GL","",225,"ดำ (กึ่งเงา)",0,1,225,"8851286094229"],["2026-03-22","รองพื้น WEATHERBOND 5100","5 GL","",3190,"",0,1,3190,"8851286383163"],["2026-03-22","รองพื้น Quick Coat","2.5 GL","",1690,"",0,1,1690,"8852186523628"],["2026-03-22","JUNIOR99 ภายใน (9106)","5 GL","",860,"ควันบุหรี่",0,1,860,"8851286180151"],["2026-03-22","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1572P",27.8,2,5035.6,"8851286633619"],["2026-03-22","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1542P",265.5,3,8266.5,"8851286633619"],["2026-03-22","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"3079T",923.1,1,3413.1,"8851286633619"],["2026-03-22","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"3200P",73.8,1,2563.8,"8851286633619"],["2026-03-22","รองพื้น WEATHERBOND 5100","5 GL","",3190,"",0,2,6380,"8851286383163"],["2026-03-22","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"A5006",7.8,2,4995.6,"8851286633619"],["2026-03-22","กันซึม A100","1 GL","",640,"",0,1,640,""],["2026-03-22","รองพื้น Quick Sealer","1 GL","",740,"",0,1,740,"8851286094663"],["2026-03-22","สีทาฝ้า SUPER SERVE  (S800)","1 GL","",350,"",0,2,700,"8852186318194"],["2026-03-22","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"สีขาว",0,1,2490,"8851286633619"],["2026-03-22","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"0453",184,2,5348,"8851286633619"],["2026-03-22","รองพื้น VINILEX ","5 GL","",2550,"",0,1,2550,"8851286141305"],["2026-03-23","รองพื้น VINILEX ","5 GL","",2550,"",0,1,2550,"8851286141305"],["2026-03-23","WEATHERBOND (กึ่งเงา)","2.5 GL","C",2290,"3097D",256,1,2546,"8851286633633"],["2026-03-23","รองพื้น Quick Sealer","1 GL","",740,"",0,1,740,"8851286094663"],["2026-03-23","รายได้แม่สี (ฉีดเพิ่ม)","","",0,"1847T",400.6,2,801.2,""],["2026-03-24","รองพื้น Quick Coat","2.5 GL","",1690,"",0,1,1690,"8852186523628"],["2026-03-24","AirCare (เนียน)","2.5 GL","A",2020,"A5006",8.2,1,2028.2,"8851286683867"],["2026-03-24","รองพื้น Quick Coat","2.5 GL","",1690,"",0,1,1690,"8852186523628"],["2026-03-25","WEATHERBOND (กึ่งเงา)","1 GL","A",1130,"3200P",31,1,1161,"8851286681115"],["2026-03-25","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"L238",0,2,116,""],["2026-03-25","รองพื้น WEATHERBOND 5100","5 GL","",3190,"",0,1,3190,"8851286383163"],["2026-03-25","รองพื้นกันสนิม JUNIOR99 (เทา)","5 GL","",1980,"เทา",0,1,1980,""],["2026-03-25","สีทาหลังคา ROOF PAINT ","1 GL","",490,"3012",0,2,980,""],["2026-03-26","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-03-26","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"A5006",7.8,1,2497.8,"8851286633619"],["2026-03-26","SUPER SERVE (ด้าน) ภายนอก","1 GL","A",400,"A5006",2.3,1,402.3,"8852186006749"],["2026-03-26","WEATHERBOND (กึ่งเงา)","1 GL","A",1130,"ขาว",0,1,1130,"8851286681115"],["2026-03-27","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"สีดำ",0,1,58,""],["2026-03-27","รองพื้น Quick Coat","2.5 GL","",1690,"",0,1,1690,"8852186523628"],["2026-03-27","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"A5006",7.8,3,7493.4,"8851286633619"],["2026-03-28","สีท้าฝ้า HYBRIDESHIELD (777C)","1 GL","",540,"777C",0,1,540,"8851286533537"],["2026-03-28","รองพื้น Quick Coat","2.5 GL","",1690,"",0,1,1690,"8852186523628"],["2026-03-28","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","C",1690,"1997",326,2,4032,"8851286523835"],["2026-03-28","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"1971",33,1,1613,"8851286523934"],["2026-03-28","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"3107",100,1,1840,"8851286523811"],["2026-03-28","WEATHERBOND (กึ่งเงา)","1 GL","A",1130,"",0,1,1130,"8851286681115"],["2026-03-28","รองพื้น Quick Sealer","1 GL","",740,"",0,1,740,"8851286094663"],["2026-03-28","HYBRIDESHIELD (กึ่งเงา) ภายใน","1 GL","A",710,"5006",4,1,714,"8851286522821"],["2026-03-28","WEATHERBOND (กึ่งเงา)","2.5 GL","D",2060,"1197",2554,1,4614,"8851286633640"],["2026-03-28","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"3107",126,6,15696,"8851286633619"],["2026-03-28","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"0310",11,8,20008,"8851286633619"],["2026-03-28","รองพื้น Quick Coat","2.5 GL","",1690,"",0,1,1690,"8852186523628"],["2026-03-29","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"",0,1,1190,"8852186036128"],["2026-03-30","สีทาฝ้า SUPER SERVE (S700)","5 GL","",1440,"ขาว",0,1,1440,"8852186318187"],["2026-03-30","กันซึม A200","","",0,"",0,1,0,""],["2026-03-30","กันซึม A100","","",0,"",0,3,0,""],["2026-03-31","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"",0,1,2490,"8851286633619"],["2026-03-31","WEATHERBOND (กึ่งเงา)","1 GL","C",1040,"",347,1,1387,"8851286681290"],["2026-03-31","กันซึม A200","1 GL","",760,"",0,4,3040,""],["2026-03-31","อื่นๆ","","",0,"",2030,1,2030,""],["2026-03-31","อื่นๆ","","",0,"",-25871,1,-25871,""],["2026-04-01","สีน้ำมัน All in 1 F914","1 GL","",690,"ดำ (ด้าน)",0,2,1380,"8851286094144"],["2026-04-01","สีทาฝ้า JUNIOR99 (S800)","5 GL","",900,"S800",0,4,3600,"8851286207711"],["2026-04-01","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,4,4520,"8851286180557"],["2026-04-01","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","A",1490,"1087P",34.5,6,9147,"8851286472669"],["2026-04-01","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","D",1180,"2140A",760.5,2,3881,"8851286472744"],["2026-04-02","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1022P",42,1,2532,"8851286633619"],["2026-04-02","สีท้าฝ้า HYBRIDESHIELD","1 GL","",0,"999",0,1,0,""],["2026-04-02","กันซึม A100","1 GL","",640,"",0,1,640,""],["2026-04-02","สีน้ำมัน All in 1 F914","1 GL","",690,"ดำ (ด้าน)",0,1,690,"8851286094144"],["2026-04-02","สีน้ำมัน All in 1 S900","1 GL","",720,"ขาว (กึ่งเงา)",0,1,720,""],["2026-04-02","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","D",640,"1197A",1066,1,1706,"8851286523804"],["2026-04-04","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,8,464,""],["2026-04-04","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","C",1050,"",175,2,2450,"8852186036142"],["2026-04-04","สีน้ำมัน All in 1 S900","1/4 GL","",225,"ขาว (กึ่งเงา)",0,1,225,"8851286094151"],["2026-04-05","รายได้แม่สี (ฉีดเพิ่ม)","","",0,"8264",262.2,2,524.4,""],["2026-04-05","รายได้แม่สี (ฉีดเพิ่ม)","","",0,"ดำ (B)",88.3,2,176.6,""],["2026-04-06","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","B",770,"1977P",84,1,854,"8851286523583"],["2026-04-06","SUPER SERVE (กึ่งเงา) ภายนอก","5 GL","A",2300,"2212P",4.6,2,4609.2,"8851286094489"],["2026-04-06","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"2212P",2.3,1,1192.3,"8852186036128"],["2026-04-06","สีน้ำมัน All in 1 S914","1 GL","",720,"ดำ",0,3,2160,"8851286094311"],["2026-04-06","สีน้ำมัน All in 1 S138","1/4 GL","",225,"บรอนซ์ (กึ่งเงา)",0,2,450,"8851286094267"],["2026-04-06","รองพื้น VINILEX ","5 GL","",2550,"",0,2,5100,"8851286141305"],["2026-04-06","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"0310",11,2,3502,"8851286523811"],["2026-04-06","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"น้ำเงิน",0,1,58,""],["2026-04-06","AirCare (กึ่งเงา)","2.5 GL","A",2070,"2816P",32.3,1,2102.3,"8851286675732"],["2026-04-06","รองพื้น Quick Coat","1 GL","",740,"",0,1,740,"8852186521426"],["2026-04-07","กันซึม A200","1 GL","",760,"",0,4,3040,""],["2026-04-07","กันซึม A100","1 GL","",640,"",0,1,640,""],["2026-04-07","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","D",640,"1435",681,1,1321,"8851286523804"],["2026-04-07","อื่นๆ","","",0,"",0,1,0,""],["2026-04-08","SUPER SERVE (ด้าน) ภายนอก","1 GL","A",400,"",0,1,400,"8852186006749"],["2026-04-08","WEATHERBOND (กึ่งเงา)","1 GL","A",1130,"0310",4,1,1134,"8851286681115"],["2026-04-09","รองพื้น VINILEX ","5 GL","",2550,"",0,3,7650,"8851286141305"],["2026-04-09","รองพื้นปูนเก่า JUNIOR99","5 GL","",0,"",0,1,0,"8851286520971"],["2026-04-10","สีน้ำมัน All in 1 S138","1/4 GL","",225,"บรอนซ์ (กึ่งเงา)",0,1,225,"8851286094267"],["2026-04-10","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","B",1460,"1990T",222.5,1,1682.5,"8851286472683"],["2026-04-10","รองพื้น VINILEX ","1 GL","",635,"",0,1,635,"8851286141299"],["2026-04-10","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,"ขาว",0,1,790,"8851286523576"],["2026-04-10","รองพื้น VINILEX ","1 GL","",635,"",0,1,635,"8851286141299"],["2026-04-10","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","A",500,"ขาว",0,1,500,"8851286094472"],["2026-04-10","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1986P",122,2,5224,"8851286633619"],["2026-04-10","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,"",0,1,1350,"8851286448237"],["2026-04-10","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,"",0,1,1350,"8851286448237"],["2026-04-11","JUNIOR99 ภายนอก (9506)","5 GL","",1050,"",0,1,1050,"8851286180359"],["2026-04-11","รองพื้นปูนเก่า JUNIOR99","5 GL","",0,"",0,1,0,"8851286520971"],["2026-04-11","VINILEX (กึ่งเงา) ภายนอก","1 GL","B",700,"",89,1,789,"8851286472676"],["2026-04-11","WEATHERBOND (กึ่งเงา)","1 GL","C",1040,"3008",70,1,1110,"8851286681290"],["2026-04-11","AirCare (กึ่งเงา)","2.5 GL","A",2070,"1522",154,2,4448,"8851286675732"],["2026-04-11","รองพื้น SUPER SERVE ","5 GL","",1790,"",0,1,1790,"8851286018676"],["2026-04-11","สีท้าฝ้า HYBRIDESHIELD (999C)","5 GL","",2200,"ควันบุหรี่",0,2,4400,"8851286533568"],["2026-04-11","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1572",27,1,2517,"8851286633619"],["2026-04-11","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"3107",126,1,2616,"8851286633619"],["2026-04-11","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"",7,1,1197,"8852186036128"],["2026-04-12","WEATHERBOND (เนียน)","2.5 GL","A",2250,"1601",86,2,4672,"8851286633572"],["2026-04-12","รองพื้น VINILEX ","5 GL","",2550,"",0,1,2550,"8851286141305"],["2026-04-12","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"สีขาว",0,2,3480,"8851286523811"],["2026-04-12","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-04-14","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","A",910,"2454",22,1,932,"8852186036562"],["2026-04-14","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,1,58,""],["2026-04-15","รองพื้น Quick Sealer","5 GL","",3190,"",0,1,3190,"8851286094687"],["2026-04-15","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"2609P",99.9,4,10359.6,"8851286633619"],["2026-04-15","WEATHERBOND (เนียน)","2.5 GL","A",2250,"001",6,1,2256,"8851286633572"],["2026-04-16","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","A",1490,"ขาว",0,2,2980,"8851286472669"],["2026-04-16","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","A",1490,"2042P",143.2,2,3266.4,"8851286472669"],["2026-04-16","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","A",1490,"1572P",22.2,3,4536.6,"8851286472669"],["2026-04-16","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","D",1180,"1981A",538.5,2,3437,"8851286472744"],["2026-04-16","สีน้ำมัน BODELAG","1 GL","A",880,"1572P",10,1,890,""],["2026-04-16","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1572P",22.2,1,1762.2,"8851286523811"],["2026-04-16","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,"1572P",8.9,1,798.9,"8851286523576"],["2026-04-17","สีทาหลังคา ROOF PAINT ","1 GL","",490,"3012",0,2,980,""],["2026-04-17","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1601P",116.9,3,7820.7,"8851286633619"],["2026-04-17","AirCare (เนียน)","2.5 GL","A",2020,"1601P",112,1,2132,"8851286683867"],["2026-04-17","รองพื้น VINILEX ","5 GL","",2550,"",0,2,5100,"8851286141305"],["2026-04-17","VINILEX (กึ่งเงา) ภายนอก","1 GL","C",680,"8255",121.6,1,801.6,"8851286472713"],["2026-04-17","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","D",640,"3150A",447.5,1,1087.5,"8851286523804"],["2026-04-17","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","A",500,"2468",16,1,516,"8851286094472"],["2026-04-18","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-04-18","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"2352",25,2,3210,"8851286523934"],["2026-04-18","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"2352",8,2,3496,"8851286523811"],["2026-04-18","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","C",1690,"2001",569,2,4518,"8851286523835"],["2026-04-18","รองพื้น SUPER SERVE ","5 GL","",1790,"",0,2,3580,"8851286018676"],["2026-04-18","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"0310",12,2,5004,"8851286633619"],["2026-04-18","รองพื้น Quick Sealer","2.5 GL","",1800,"",0,1,1800,"8851286094670"],["2026-04-18","สีท้าฝ้า HYBRIDESHIELD (999C)","5 GL","",2200,"999",0,1,2200,"8851286533568"],["2026-04-18","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,14,812,""],["2026-04-18","VINILEX (กึ่งเงา) ภายนอก","1 GL","A",740,"0411",75,1,815,"8851286472645"],["2026-04-19","รองพื้นกันสนิม JUNIOR99 (เทา)","","",0,"สีเทา",0,1,0,""],["2026-04-19","WEATHERBOND (กึ่งเงา)","1 GL","A",1130,"3079",415,1,1545,"8851286681115"],["2026-04-19","WEATHERBOND (กึ่งเงา)","1 GL","A",1130,"3200",33,1,1163,"8851286681115"],["2026-04-19","รองพื้น Quick Sealer","2.5 GL","",1800,"",0,1,1800,"8851286094670"],["2026-04-19","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","D",1630,"2412",2618,2,8496,"8851286523842"],["2026-04-19","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"",0,1,1580,"8851286523934"],["2026-04-19","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-04-19","สีทาฝ้า JUNIOR99 (S700)","5 GL","",900,"สีขาว",0,1,900,"8851286207339"],["2026-04-20","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,"3087P",25,2,1630,"8851286523576"],["2026-04-20","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1601",116,2,5212,"8851286633619"],["2026-04-21","สีท้าฝ้า HYBRIDESHIELD (999C)","5 GL","",2200,"999",0,1,2200,"8851286533568"],["2026-04-21","สีน้ำมัน All in 1 S900","1 GL","",720,"สีขาว",0,1,720,""],["2026-04-22","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"2194P",41.1,1,1781.1,"8851286523811"],["2026-04-22","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"2198P",11.6,1,1751.6,"8851286523811"],["2026-04-22","รองพื้น SUPER SERVE ","5 GL","",1790,"",0,1,1790,"8851286018676"],["2026-04-22","JUNIOR99 ภายนอก (900)","1 GL","",300,"ขาว",0,1,300,""],["2026-04-23","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,"",0,1,1350,"8851286448237"],["2026-04-23","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","A",500,"1980T",74,1,574,"8851286094472"],["2026-04-24","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"",0,1,1740,"8851286523811"],["2026-04-24","AirCare (กึ่งเงา)","2.5 GL","A",2070,"1087",22,3,6276,"8851286675732"],["2026-04-24","AirCare (เนียน)","2.5 GL","A",2020,"5006",8,1,2028,"8851286683867"],["2026-04-24","ร้องพื้น Excel","5 GL","",3150,"",0,1,3150,"8851286460000"],["2026-04-24","WEATHERBOND (กึ่งเงา)","1 GL","D",900,"1358",512,1,1412,"8851286681344"],["2026-04-24","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"",0,1,1190,"8852186036128"],["2026-04-24","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1601",116,1,2606,"8851286633619"],["2026-04-24","AirCare (กึ่งเงา)","2.5 GL","A",2070,"1601",112,1,2182,"8851286675732"],["2026-04-25","รองพื้น SUPER SERVE ","5 GL","",1790,"",0,4,7160,"8851286018676"],["2026-04-25","รองพื้น SUPER SERVE ","5 GL","",1790,"",0,2,3580,"8851286018676"],["2026-04-26","WEATHERBOND (กึ่งเงา)","2.5 GL","C",2290,"1997",318,3,7824,"8851286633633"],["2026-04-26","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"5006",8,3,4764,"8851286523934"],["2026-04-26","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"",0,1,1740,"8851286523811"],["2026-04-26","สีน้ำมัน BODELAG","1 GL","D",760,"1358",477,1,1237,"8851286079059"],["2026-04-26","รองพื้น WEATHERBOND 5100","5 GL","",3190,"",0,2,6380,"8851286383163"],["2026-04-26","AirCare (กึ่งเงา)","2.5 GL","A",2070,"2536",25,1,2095,"8851286675732"],["2026-04-26","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","D",1630,"1679",672,3,6906,"8851286523842"],["2026-04-26","รองพื้น SUPER SERVE ","5 GL","",1790,"",0,2,3580,"8851286018676"],["2026-04-26","กันซึม A100","1 GL","",640,"",0,3,1920,""],["2026-04-26","สีน้ำมัน All in 1 S914","1 GL","",720,"",0,1,720,"8851286094311"],["2026-04-27","WEATHERBOND (กึ่งเงา)","1 GL","C",1040,"8438",186,1,1226,"8851286681290"],["2026-04-27","สีทาฝ้า SUPER SERVE  (S800)","1 GL","",350,"800",0,1,350,"8852186318194"],["2026-04-27","AirCare (กึ่งเงา)","2.5 GL","A",2070,"",0,1,2070,"8851286675732"],["2026-04-27","รองพื้น Quick Coat","1 GL","",740,"",0,1,740,"8852186521426"],["2026-04-27","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","A",1490,"1004",9,1,1499,"8851286472669"],["2026-04-28","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"2352",26,1,1606,"8851286523934"],["2026-04-28","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"2352",8,2,3496,"8851286523811"],["2026-04-28","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","C",1690,"2001",569,1,2259,"8851286523835"],["2026-04-28","AirCare (กึ่งเงา)","2.5 GL","A",2070,"8260",10,2,4160,"8851286675732"],["2026-04-28","สีน้ำมัน All in 1 S914","1/4 GL","",225,"914",0,2,450,"8851286094229"],["2026-04-29","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","A",910,"",0,1,910,"8852186036562"],["2026-04-29","สีน้ำมัน All in 1 S138","1/4 GL","",225,"บรอนซ์",0,1,225,"8851286094267"],["2026-04-30","สีทาหลังคา ROOF PAINT ","1 GL","",490,"3578",0,2,980,""],["2026-04-30","สีทาหลังคา ROOF PAINT ","1 GL","",490,"3012",0,2,980,""],["2026-04-30","รองพื้น WEATHERBOND 5100","5 GL","",3190,"",0,1,3190,"8851286383163"],["2026-04-30","WEATHERBOND (กึ่งเงา)","2.5 GL","B",2390,"001 ขาวเพิ่ม",72.1,2,4924.2,"8851286633626"],["2026-04-30","AirCare (กึ่งเงา)","2.5 GL","A",2070,"ขาวเบส",0,2,4140,"8851286675732"],["2026-04-30","สีทาฝ้า SUPER SERVE  (S800)","5 GL","",1440,"ควันบุหรี่",0,1,1440,"8852186318507"],["2026-04-30","กันซึม A100","1 GL","",640,"",0,3,1920,""],["2026-04-30","สีน้ำมัน All in 1 S138","1 GL","",720,"บรอนซ์",0,1,720,""],["2026-04-30","อื่นๆ","","",0,"",3191,1,3191,""],["2026-04-30","อื่นๆ","","",0,"",3190,1,3190,""],["2026-04-30","อื่นๆ","","",0,"",839,1,839,""],["2026-05-01","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"OW 1004P",10.2,2,3180.4,"8851286523934"],["2026-05-01","สีทาฝ้า SUPER SERVE  (S800)","5 GL","",1440,"ควันบุหรี่",0,1,1440,"8852186318507"],["2026-05-01","JUNIOR99 ภายใน (9106)","1 GL","",300,"",0,1,300,""],["2026-05-02","WEATHERBOND (กึ่งเงา)","1 GL","A",1130,"2987P",99.6,1,1229.6,"8851286681115"],["2026-05-02","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,5,290,""],["2026-05-02","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","A",1490,"2042P",153.2,1,1643.2,"8851286472669"],["2026-05-03","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,"1984",16,1,806,"8851286523576"],["2026-05-03","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"0310",16,1,1596,"8851286523934"],["2026-05-04","รองพื้น Quick Sealer","2.5 GL","",1800,"",0,1,1800,"8851286094670"],["2026-05-04","AirCare (กึ่งเงา)","2.5 GL","A",2070,"2817P",107.7,2,4355.4,"8851286675732"],["2026-05-04","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","B",480,"1360T",154.3,1,634.3,"8851286094496"],["2026-05-04","สีน้ำมัน BODELAG","1 GL","A",880,"2039T",138.9,1,1018.9,""],["2026-05-04","รองพื้น Quick Sealer","5 GL","",3190,"",0,1,3190,"8851286094687"],["2026-05-04","WEATHERBOND (กึ่งเงา)","2.5 GL","B",2390,"ฉีดขาว (001 แต่ง)",72.1,2,4924.2,"8851286633626"],["2026-05-05","รองพื้นอเนกประสงค์ FLEXISEAL","5 GL","",2190,"",0,2,4380,"8851286233819"],["2026-05-05","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"3075P",44.2,4,6496.8,"8851286523934"],["2026-05-05","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"3077P",158.7,3,5696.1,"8851286523811"],["2026-05-05","สีน้ำมัน All in 1 F914","1 GL","",690,"ดำ (ด้าน)",0,1,690,"8851286094144"],["2026-05-05","สีทาฝ้า SUPER SERVE (S700)","5 GL","",1440,"ขาว 700",0,1,1440,"8852186318187"],["2026-05-06","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,"",0,1,1350,"8851286448237"],["2026-05-06","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"2837P",49.3,2,3258.6,"8851286523934"],["2026-05-06","สีน้ำมัน All in 1 S914","1 GL","",720,"ดำ (กึ่งเงา)",0,2,1440,"8851286094311"],["2026-05-07","WEATHERBOND (กึ่งเงา)","2.5 GL","C",2290,"1975D",408.2,1,2698.2,"8851286633633"],["2026-05-08","WEATHERBOND (กึ่งเงา)","1 GL","B",1090,"8472",56.7,1,1146.7,"8851286681252"],["2026-05-08","WEATHERBOND (กึ่งเงา)","1 GL","A",1130,"8260",4.8,1,1134.8,"8851286681115"],["2026-05-08","รองพื้นอเนกประสงค์ FLEXISEAL","5 GL","",2190,"",0,2,4380,"8851286233819"],["2026-05-08","SUPER SERVE (ด้าน) ภายนอก","1 GL","A",400,"ขาวเบส",0,1,400,"8852186006749"],["2026-05-08","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","A",910,"ขาวเบส",0,1,910,"8852186036562"],["2026-05-09","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1601",92,1,1832,"8851286523811"],["2026-05-09","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"0310",12,6,10512,"8851286523811"],["2026-05-09","WEATHERBOND (กึ่งเงา)","2.5 GL","B",2390,"3079",987,1,3377,"8851286633626"],["2026-05-09","WEATHERBOND (เนียน)","2.5 GL","A",2250,"0310",13,2,4526,"8851286633572"],["2026-05-09","รองพื้น Quick Sealer","5 GL","",3190,"",0,1,3190,"8851286094687"],["2026-05-09","รองพื้น Quick Sealer","5 GL","",3190,"",0,1,3190,"8851286094687"],["2026-05-10","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,2,2260,"8851286180557"],["2026-05-10","รองพื้น Quick Sealer","5 GL","",3190,"",0,1,3190,"8851286094687"],["2026-05-10","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","A",1490,"A5006",6.7,6,8980.2,"8851286472669"],["2026-05-10","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"ขาวเบส",0,1,1580,"8851286523934"],["2026-05-10","รองพื้น JUNIOR99 (น้ำ)","1 GL","",325,"",0,1,325,"8851286180540"],["2026-05-11","Roof Seal กันซึมดาดฟ้า (เทาเข้ม)","4 KG","",690,"เทาเข้ม",0,1,690,"8852186349068"],["2026-05-11","กันซึม A200","1 GL","",760,"",0,1,760,""],["2026-05-11","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","A",500,"3216P",48,1,548,"8851286094472"],["2026-05-11","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","A",500,"1879P",28,1,528,"8851286094472"],["2026-05-12","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,2,2260,"8851286180557"],["2026-05-13","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1065P",10,2,3500,"8851286523811"],["2026-05-13","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1524P",86,2,3652,"8851286523811"],["2026-05-13","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1986P",104,4,7376,"8851286523811"],["2026-05-13","AirCare (กึ่งเงา)","2.5 GL","A",2070,"ขาวเบส",0,2,4140,"8851286675732"],["2026-05-14","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,"3087P",25.3,1,815.3,"8851286523576"],["2026-05-14","สีทาฝ้า SUPER SERVE  (S800)","5 GL","",1440,"S800",0,1,1440,"8852186318507"],["2026-05-15","สีน้ำมัน All in 1 S138","1/4 GL","",225,"สีบรอนซ์",0,3,675,"8851286094267"],["2026-05-15","สีน้ำมัน All in 1 S914","1 GL","",720,"",0,1,720,"8851286094311"],["2026-05-16","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"1004P",10.2,1,1590.2,"8851286523934"],["2026-05-17","รองพื้น SUPER SERVE ","5 GL","",1790,"",0,1,1790,"8851286018676"],["2026-05-17","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"A5006",6.7,2,3493.4,"8851286523811"],["2026-05-17","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","B",1710,"2839T",176.9,1,1886.9,"8851286523828"],["2026-05-17","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","D",640,"1925T",178.5,1,818.5,"8851286523804"],["2026-05-17","รองพื้น Quick Sealer","5 GL","",3190,"",0,2,6380,"8851286094687"],["2026-05-18","AirCare (กึ่งเงา)","2.5 GL","A",2070,"21001",2.8,1,2072.8,"8851286675732"],["2026-05-18","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,"",0,1,1350,"8851286448237"],["2026-05-18","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"0453",197.4,2,3874.8,"8851286523811"],["2026-05-19","No Bill 😭","","",0,"No Bill 😭",0,0,0,""],["2026-05-20","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"L218",0,2,116,""],["2026-05-20","รองพื้น Quick Coat","1 GL","",740,"",0,1,740,"8852186521426"],["2026-05-20","สีท้าฝ้า HYBRIDESHIELD (999C)","1 GL","",540,"999C",0,1,540,"8851286533551"],["2026-05-20","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","A",910,"2454P",24.5,1,934.5,"8852186036562"],["2026-05-21","No Bill 😭","","",0,"No Bill 😭",0,0,0,""],["2026-05-22","WEATHERBOND (กึ่งเงา)","1 GL","C",1040,"1997T",134.1,2,2348.2,"8851286681290"],["2026-05-22","HYBRIDESHIELD (กึ่งเงา) ภายใน","1 GL","A",710,"A5006",3.5,1,713.5,"8851286522821"],["2026-05-22","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,3,174,""],["2026-05-22","สีท้าฝ้า HYBRIDESHIELD (999C)","5 GL","",2200,"",0,1,2200,"8851286533568"],["2026-05-22","WEATHERBOND (กึ่งเงา)","1 GL","A",1130,"1753P",86.9,1,1216.9,"8851286681115"],["2026-05-23","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,"ขาวเบส",0,1,790,"8851286523576"],["2026-05-23","อะคริลิค Wall Filler","5 KG","",260,"",0,1,260,""],["2026-05-23","สีน้ำมัน BODELAG","2.5 GL","A",2070,"2964P",12.6,1,2082.6,""],["2026-05-23","อะคริลิค Wall Filler","5 KG","",260,"",0,1,260,""],["2026-05-24","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"ดำ (ด้าน)",0,1,58,""],["2026-05-24","สีทาฝ้า JUNIOR99 (S700)","5 GL","",900,"700 ขาว",0,1,900,"8851286207339"],["2026-05-25","รองพื้นปูนเก่า JUNIOR99","5 GL","",0,"",0,1,0,"8851286520971"],["2026-05-25","อะคริลิค Wall Filler","5 KG","",260,"",0,1,260,""],["2026-05-25","อะคริลิค Wall Filler","5 KG","",260,"",0,1,260,""],["2026-05-25","JUNIOR99 ภายนอก (9506)","5 GL","",1050,"900",0,2,2100,"8851286180359"],["2026-05-26","สีทาหลังคา ROOF PAINT ","1 GL","",490,"3012",0,1,490,""],["2026-05-26","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"ขาวเบส",0,1,2490,"8851286633619"],["2026-05-27","สีน้ำมัน All in 1 S138","1/4 GL","",225,"บรอนซ์",0,1,225,"8851286094267"],["2026-05-27","JUNIOR99 ภายใน (300)","5 GL","",860,"ขาว",0,1,860,"8851286180212"],["2026-05-27","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"ขาว เงา",0,1,58,""],["2026-05-27","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"ขาวเบส",0,1,2490,"8851286633619"],["2026-05-27","รองพื้น Quick Sealer","1 GL","",740,"",0,1,740,"8851286094663"],["2026-05-28","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"ขาวเงา",0,1,58,""],["2026-05-28","รองพื้น Quick Coat","5 GL","",2690,"",0,2,5380,"8852186521914"],["2026-05-28","WEATHERBOND (กึ่งเงา)","2.5 GL","D",2060,"3135A",777.7,1,2837.7,"8851286633640"],["2026-05-29","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"เหลือง",0,2,116,""],["2026-05-29","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"แดง",0,2,116,""],["2026-05-29","สีน้ำมัน All in 1 S900","1/4 GL","",225,"ขาว",0,1,225,"8851286094151"],["2026-05-29","VINILEX (กึ่งเงา) ภายนอก","1 GL","D",550,"2070A",557.9,1,1107.9,"8851286472737"],["2026-05-30","สีน้ำมัน All in 1 S900","1 GL","",720,"",0,1,720,""],["2026-05-30","สีทาฝ้า JUNIOR99 (S800)","1 GL","",225,"",0,2,450,"8851286207704"],["2026-05-30","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"ขาวด้าน",0,1,58,""],["2026-05-31","รองพื้น SUPER SERVE ","5 GL","",1790,"",0,1,1790,"8851286018676"],["2026-05-31","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"ขาว เบส",0,1,2490,"8851286633619"],["2026-05-31","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"เหลือง",0,1,58,""],["2026-05-31","รองพื้น SUPER SERVE ","5 GL","",1790,"",0,1,1790,"8851286018676"],["2026-05-31","อื่นๆ","","",0,"",6249,1,6249,""],["2026-06-01","No Bill 😭","","",0,"",0,0,0,""],["2026-06-02","สีสเปรย์กระป๋อง","","",0,"",0,12,0,""],["2026-06-03","รองพื้น VINILEX ","5 GL","",2550,"",0,1,2550,"8851286141305"],["2026-06-03","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1017P ",17.2,1,1757.2,"8851286523811"],["2026-06-03","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","C",1690,"8264",307.3,1,1997.3,"8851286523835"],["2026-06-04","สีน้ำมัน All in 1 S914","1/4 GL","",225,"ดำ กึ่งเงา",0,1,225,"8851286094229"],["2026-06-04","สีสเปรย์กระป๋อง","","",0,"H-45",0,2,0,""],["2026-06-05","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"ขาวเบส",0,-1,-2490,"8851286633619"],["2026-06-05","WEATHERBOND (กึ่งเงา)","1 GL","A",1130,"ขาวเบส",0,1,1130,"8851286681115"],["2026-06-05","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,"",0,1,1350,"8851286448237"],["2026-06-06","สีสเปรย์กระป๋อง","","",0,"",0,1,0,""],["2026-06-06","สีน้ำมัน All in 1 S914","1 GL","",720,"",0,1,720,"8851286094311"],["2026-06-06","SUPER SERVE (ด้าน) ภายนอก","1 GL","D",300,"144",227.5,1,527.5,"8852186006817"],["2026-06-07","สีน้ำมัน All in 1 S914","1/4 GL","",225,"",0,1,225,"8851286094229"],["2026-06-07","สีน้ำมัน All in 1 S900","1/4 GL","",225,"",0,1,225,"8851286094151"],["2026-06-07","สีทาหลังคา ROOF PAINT ","1 GL","",490,"",0,2,980,""],["2026-06-08","รองพื้น VINILEX ","5 GL","",2550,"",0,1,2550,"8851286141305"],["2026-06-08","สีทาฝ้า SUPER SERVE  (S800)","1 GL","",350,"",0,1,350,"8852186318194"],["2026-06-08","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1017P",17.2,1,1757.2,"8851286523811"],["2026-06-08","สีสเปรย์กระป๋อง","","",0,"แดง",0,1,0,""],["2026-06-08","สีน้ำมัน All in 1 S914","1 GL","",720,"ดำ กึ่งเงา",0,1,720,"8851286094311"],["2026-06-09","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,"ขาวเบส",0,1,790,"8851286523576"],["2026-06-09","รองพื้น Quick Coat","1 GL","",740,"",0,1,740,"8852186521426"],["2026-06-09","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-06-09","กันซึม A100","","",0,"",0,1,0,""],["2026-06-09","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"0310",12.2,4,7008.8,"8851286523811"],["2026-06-10","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1017P",17.2,1,1757.2,"8851286523811"],["2026-06-10","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","C",730,"8264",122.9,1,852.9,"8851286523590"],["2026-06-10","สีน้ำมัน All in 1 S900","1 GL","",720,"",0,1,720,""],["2026-06-10","รองพื้น Quick Coat","5 GL","",2690,"",0,1,2690,"8852186521914"],["2026-06-10","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"2480P",24,3,7542,"8851286633619"],["2026-06-10","WEATHERBOND (กึ่งเงา)","2.5 GL","D",2060,"3135A",778.7,1,2838.7,"8851286633640"],["2026-06-10","สีสเปรย์กระป๋อง","","",0,"",0,3,0,""],["2026-06-10","สีสเปรย์กระป๋อง","","",0,"",0,1,0,""],["2026-06-11","สีสเปรย์กระป๋อง","","",0,"",0,1,0,""],["2026-06-12","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"0310",12.2,1,1202.2,"8852186036128"],["2026-06-12","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,"",0,1,790,"8851286523576"],["2026-06-12","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,2,2260,"8851286180557"],["2026-06-12","สีสเปรย์กระป๋อง","","",0,"",0,17,0,""],["2026-06-13","รองพื้น Quick Coat","5 GL","",2690,"",0,2,5380,"8852186521914"],["2026-06-13","WEATHERBOND (กึ่งเงา)","2.5 GL","B",2390,"2839T",131.3,3,7563.9,"8851286633626"],["2026-06-13","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"2230P",23.4,4,7053.6,"8851286523811"],["2026-06-13","WEATHERBOND (เนียน)","2.5 GL","A",2250,"0310",11.5,1,2261.5,"8851286633572"],["2026-06-13","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,"",0,1,790,"8851286523576"],["2026-06-13","รองพื้น Quick Coat","5 GL","",2690,"",0,1,2690,"8852186521914"],["2026-06-13","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"0310",12.2,2,3504.4,"8851286523811"],["2026-06-13","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","D",640,"1211A",1184.9,1,1824.9,"8851286523804"],["2026-06-13","สีน้ำมัน All in 1 F914","1 GL","",690,"",0,2,1380,"8851286094144"],["2026-06-13","รองพื้น Quick Coat","5 GL","",2690,"",0,1,2690,"8852186521914"],["2026-06-13","AirCare (กึ่งเงา)","2.5 GL","A",2070,"1041P",40.6,2,4221.2,"8851286675732"],["2026-06-13","AirCare (เนียน)","2.5 GL","A",2020,"1971P",19.9,1,2039.9,"8851286683867"],["2026-06-13","รองพื้น VINILEX ","5 GL","",2550,"",0,3,7650,"8851286141305"],["2026-06-13","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"1086P",25.2,3,7545.6,"8851286633619"],["2026-06-13","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"2943P",37.9,1,1617.9,"8851286523934"],["2026-06-14","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-06-14","JUNIOR99 ภายใน (300)","5 GL","",860,"ขาว",0,2,1720,"8851286180212"],["2026-06-14","รองพื้น Quick Sealer","2.5 GL","",1800,"",0,1,1800,"8851286094670"],["2026-06-14","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"1133",18,4,4832,"8852186036128"],["2026-06-14","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","D",900,"3157A",954.4,1,1854.4,"8852186036159"],["2026-06-14","สีน้ำมัน BODELAG","1 GL","D",760,"3136A",215.3,1,975.3,"8851286079059"],["2026-06-14","SUPER SERVE (ด้าน) ภายนอก","5 GL","",0,"A5006",12.5,3,37.5,"8852186006749"],["2026-06-14","สีทาฝ้า SUPER SERVE  (S800)","5 GL","",1440,"",0,1,1440,"8852186318507"],["2026-06-14","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","D",640,"3135A",318.9,2,1917.8,"8851286523804"],["2026-06-14","รองพื้น Quick Coat","5 GL","",2690,"",0,1,2690,"8852186521914"],["2026-06-14","รองพื้น Quick Coat","2.5 GL","",1690,"",0,1,1690,"8852186523628"],["2026-06-14","WEATHERBOND (กึ่งเงา)","2.5 GL","C",2290,"3302D",377.9,2,5335.8,"8851286633633"],["2026-06-14","AirCare (กึ่งเงา)","2.5 GL","A",2070,"1086P",21.4,2,4182.8,"8851286675732"],["2026-06-14","สีท้าฝ้า HYBRIDESHIELD (777C)","5 GL","",2200,"",0,1,2200,"8851286533544"],["2026-06-14","Roof Seal กันซึมดาดฟ้า","1 GL","",0,"",0,1,0,""],["2026-06-14","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,"",0,1,1350,"8851286448237"],["2026-06-14","รองพื้น SUPER SERVE ","5 GL","",1790,"",0,1,1790,"8851286018676"],["2026-06-14","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"21001",2.8,1,2492.8,"8851286633619"],["2026-06-14","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","C",830,"3142D",656.1,1,1486.1,""],["2026-06-15","สีสเปรย์กระป๋อง","","",0,"ขาวเงา",0,1,0,""],["2026-06-15","HYBRIDESHIELD (ด้าน)","1 GL","A",730,"1984P",17.7,1,747.7,"8851286522050"],["2026-06-16","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"001",17.7,1,1757.7,"8851286523811"],["2026-06-16","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"",0,2,3160,"8851286523934"],["2026-06-16","สีสเปรย์กระป๋อง","","",0,"ดำ-เงา",0,2,0,""],["2026-06-17","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"0310",12.2,2,3504.4,"8851286523811"],["2026-06-17","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"2480P",24,1,2514,"8851286633619"],["2026-06-17","WEATHERBOND (กึ่งเงา)","2.5 GL","D",2060,"3135A",777.7,1,2837.7,"8851286633640"],["2026-06-17","สีน้ำมัน All in 1 S900","1 GL","",720,"ขาว-กึ่งเงา",0,2,1440,""],["2026-06-17","สีน้ำมัน All in 1 F914","1 GL","",690,"ดำ-ด้าน",0,2,1380,"8851286094144"],["2026-06-18","รองพื้น Quick Coat","2.5 GL","",1690,"",0,1,1690,"8852186523628"],["2026-06-18","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"0310",12.2,1,1752.2,"8851286523811"],["2026-06-18","อะคริลิค Wall Filler","1 GL","",0,"",0,1,0,""],["2026-06-18","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1017P ",17.2,1,1757.2,"8851286523811"],["2026-06-18","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"001",17.7,1,1757.7,"8851286523811"],["2026-06-18","รองพื้น Quick Sealer","5 GL","",3190,"",0,2,6380,"8851286094687"],["2026-06-19","No Bill 😭","","",0,"",0,0,0,""],["2026-06-20","สีสเปรย์กระป๋อง","","",0,"ดำ-ด้าน",0,2,0,""],["2026-06-20","รายได้แม่สี (ฉีดเพิ่ม)","","",0,"2044A",579.9,1,579.9,""],["2026-06-21","Roof Seal กันซึมดาดฟ้า","1 GL","",0,"",0,1,0,""],["2026-06-21","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,"3107P",43,1,833,"8851286523576"],["2026-06-22","รองพื้น Quick Coat","2.5 GL","",1690,"",0,5,8450,"8852186523628"],["2026-06-22","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","",0,"8558",584,1,584,"8851286523576"],["2026-06-23","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","D",640,"2070A",557.9,1,1197.9,"8851286523804"],["2026-06-23","อะคริลิค Wall Filler","1 GL","",0,"",0,1,0,""],["2026-06-24","WEATHERBOND (เนียน)","2.5 GL","A",2250,"2991P",6.9,1,2256.9,"8851286633572"],["2026-06-24","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","C",730,"3255D",269.1,1,999.1,"8851286523590"],["2026-06-24","สีทาหลังคา ROOF PAINT ","1 GL","",490,"เคลือบ",0,1,490,""],["2026-06-24","สีทาหลังคา ROOF PAINT ","1 GL","",490,"ขาว",0,1,490,""],["2026-06-24","กันซึม A100","1 GL","",640,"",0,2,1280,""],["2026-06-24","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","",0,"",0,1,0,"8851286523576"],["2026-06-24","อะคริลิค Wall Filler","1 GL","",0,"",0,1,0,""],["2026-06-24","สีทาหลังคา ROOF PAINT ","1 GL","",490,"3575",0,1,490,""],["2026-06-24","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","A",910,"2454P",24.5,1,934.5,"8852186036562"],["2026-06-24","สีทาฝ้า SUPER SERVE  (S800)","5 GL","",1440,"",0,1,1440,"8852186318507"],["2026-06-24","Roof Seal กันซึมดาดฟ้า","5 GL","",0,"",0,1,0,""],["2026-06-24","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,"",0,1,1350,"8851286448237"],["2026-06-24","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"ขาวเบส",0,1,1740,"8851286523811"],["2026-06-24","สีน้ำมัน JUNIOR99","1 GL","",0,"9736",0,2,0,""],["2026-06-25","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,2,2260,"8851286180557"],["2026-06-25","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","C",1050,"1163D",1337.7,1,2387.7,"8852186036142"],["2026-06-25","JUNIOR99 ภายใน (9106)","5 GL","",860,"9160",0,1,860,"8851286180151"],["2026-06-25","รองพื้น Quick Coat","1 GL","",740,"",0,1,740,"8852186521426"],["2026-06-26","ร้องพื้น Excel","1 GL","",800,"",0,1,800,"8851286459998"],["2026-06-26","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"ขาว-เบส",0,1,1740,"8851286523811"],["2026-06-26","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","B",1710,"3079T",838.2,1,2548.2,"8851286523828"],["2026-06-26","AirCare (กึ่งเงา)","2.5 GL","A",2070,"2554P",60,1,2130,"8851286675732"],["2026-06-26","สีสร้างลาย Momento Loft","","",0,"ML002",6,1,6,""],["2026-06-26","AQUA Epoxy","1 GL","C",0,"RAL7012",177.1,2,354.2,"8852186427421"],["2026-06-27","สีทาฝ้า JUNIOR99 (S800)","1 GL","",225,"",0,1,225,"8851286207704"],["2026-06-27","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","B",1710,"3079T",383.2,1,2093.2,"8851286523828"],["2026-06-27","WEATHERBOND (กึ่งเงา)","2.5 GL","B",2390,"1086P",25.2,2,4830.4,"8851286633626"],["2026-06-27","รายได้แม่สี (ฉีดเพิ่ม)","","",0,"1980T",164.2,2,328.4,""],["2026-06-28","JUNIOR99 ภายนอก (9506)","5 GL","",1050,"9506",0,3,3150,"8851286180359"],["2026-06-29","No Bill 😭","","",0,"",0,0,0,""],["2026-07-30","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"0310",12.2,1,1752.2,"8851286523811"],["2026-07-30","สีทาหลังคา ROOF PAINT ","1 GL","",490,"",0,1,490,""],["2026-07-01","สีน้ำมัน All in 1 S914","1 GL","",720,"ดำ-กึ่งเงา",0,4,2880,"8851286094311"],["2026-07-01","สีทาฝ้า JUNIOR99 (S800)","5 GL","",900,"",0,1,900,"8851286207711"],["2026-07-02","สีสเปรย์กระป๋อง","","",0,"",0,2,0,""],["2026-07-02","สีสเปรย์กระป๋อง","","",0,"แดง",0,9,0,""],["2026-07-02","สีสเปรย์กระป๋อง","","",0,"เทา",0,5,0,""],["2026-07-02","AirCare (กึ่งเงา)","2.5 GL","A",2070,"8444",14,1,2084,"8851286675732"],["2026-07-02","รองพื้น Quick Coat","1 GL","",740,"",0,1,740,"8852186521426"],["2026-07-03","สีทาฝ้า SUPER SERVE (S700)","5 GL","",1440,"ขาว",0,1,1440,"8852186318187"],["2026-07-03","สีท้าฝ้า HYBRIDESHIELD (777C)","1 GL","",540,"ขาว",0,1,540,"8851286533537"],["2026-07-04","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1017P",17.2,1,1757.2,"8851286523811"],["2026-07-05","สีน้ำมัน All in 1 S900","1/4 GL","",225,"ขาว",0,1,225,"8851286094151"],["2026-07-05","สีน้ำมัน All in 1 S910","1/4 GL","",0,"บรอนซ์",0,1,0,"8851286094335"],["2026-07-05","สีน้ำมัน BODELAG","1 GL","D",760,"2933A",341.6,1,1101.6,"8851286079059"],["2026-07-05","สีน้ำมัน All in 1 S914","1/4 GL","",225,"",0,1,225,"8851286094229"],["2026-07-06","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","A",500,"2146P",0.8,1,500.8,"8851286094472"],["2026-07-06","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"2146P",3.4,3,4750.2,"8851286523934"],["2026-07-06","อะคริลิค Wall Filler","1 GL","",0,"",0,1,0,""],["2026-07-07","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"2164P",20.9,1,1210.9,"8852186036128"],["2026-07-08","WEATHERBOND (กึ่งเงา)","2.5 GL","B",2390,"1868T",244.3,1,2634.3,"8851286633626"],["2026-07-08","รองพื้น Quick Sealer","1 GL","",740,"",0,1,740,"8851286094663"],["2026-07-08","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"0310",13,3,7509,"8851286633619"],["2026-07-08","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"ขาว เบส",0,1,1740,"8851286523811"],["2026-07-08","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","C",1690,"2989D",180.9,1,1870.9,"8851286523835"],["2026-07-08","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","C",450,"8558",233.3,1,683.3,"8851286094519"],["2026-07-08","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"ขาว เบส",0,1,2490,"8851286633619"],["2026-07-08","รองพื้นกันสนิม JUNIOR99 (เทา)","5 GL","",1980,"",0,1,1980,""],["2026-07-08","สีน้ำมัน All in 1 S900","1/4 GL","",225,"",0,1,225,"8851286094151"],["2026-07-08","SUPER SERVE (ด้าน) ภายนอก","1 GL","",0,"",0,1,0,"8852186006749"],["2026-07-09","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1985P",63.8,5,9019,"8851286523811"],["2026-07-10","อะคริลิค Wall Filler","5 KG","",260,"",0,1,260,""],["2026-07-11","สีสเปรย์กระป๋อง","","",0,"เทา-ดำ",0,4,0,""],["2026-07-11","Roof Seal กันซึมดาดฟ้า (ขาว)","20 KG","",2890,"ขาว",0,1,2890,"8852186347064"],["2026-07-12","สีสเปรย์กระป๋อง","","",0,"",0,2,0,""],["2026-07-13","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"0310",12.2,1,1752.2,"8851286523811"],["2026-07-14","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"2164P",3.4,1,1583.4,"8851286523934"],["2026-07-14","สีสเปรย์กระป๋อง","","",0,"ดำ-ด้าน",0,1,0,""],["2026-07-15","สีสเปรย์กระป๋อง","","",0,"",0,2,0,""],["2026-07-15","รองพื้น Quick Coat","5 GL","",2690,"",0,1,2690,"8852186521914"],["2026-07-15","JUNIOR99 ภายใน (300)","5 GL","",860,"",0,1,860,"8851286180212"],["2026-07-15","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"001",17.7,3,5273.1,"8851286523811"],["2026-07-15","รองพื้น Quick Coat","2.5 GL","",1690,"",0,1,1690,"8852186523628"],["2026-07-16","WEATHERBOND (กึ่งเงา)","1 GL","D",900,"8093",1037.2,1,1937.2,"8851286681344"],["2026-07-16","สีน้ำมัน BODELAG","2.5 GL","D",1830,"2409A",911.1,1,2741.1,"8851286079097"],["2026-07-16","JUNIOR99 ภายใน (9106)","5 GL","",860,"9106",0,4,3440,"8851286180151"],["2026-07-17","No Bill 😭","","",0,"",0,0,0,""],["2026-07-18","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","A",1490,"A5006",6.7,2,2993.4,"8851286472669"],["2026-07-18","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,"2164P",9.8,1,799.8,"8851286523576"],["2026-07-18","สีสเปรย์กระป๋อง","","",0,"",0,2,0,""],["2026-07-19","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","D",640,"3197A",290.5,1,930.5,"8851286523804"],["2026-07-19","กันซึม A200","","",0,"",0,3,0,""],["2026-07-19","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,"2231P",15.6,1,805.6,"8851286523576"],["2026-07-19","สีสเปรย์กระป๋อง","","",0,"",0,2,0,""],["2026-07-20","สีน้ำมัน All in 1 F914","1 GL","",690,"",0,1,690,"8851286094144"],["2026-07-20","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"2991P",8.8,2,4997.6,"8851286633619"],["2026-07-20","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"2993",140,1,2630,"8851286633619"],["2026-07-20","SUPER SERVE (ด้าน) ภายนอก","1 GL","A",400,"1984P",16.2,1,416.2,"8852186006749"],["2026-07-20","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,"1017P",6.9,1,796.9,"8851286523576"],["2026-07-20","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","C",730,"8264",122.9,1,852.9,"8851286523590"],["2026-07-20","อะคริลิค Wall Filler","5 KG","",260,"",0,2,520,""],["2026-07-20","รองพื้น VINILEX ","5 GL","",2550,"",0,1,2550,"8851286141305"],["2026-07-20","Roof Seal กันซึมดาดฟ้า","20 KG","",0,"",0,1,0,""],["2026-07-21","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"2504P",94.2,3,5502.6,"8851286523811"],["2026-07-21","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"0310",12.2,4,7008.8,"8851286523811"],["2026-07-21","รองพื้น SUPER SERVE ","5 GL","",1790,"",0,2,3580,"8851286018676"],["2026-07-21","HYBRIDESHIELD (ด้าน)","2.5 GL","A",1620,"ขาวเบส",0,1,1620,""],["2026-07-22","รองพื้น Quick Coat","5 GL","",2690,"",0,1,2690,"8852186521914"],["2026-07-22","AirCare (กึ่งเงา)","2.5 GL","A",2070,"0310",12.2,2,4164.4,"8851286675732"],["2026-07-22","รองพื้น Quick Coat","2.5 GL","",1690,"",0,1,1690,"8852186523628"],["2026-07-22","สีท้าฝ้า HYBRIDESHIELD (777C)","5 GL","",2200,"",0,1,2200,"8851286533544"],["2026-07-22","สีสเปรย์กระป๋อง","","",0,"",0,1,0,""],["2026-07-22","สีน้ำมัน All in 1 F914","1 GL","",690,"",0,1,690,"8851286094144"],["2026-07-22","รองพื้นกันสนิม JUNIOR99 (เทา)","1 GL","",400,"",0,1,400,""],["2026-07-22","WEATHERBOND (เนียน)","2.5 GL","",0,"2991P",6.9,1,6.9,"8851286633572"],["2026-07-23","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"2504P",89.8,1,1829.8,"8851286523811"],["2026-07-23","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-07-24","รองพื้น Quick Coat","2.5 GL","",1690,"",0,1,1690,"8852186523628"],["2026-07-24","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","A",1490,"1984P",42.1,1,1532.1,"8851286472669"],["2026-07-24","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-07-25","No Bill 😭","","",0,"",0,0,0,""],["2026-07-26","กันซึม A100","","",0,"",0,1,0,""],["2026-07-26","รองพื้น SUPER SERVE ","5 GL","",1790,"",0,1,1790,"8851286018676"],["2026-07-27","สีสเปรย์กระป๋อง","","",0,"",0,2,0,""],["2026-07-27","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,"1984P",35.8,1,1225.8,"8852186036128"],["2026-07-27","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","D",1630,"2139A",581,1,2211,"8851286523842"],["2026-07-28","No Bill 😭","","",0,"",0,0,0,""],["2026-07-29","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"ขาว",0,1,1580,"8851286523934"],["2026-07-29","AQUA Epoxy","1 Set","D",1800,"8023",94.6,2,3789.2,"8852186427452"],["2026-07-29","Roof Seal กันซึมดาดฟ้า","4 KG","",0,"เทาเข้ม",0,1,0,""],["2026-07-29","สีน้ำมัน All in 1 S900","1/4 GL","",225,"",0,1,225,"8851286094151"],["2026-07-29","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","C",1050,"3142D",453.5,2,3007,"8852186036142"],["2026-07-30","รองพื้น Quick Coat","5 GL","",2690,"",0,1,2690,"8852186521914"],["2026-07-30","สีท้าฝ้า HYBRIDESHIELD (999C)","5 GL","",2200,"",0,2,4400,"8851286533568"],["2026-07-30","สีสเปรย์กระป๋อง","","",0,"",0,2,0,""],["2026-07-30","สีน้ำมัน All in 1","","",0,"",0,1,0,""],["2026-07-31","WEATHERBOND (กึ่งเงา)","1 GL","A",1130,"0310",5.2,1,1135.2,"8851286681115"],["2026-07-31","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","A",1490,"",0,1,1490,"8851286472669"],["2026-07-31","รองพื้น Quick Coat","1 GL","",740,"",0,1,740,"8852186521426"],["2026-07-31","สีทาฝ้า SUPER SERVE (S700)","1 GL","",350,"",0,1,350,"8852186318170"],["2026-07-31","AirCare (กึ่งเงา)","2.5 GL","A",2070,"",0,2,4140,"8851286675732"],["2026-07-31","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,"",0,1,2490,"8851286633619"],["2026-07-31","สีน้ำมัน All in 1 S900","1/4 GL","",225,"",0,1,225,"8851286094151"],["2026-07-31","AQUA Epoxy","1 Set","",0,"รองพื้น",0,1,0,"8852186427421"],["2026-07-31","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"2437P",553.8,1,2293.8,"8851286523811"],["2026-07-31","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"0310",12,1,1752,"8851286523811"],["2026-07-31","สีทาฝ้า JUNIOR99 (S800)","5 GL","",900,"",0,1,900,"8851286207711"],["2026-07-31","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"2164P",3.4,1,1583.4,"8851286523934"],["2026-07-31","สีน้ำมัน All in 1","1 GL","A",0,"",0,1,0,""],["2026-08-01","JUNIOR99 ภายนอก (900)","5 GL","",1050,"2505P",332,1,1382,"8851286180533"],["2026-08-01","AQUA Epoxy","1 Set","B",2310,"1457",51,2,4722,"8852186427438"],["2026-08-01","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","A",1490,"3311P",124.1,1,1614.1,"8851286472669"],["2026-08-01","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","C",1690,"1273T",468.3,2,4316.6,"8851286523835"],["2026-08-01","รองพื้น Quick Coat","5 GL","",2690,"",0,1,2690,"8852186521914"],["2026-08-01","WEATHERBOND (กึ่งเงา)","1 GL","A",1130,"2463P",149.6,1,1279.6,"8851286681115"],["2026-08-01","รายได้แม่สี (ฉีดเพิ่ม)","","",0,"KX",72.1,1,72.1,""],["2026-08-02","รองพื้น Quick Coat","2.5 GL","",1690,"",0,1,1690,"8852186523628"],["2026-08-02","WEATHERBOND (กึ่งเงา)","2.5 GL","B",2390,"1304T",400.8,1,2790.8,"8851286633626"],["2026-08-02","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-08-02","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","A",1490,"2164P",24.6,1,1514.6,"8851286472669"],["2026-08-02","สีน้ำมัน All in 1 S910","1 GL","",720,"",0,1,720,"8851286094335"],["2026-08-02","รองพื้น Quick Coat","5 GL","",2690,"",0,3,8070,"8852186521914"],["2026-08-02","WEATHERBOND (กึ่งเงา)","2.5 GL","D",2060,"8558",554.7,1,2614.7,"8851286633640"],["2026-08-02","JUNIOR99 ภายใน (300)","1 GL","",300,"",0,1,300,"8851286180205"],["2026-08-02","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-08-02","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","C",1050,"1982D",254.3,1,1304.3,"8852186036142"],["2026-08-02","สีน้ำมัน All in 1 S912","1 GL","",720,"",0,1,720,"8851286094328"],["2026-08-03","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,"",0,1,790,"8851286523576"],["2026-08-04","-","","",0,"",0,0,0,""],["2026-08-05","สีน้ำมัน BODELAG","1 GL","A",880,"8290",22,3,2706,""],["2026-08-05","รองพื้น Quick Coat","5 GL","",2690,"",0,1,2690,"8852186521914"],["2026-08-05","สีท้าฝ้า HYBRIDESHIELD (999C)","5 GL","",2200,"",0,2,4400,"8851286533568"],["2026-08-06","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","A",500,"8444",3,1,503,"8851286094472"],["2026-08-06","รองพื้น JUNIOR99 (น้ำ)","1 GL","",325,"",0,1,325,"8851286180540"],["2026-08-06","สีท้าฝ้า HYBRIDESHIELD (777C)","5 GL","",2200,"",0,1,2200,"8851286533544"],["2026-08-06","สีทาหลังคา ROOF PAINT","1 GL","",0,"3011",0,1,0,""],["2026-08-07","สีน้ำมัน All in 1 S138","1/4 GL","",225,"",0,1,225,"8851286094267"],["2026-08-07","สีสเปรย์กระป๋อง PYLAC","1 กป","",98,"",0,2,196,""],["2026-08-08","กันซึม A100","1 GL","",640,"",0,3,1920,""],["2026-08-09","รองพื้น JUNIOR99 (น้ำ)","1 GL","",325,"",0,1,325,"8851286180540"],["2026-08-09","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,2,116,""],["2026-08-09","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"2992P",34,1,1614,"8851286523934"],["2026-08-09","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"3233P",25,2,3530,"8851286523811"],["2026-08-09","AirCare (กึ่งเงา)","2.5 GL","A",2070,"310",12.2,1,2082.2,"8851286675732"],["2026-08-09","รองพื้น Quick Coat","1 GL","",740,"",0,1,740,"8852186521426"],["2026-08-10","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-08-11","สีสเปรย์กระป๋อง PYLAC","1 กป","",98,"",0,11,1078,""],["2026-08-11","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,2,116,""],["2026-08-11","WEATHERBOND (กึ่งเงา)","1 GL","C",1040,"8438",186.6,1,1226.6,"8851286681290"],["2026-08-12","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,2,116,""],["2026-08-12","สีทาหลังคา ROOF PAINT","1 GL","",0,"",0,7,0,""],["2026-08-12","อะคริลิค Wall Filler","5 KG","",260,"",0,1,260,""],["2026-08-13","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","A",1490,"2845P",384.4,1,1874.4,"8851286472669"],["2026-08-14","รองพื้น Quick Coat","5 GL","",2690,"",0,1,2690,"8852186521914"],["2026-08-15","สีท้าฝ้า HYBRIDESHIELD (777C)","1 GL","",540,"",0,1,540,"8851286533537"],["2026-08-16","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,2,116,""],["2026-08-16","สีน้ำมัน All in 1 S914","1 GL","",720,"",0,1,720,"8851286094311"],["2026-08-17","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"1860P",83.9,2,3647.8,"8851286523811"],["2026-08-17","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"2253P",5.1,1,1585.1,"8851286523934"],["2026-08-17","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"1999P",36.5,1,1616.5,"8851286523934"],["2026-08-18","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","D",640,"2841P",266.9,1,906.9,"8851286523804"],["2026-08-18","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,"",0,1,1130,"8851286180557"],["2026-08-18","สีน้ำมัน All in 1 S910","1 GL","",720,"",0,1,720,"8851286094335"],["2026-08-18","สีสเปรย์กระป๋อง PYLAC","1 กป","",98,"",0,1,98,""],["2026-08-18","Roof Seal กันซึมดาดฟ้า (เทาเข้ม)","20 KG","",2890,"",0,2,5780,"8852186349075"],["2026-08-18","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,1,58,""],["2026-08-19","รองพื้น Quick Coat","5 GL","",2690,"",0,2,5380,"8852186521914"],["2026-08-19","สีน้ำมัน All in 1 F914","1 GL","",690,"",0,1,690,"8851286094144"],["2026-08-19","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"",0,2,3160,"8851286523934"],["2026-08-19","สีน้ำมัน All in 1 S900","1 GL","",720,"",0,1,720,""],["2026-08-20","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,"0310",12.2,2,3504.4,"8851286523811"],["2026-08-20","AQUA Epoxy","1 Set","B",2310,"RAL7001",54.4,1,2364.4,"8852186427438"],["2026-08-20","รองพื้น AQUA Epoxy","1 Set","",1950,"",0,1,1950,"8852186427636"],["2026-08-21","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,"2190P",19.2,1,1599.2,"8851286523934"],["2026-08-21","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","A",1490,"A5006",6.7,1,1496.7,"8851286472669"],["2026-08-21","Roof Seal กันซึมดาดฟ้า (เทาเข้ม)","20 KG","",2890,"",0,1,2890,"8852186349075"],["2026-08-21","WEATHERBOND (กึ่งเงา)","1 GL","A",1130,"1559P",52.6,1,1182.6,"8851286681115"],["2026-08-21","รองพื้น Quick Sealer","1 GL","",740,"",0,1,740,"8851286094663"],["2026-08-22","สีน้ำมัน All in 1 S900","1/4 GL","",225,"",0,2,450,"8851286094151"],["2026-08-22","อะคริลิค Wall Filler","5 KG","",260,"",0,1,260,""],["2026-08-22","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","C",1690,"3065D",444.1,1,2134.1,"8851286523835"],["2026-08-23","AirCare (กึ่งเงา)","2.5 GL","A",2070,"2991P",8.5,1,2078.5,"8851286675732"],["2026-08-23","กันซึม A100","4 KG","",640,"",0,1,640,""],["2026-08-24","สีสเปรย์กระป๋อง LAZER","1 กป","",58,"",0,1,58,""],["2026-08-24","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","A",1490,"2164P",24.6,1,1514.6,"8851286472669"],["2026-08-24","AirCare (กึ่งเงา)","2.5 GL","A",2070,"8444",13.6,1,2083.6,"8851286675732"],["2026-08-24","รองพื้น Quick Coat","1 GL","",740,"",0,1,740,"8852186521426"],["2026-08-24","รองพื้น Quick Coat","2.5 GL","",1690,"",0,1,1690,"8852186523628"],["2026-08-24","AirCare (กึ่งเงา)","2.5 GL","A",2070,"8290",87.9,1,2157.9,"8851286675732"],["2026-08-24","สีท้าฝ้า HYBRIDESHIELD (777C)","1 GL","",540,"",0,1,540,"8851286533537"],["2026-08-24","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","A",1490,"A5006",6.7,1,1496.7,"8851286472669"],["2026-08-25","สีน้ำมัน All in 1 S900","4 KG","",720,"",0,1,720,"8851286094151"]];
+/* Monthly 100% targets as recorded in the original workbook, per "YYYY-MM" */
+const TARGETS_SEED = {"2026-01":380000,"2026-02":380000,"2026-03":420000,"2026-04":420000,"2026-05":250000,"2026-06":400000,"2026-07":380000,"2026-08":380000};
+const DEFAULT_TARGET = 380000;
+const TIER_PCTS = [1, 0.95, 0.9, 0.85, 0.8];
+const THAI_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+
+const STORE_KEYS = { products:'tint:products', sales:'tint:sales', settings:'tint:settings' };
+const APP_VERSION = 'NIPPON-SALE-SECURE-2.1-PERSISTENT';
+
+let PRODUCTS = [];      // live, mutable — {sku,name,size,base,price,init,inflow,sold,remain}
+let SALES = [];         // full sales log (seed history + app-entered), each {id,date,name,size,base,price,colorCode,tintPrice,qty,total,sku,seed}
+let SETTINGS = { targets:{}, defaultTarget: DEFAULT_TARGET };
+let PRODUCT_INDEX = {}; // name -> {size -> {base -> row}}
+
+function seedProducts(){
+  return PRODUCTS_SEED.map(r => ({sku:r[0],name:r[1],size:r[2],base:r[3],price:r[4],init:r[5],inflow:r[6],sold:r[7],remain:r[8]}));
+}
+function seedSales(){
+  return SALES_SEED.map((r,i) => ({
+    id:'seed-'+i, date:r[0], name:r[1], size:r[2], base:r[3], price:r[4],
+    colorCode:r[5], tintPrice:r[6], qty:r[7], total:r[8], sku:r[9], seed:true
+  }));
+}
+
+/* ================= storage helpers ================= */
+/*
+ * IMPORTANT: The original app used window.storage, which is not provided by
+ * normal Netlify/Chrome pages. That caused every save to silently fail and
+ * refresh to fall back to SALES_SEED. Use localStorage as the real browser
+ * persistence layer, while keeping a compatibility path for window.storage.
+ */
+const LOCAL_STORAGE_PREFIX = 'nippon-sale:';
+
+async function storageGet(key){
+  try{
+    if(window.storage && typeof window.storage.get === 'function'){
+      const s = await window.storage.get(key);
+      if(s) return s;
+    }
+  }catch(e){ console.warn('window.storage.get failed:', e); }
+  try{
+    const value = localStorage.getItem(LOCAL_STORAGE_PREFIX + key);
+    return value === null ? null : {value};
+  }catch(e){
+    console.error('localStorage.get failed:', e);
+    return null;
+  }
+}
+
+async function storageSet(key,value){
+  let saved = false;
+  try{
+    if(window.storage && typeof window.storage.set === 'function'){
+      await window.storage.set(key,value);
+      saved = true;
+    }
+  }catch(e){ console.warn('window.storage.set failed, using localStorage:', e); }
+  try{
+    localStorage.setItem(LOCAL_STORAGE_PREFIX + key,value);
+    saved = true;
+  }catch(e){ console.error('localStorage.set failed:', e); }
+  return saved;
+}
+
+async function loadAll(){
+  let productsLoaded=false, salesLoaded=false, settingsLoaded=false;
+
+  try{
+    const s = await storageGet(STORE_KEYS.products);
+    if(s && s.value){ PRODUCTS = JSON.parse(s.value); productsLoaded=true; }
+  }catch(e){ console.error('Load products failed:', e); }
+  if(!productsLoaded){
+    PRODUCTS = seedProducts();
+    await storageSet(STORE_KEYS.products, JSON.stringify(PRODUCTS));
+  }
+
+  try{
+    const s = await storageGet(STORE_KEYS.sales);
+    if(s && s.value){ SALES = JSON.parse(s.value); salesLoaded=true; }
+  }catch(e){ console.error('Load sales failed:', e); }
+  if(!salesLoaded){
+    SALES = seedSales();
+    await storageSet(STORE_KEYS.sales, JSON.stringify(SALES));
+  }
+
+  try{
+    const s = await storageGet(STORE_KEYS.settings);
+    if(s && s.value){ SETTINGS = JSON.parse(s.value); settingsLoaded=true; }
+  }catch(e){ console.error('Load settings failed:', e); }
+  if(!settingsLoaded){
+    SETTINGS = { targets: Object.assign({}, TARGETS_SEED), defaultTarget: DEFAULT_TARGET, auditLog:[], notifiedMonth:'' };
+    await storageSet(STORE_KEYS.settings, JSON.stringify(SETTINGS));
+  }
+
+  SETTINGS.targets = SETTINGS.targets || {};
+  SETTINGS.auditLog = SETTINGS.auditLog || [];
+  SETTINGS.notifiedMonth = SETTINGS.notifiedMonth || '';
+  buildProductIndex();
+}
+
+async function saveProducts(){
+  const ok=await storageSet(STORE_KEYS.products, JSON.stringify(PRODUCTS));
+  if(!ok) toast('⚠️ บันทึกสต็อกไม่สำเร็จ กรุณาอนุญาตการจัดเก็บข้อมูลของเบราว์เซอร์');
+  return ok;
+}
+async function saveSales(){
+  const ok=await storageSet(STORE_KEYS.sales, JSON.stringify(SALES));
+  if(!ok) toast('⚠️ บันทึกยอดขายไม่สำเร็จ กรุณาอนุญาตการจัดเก็บข้อมูลของเบราว์เซอร์');
+  return ok;
+}
+async function saveSettings(){
+  const ok=await storageSet(STORE_KEYS.settings, JSON.stringify(SETTINGS));
+  if(!ok) toast('⚠️ บันทึกการตั้งค่าไม่สำเร็จ กรุณาอนุญาตการจัดเก็บข้อมูลของเบราว์เซอร์');
+  return ok;
+}
+async function hashText(text){
+  if(window.crypto && crypto.subtle){ const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text)); return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+  let h=0; for(let i=0;i<text.length;i++) h=((h<<5)-h)+text.charCodeAt(i)|0; return String(h);
+}
+async function ensurePin(){
+  if(!SETTINGS.pinhash){
+    const pin=prompt('ตั้ง PIN 4–6 หลักสำหรับการแก้ไขข้อมูลสำคัญ');
+    if(!pin || !/^\d{4,6}$/.test(pin)){ toast('PIN ต้องเป็นตัวเลข 4–6 หลัก'); return false; }
+    const pin2=prompt('ยืนยัน PIN อีกครั้ง');
+    if(pin!==pin2){ toast('PIN ไม่ตรงกัน'); return false; }
+    SETTINGS.pinhash=await hashText(pin); await saveSettings(); toast('ตั้ง PIN เรียบร้อย'); return true;
+  }
+  const pin=prompt('กรุณาใส่ PIN เพื่อดำเนินการ');
+  if(!pin || await hashText(pin)!==SETTINGS.pinhash){ toast('PIN ไม่ถูกต้อง'); return false; }
+  return true;
+}
+async function addAudit(action,detail){
+  SETTINGS.auditLog=SETTINGS.auditLog||[]; SETTINGS.auditLog.unshift({time:new Date().toISOString(),action,detail});
+  SETTINGS.auditLog=SETTINGS.auditLog.slice(0,300); await saveSettings();
+}
+function renderAudit(){
+  const box=document.getElementById('auditList'); const logs=(SETTINGS.auditLog||[]).filter(x=>!stockModalIdx||!x.detail || x.detail.indexOf((PRODUCTS[stockModalIdx]||{}).name||'')>=0).slice(0,100);
+  box.innerHTML=logs.length?logs.map(x=>`<div class="audit-row"><b>${x.action}</b> — ${x.detail}<div class="meta">${new Date(x.time).toLocaleString('th-TH')}</div></div>`).join(''):'<div class="empty">ยังไม่มีประวัติ</div>';
+}
+function daysInMonth(y,m){ return new Date(y,m,0).getDate(); }
+async function checkGoalNotification(){
+  const now=new Date(), mKey=monthKey(todayISO()), last=daysInMonth(now.getFullYear(),now.getMonth()+1), day=now.getDate();
+  if(day<last-4 || SETTINGS.notifiedMonth===mKey) return;
+  const total=SALES.filter(s=>monthKey(s.date)===mKey).reduce((a,s)=>a+s.total,0), target=getMonthTarget(mKey), pct=target?total/target:0;
+  if(pct>=0.8) return;
+  const msg=`ใกล้สิ้นเดือนแล้ว: ยอดขาย ${Math.round(pct*100)}% ยังไม่ถึงเป้า 80%`; toast('⚠️ '+msg);
+  if('Notification' in window){ try{ if(Notification.permission==='default') await Notification.requestPermission(); if(Notification.permission==='granted') new Notification('NIPPON SALE — แจ้งเตือนเป้ายอดขาย',{body:msg}); }catch(e){} }
+  SETTINGS.notifiedMonth=mKey; await saveSettings();
+}
+async function exportExcelFile(){
+  if(typeof XLSX==='undefined'){ toast('ไม่สามารถโหลดระบบ Excel ได้ กรุณาเชื่อมต่ออินเทอร์เน็ตแล้วลองใหม่'); return; }
+  const wb=XLSX.utils.book_new();
+  const salesRows=SALES.map((s,i)=>({
+    'ลำดับ':i+1,'วันที่':s.date,'สินค้า':s.name,'ขนาด':s.size,'Base':s.base||'',
+    'ราคาสินค้า/หน่วย':Number(s.price)||0,'รหัสสี':s.colorCode||'','ราคาแม่สี':Number(s.tintPrice)||0,
+    'จำนวน':Number(s.qty)||0,'ยอดรวม':Number(s.total)||0,'SKU':s.sku||'',
+    'แหล่งข้อมูล':s.seed?'Excel/ข้อมูลย้อนหลัง':'บันทึกในแอป'
+  }));
+  const productRows=PRODUCTS.map((p,i)=>({
+    'ลำดับ':i+1,'SKU':p.sku||'','สินค้า':p.name,'ขนาด':p.size,'Base':p.base||'',
+    'ราคา':Number(p.price)||0,'สต็อกเริ่มต้น':Number(p.init)||0,'รับเข้า':Number(p.inflow)||0,
+    'ขายสะสม':Number(p.sold)||0,'คงเหลือ':Number(p.remain)||0
+  }));
+  const months=[...new Set(SALES.map(s=>monthKey(s.date)))].sort();
+  const summaryRows=months.map(m=>{const rows=SALES.filter(s=>monthKey(s.date)===m);const total=rows.reduce((a,s)=>a+(Number(s.total)||0),0);return {'เดือน':formatMonthTH(m),'รหัสเดือน':m,'จำนวนรายการ':rows.length,'ยอดขายรวม':total,'เป้าหมาย':getMonthTarget(m),'% เป้า':getMonthTarget(m)?total/getMonthTarget(m):0};});
+  const auditRows=(SETTINGS.auditLog||[]).map((x,i)=>({'ลำดับ':i+1,'เวลา':x.time,'การทำรายการ':x.action,'รายละเอียด':x.detail}));
+  const add=(data,name,widths)=>{const ws=XLSX.utils.json_to_sheet(data.length?data:[{}]); if(widths) ws['!cols']=widths.map(w=>({wch:w})); XLSX.utils.book_append_sheet(wb,ws,name);};
+  add(salesRows,'ประวัติการขาย',[8,14,32,12,8,16,14,14,10,16,18,22]);
+  add(productRows,'สินค้าและสต็อก',[8,18,32,12,8,14,16,12,12,12]);
+  add(summaryRows,'สรุปรายเดือน',[16,12,12,16,16,12]);
+  add(auditRows,'Audit Log',[8,24,22,60]);
+  const meta=XLSX.utils.aoa_to_sheet([
+    ['NIPPON SALE — Export'],['Exported At',new Date().toLocaleString('th-TH')],['Version',APP_VERSION],['รายการขายทั้งหมด',SALES.length],['ยอดขายรวมทั้งหมด',SALES.reduce((a,s)=>a+(Number(s.total)||0),0)]
+  ]); meta['!cols']=[{wch:24},{wch:40}]; XLSX.utils.book_append_sheet(wb,meta,'ข้อมูลไฟล์');
+  const fileName=`NIPPON-SALE-${todayISO()}.xlsx`;
+  XLSX.writeFile(wb,fileName,{compression:true});
+  await addAudit('ส่งออก Excel',`ไฟล์ ${fileName} · ${SALES.length} รายการ`);
+  toast('✓ ส่งออก Excel แล้ว — ไฟล์อยู่ใน Downloads');
+}
+
+function exportBackup(){
+  const payload={version:APP_VERSION,exportedAt:new Date().toISOString(),products:PRODUCTS,sales:SALES,settings:SETTINGS};
+  const esc=JSON.stringify(payload).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const html=`<html><head><meta charset="utf-8"></head><body><h1>NIPPON SALE Backup</h1><p>Exported ${new Date().toLocaleString('th-TH')}</p><div id="tintBackupJson">${esc}</div></body></html>`;
+  const blob=new Blob([html],{type:'application/vnd.ms-excel;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`NIPPON-SALE-backup-${todayISO()}.xls`; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); toast('ส่งออกข้อมูลแล้ว');
+}
+async function importBackupFile(file){
+  const text=await file.text(); const doc=new DOMParser().parseFromString(text,'text/html'); const node=doc.getElementById('tintBackupJson');
+  if(!node) throw new Error('ไม่พบข้อมูลสำรองของ NIPPON SALE');
+  const data=JSON.parse(node.textContent||node.innerHTML); if(!data.products||!data.sales) throw new Error('ไฟล์สำรองไม่สมบูรณ์');
+  PRODUCTS=data.products; SALES=data.sales; SETTINGS=data.settings||{targets:Object.assign({},TARGETS_SEED),defaultTarget:DEFAULT_TARGET,auditLog:[]};
+  SETTINGS.auditLog=SETTINGS.auditLog||[]; await saveProducts(); await saveSales(); await saveSettings(); buildProductIndex();
+  renderRecent();renderGauge();renderDashboard();renderStock();renderProductsList();renderHistMonthOptions();renderHistMonth(); toast('นำเข้าข้อมูลสำเร็จ');
+}
+
+function buildProductIndex(){
+  PRODUCT_INDEX = {};
+  PRODUCTS.forEach(r=>{
+    if(!r.name) return;
+    if(!PRODUCT_INDEX[r.name]) PRODUCT_INDEX[r.name] = {};
+    const sizeKey = r.size || '—';
+    if(!PRODUCT_INDEX[r.name][sizeKey]) PRODUCT_INDEX[r.name][sizeKey] = {};
+    const baseKey = r.base || '—';
+    PRODUCT_INDEX[r.name][sizeKey][baseKey] = r;
+  });
+}
+
+/* ================= utils ================= */
+function fmt(n){ return Math.round(n||0).toLocaleString('th-TH'); }
+function todayISO(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function monthKey(iso){ return iso.slice(0,7); }
+function buddhistYear(gYear){ return gYear + 543; }
+function formatMonthTH(mKey){
+  const [y,m] = mKey.split('-').map(Number);
+  return THAI_MONTHS[m-1] + ' ' + buddhistYear(y);
+}
+function formatDateTH(iso){
+  const [y,m,d] = iso.split('-').map(Number);
+  return d + ' ' + THAI_MONTHS[m-1] + ' ' + buddhistYear(y);
+}
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function getMonthTarget(mKey){
+  return (SETTINGS.targets && SETTINGS.targets[mKey]) || SETTINGS.defaultTarget || DEFAULT_TARGET;
+}
+function findProductRow(sku, name, size, base){
+  if(sku){
+    const r = PRODUCTS.find(p=>p.sku===sku);
+    if(r) return r;
+  }
+  if(name && PRODUCT_INDEX[name]){
+    const sizeKey = size || '—';
+    if(PRODUCT_INDEX[name][sizeKey]){
+      const baseKey = base || '—';
+      return PRODUCT_INDEX[name][sizeKey][baseKey];
+    }
+  }
+  return null;
+}
+
+/* ================= tabs ================= */
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-'+btn.dataset.view).classList.add('active');
+    if(btn.dataset.view === 'entry'){
+      if(!currentProduct) document.getElementById('saleDate').value = todayISO();
+      renderRecent(); renderGauge();
+    }
+    if(btn.dataset.view === 'dash') renderDashboard();
+    if(btn.dataset.view === 'stock'){ renderStock(); renderProductsList(); }
+    if(btn.dataset.view === 'history'){ renderHistDay(); renderHistMonthOptions(); renderHistMonth(); }
+    if(btn.dataset.view === 'yearly') renderYearly();
+  });
+});
+
+/* ================= entry form logic ================= */
+const productSearch = document.getElementById('productSearch');
+const suggestBox = document.getElementById('suggestBox');
+const sizeSelect = document.getElementById('sizeSelect');
+const baseSelect = document.getElementById('baseSelect');
+const priceChip = document.getElementById('priceChip');
+const priceVal = document.getElementById('priceVal');
+let currentProduct = null; // name
+let currentRow = null;     // selected product row object
+
+document.getElementById('saleDate').value = todayISO();
+
+productSearch.addEventListener('input', ()=>{
+  const q = productSearch.value.trim().toLowerCase();
+  currentProduct = null; currentRow = null;
+  resetSizeBase();
+  if(!q){ suggestBox.style.display='none'; return; }
+  const names = Object.keys(PRODUCT_INDEX).filter(n=>n.toLowerCase().includes(q)).slice(0,20);
+  if(!names.length){ suggestBox.innerHTML = '<div class="suggest-item">ไม่พบสินค้า</div>'; suggestBox.style.display='block'; return; }
+  suggestBox.innerHTML = names.map(n=>{
+    const sizes = Object.keys(PRODUCT_INDEX[n]);
+    return `<div class="suggest-item" data-name="${n.replace(/"/g,'&quot;')}">${n}<div class="meta">${sizes.length} ขนาด</div></div>`;
+  }).join('');
+  suggestBox.style.display='block';
+});
+
+suggestBox.addEventListener('click', (e)=>{
+  const item = e.target.closest('.suggest-item');
+  if(!item || !item.dataset.name) return;
+  selectProduct(item.dataset.name);
+});
+
+function selectProduct(name){
+  currentProduct = name;
+  productSearch.value = name;
+  suggestBox.style.display = 'none';
+  const sizes = Object.keys(PRODUCT_INDEX[name]);
+  sizeSelect.disabled = false;
+  sizeSelect.innerHTML = sizes.map(s=>`<option value="${s}">${s}</option>`).join('');
+  sizeSelect.dispatchEvent(new Event('change'));
+}
+
+sizeSelect.addEventListener('change', ()=>{
+  if(!currentProduct) return;
+  const size = sizeSelect.value;
+  const bases = Object.keys(PRODUCT_INDEX[currentProduct][size]);
+  if(bases.length === 1 && bases[0] === '—'){
+    baseSelect.disabled = true;
+    baseSelect.innerHTML = '<option>—</option>';
+  } else {
+    baseSelect.disabled = false;
+    baseSelect.innerHTML = bases.map(b=>`<option value="${b}">${b}</option>`).join('');
+  }
+  baseSelect.dispatchEvent(new Event('change'));
+});
+
+baseSelect.addEventListener('change', ()=>{
+  if(!currentProduct) return;
+  const size = sizeSelect.value;
+  const base = baseSelect.value;
+  currentRow = PRODUCT_INDEX[currentProduct][size][base];
+  if(currentRow){
+    priceVal.textContent = fmt(currentRow.price);
+    priceChip.style.display = 'inline-flex';
+  }
+  computeTotal();
+});
+
+function resetSizeBase(){
+  sizeSelect.disabled = true; sizeSelect.innerHTML = '<option>เลือกสินค้าก่อน</option>';
+  baseSelect.disabled = true; baseSelect.innerHTML = '<option>—</option>';
+  priceChip.style.display = 'none';
+  computeTotal();
+}
+
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('.search-wrap')) suggestBox.style.display = 'none';
+});
+
+const tintPriceInput = document.getElementById('tintPrice');
+const qtyInput = document.getElementById('qty');
+[tintPriceInput, qtyInput].forEach(el=>el.addEventListener('input', computeTotal));
+
+function computeTotal(){
+  const unit = currentRow ? Number(currentRow.price)||0 : 0;
+  const tint = Number(tintPriceInput.value)||0;
+  const qty = Number(qtyInput.value)||0;
+  const total = (unit+tint)*qty;
+  document.getElementById('totalVal').textContent = fmt(total) + ' บาท';
+  return total;
+}
+
+document.getElementById('saveSaleBtn').addEventListener('click', async ()=>{
+  if(!currentRow){ toast('กรุณาเลือกสินค้าก่อน'); return; }
+  const qty = Number(qtyInput.value)||0;
+  if(qty <= 0 || !Number.isFinite(qty)){ toast('กรุณาระบุจำนวนที่มากกว่า 0'); return; }
+  const tintVal=Number(tintPriceInput.value)||0; if(tintVal<0){ toast('ราคาแม่สีห้ามติดลบ'); return; }
+  const date = document.getElementById('saleDate').value || todayISO();
+  const total = computeTotal();
+
+  const entry = {
+    id: Date.now()+'-'+Math.random().toString(36).slice(2,7),
+    date, name: currentProduct, size: sizeSelect.value, base: baseSelect.value === '—' ? '' : baseSelect.value,
+    price: currentRow.price, colorCode: document.getElementById('colorCode').value.trim(),
+    tintPrice: Number(tintPriceInput.value)||0, qty, total, sku: currentRow.sku, seed:false
+  };
+  SALES.push(entry);
+  currentRow.sold = (Number(currentRow.sold)||0) + qty;
+  currentRow.remain = (Number(currentRow.remain)||0) - qty;
+  await saveSales(); await saveProducts();
+
+  toast('✓ บันทึกยอดขายแล้ว');
+  productSearch.value=''; currentProduct=null; currentRow=null;
+  resetSizeBase();
+  document.getElementById('colorCode').value='';
+  tintPriceInput.value=''; qtyInput.value='1';
+  computeTotal();
+  renderRecent();
+  renderGauge();
+});
+
+async function deleteSaleEntry(id){
+  const idx = SALES.findIndex(s=>s.id===id);
+  if(idx < 0) return;
+  const entry = SALES[idx];
+  if(entry.seed){ toast('รายการย้อนหลังจากไฟล์เดิมไม่สามารถลบได้'); return; }
+  if(!confirm('ลบรายการนี้ใช่หรือไม่?')) return;
+  const row = findProductRow(entry.sku, entry.name, entry.size, entry.base);
+  if(row){
+    row.sold = Math.max(0, (Number(row.sold)||0) - entry.qty);
+    row.remain = (Number(row.remain)||0) + entry.qty;
+  }
+  SALES.splice(idx,1);
+  await saveSales(); await saveProducts();
+  toast('ลบรายการแล้ว');
+  renderRecent(); renderGauge(); renderDashboard();
+}
+
+/* ================= share / copy summary ================= */
+document.getElementById('shareBtn').addEventListener('click', ()=>{
+  const today = todayISO();
+  const todays = SALES.filter(s=>s.date===today);
+  if(!todays.length){ toast('ยังไม่มีรายการขายวันนี้'); return; }
+  let text = `สรุปยอดขาย ${formatDateTH(today)}\n`;
+  todays.forEach((s,i)=>{
+    text += `${i+1}. ${s.name} ${s.size} ${s.base} x${s.qty} = ${fmt(s.total)}฿\n`;
+  });
+  const total = todays.reduce((a,s)=>a+s.total,0);
+  text += `รวมทั้งหมด: ${fmt(total)} บาท (${todays.length} รายการ)`;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>toast('คัดลอกสรุปยอดขายวันนี้แล้ว')).catch(()=>fallbackCopy(text));
+  } else fallbackCopy(text);
+});
+function fallbackCopy(text){
+  try{
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    toast('คัดลอกสรุปยอดขายวันนี้แล้ว');
+  }catch(e){ toast('ไม่สามารถคัดลอกได้'); }
+}
+
+/* ================= gauge ================= */
+function renderGauge(){
+  const mKey = monthKey(todayISO());
+  const monthTotal = SALES.filter(s=>monthKey(s.date)===mKey).reduce((a,s)=>a+s.total,0);
+  const target = getMonthTarget(mKey);
+  const pct = target > 0 ? Math.min(1, monthTotal/target) : 0;
+  document.getElementById('monthTotal').textContent = fmt(monthTotal);
+  document.getElementById('targetVal').textContent = fmt(target);
+  document.getElementById('canPct').textContent = Math.round(pct*100)+'%';
+  const maxH = 68;
+  const h = maxH*pct;
+  const fillEl = document.getElementById('canFill');
+  fillEl.setAttribute('height', h);
+  fillEl.setAttribute('y', 86-h);
+}
+
+document.getElementById('editTargetBtn').addEventListener('click', openTargetModal);
+function openTargetModal(){
+  const sel = document.getElementById('targetMonthSelect');
+  const mSet = new Set(Object.keys(SETTINGS.targets||{}));
+  SALES.forEach(s=>mSet.add(monthKey(s.date)));
+  mSet.add(monthKey(todayISO()));
+  const months = Array.from(mSet).sort();
+  sel.innerHTML = months.map(m=>`<option value="${m}">${formatMonthTH(m)}</option>`).join('');
+  sel.value = monthKey(todayISO());
+  document.getElementById('targetInput').value = getMonthTarget(sel.value);
+  document.getElementById('targetModalBg').classList.add('show');
+}
+document.getElementById('targetMonthSelect').addEventListener('change', (e)=>{
+  document.getElementById('targetInput').value = getMonthTarget(e.target.value);
+});
+document.getElementById('saveTargetBtn').addEventListener('click', async ()=>{
+  if(!(await ensurePin())) return;
+  const mKey = document.getElementById('targetMonthSelect').value;
+  const v = Number(document.getElementById('targetInput').value);
+  if(v > 0){
+    if(!SETTINGS.targets) SETTINGS.targets = {};
+    SETTINGS.targets[mKey] = v;
+    SETTINGS.defaultTarget = v;
+    await saveSettings();
+    renderGauge(); renderDashboard();
+    toast('บันทึกเป้าหมายแล้ว');
+  }
+  document.getElementById('targetModalBg').classList.remove('show');
+});
+document.getElementById('targetModalBg').addEventListener('click', (e)=>{
+  if(e.target.id==='targetModalBg') e.currentTarget.classList.remove('show');
+});
+
+/* ================= recent list (today, entry tab) ================= */
+function renderRecent(){
+  const today = todayISO();
+  const todays = SALES.filter(s=>s.date===today).slice().reverse();
+  const box = document.getElementById('recentList');
+  if(!todays.length){ box.innerHTML = '<div class="empty">ยังไม่มีรายการขายวันนี้</div>'; return; }
+  box.innerHTML = todays.map(s=>`
+    <div class="list-row">
+      <div class="info">
+        <div class="name">${s.name} ${s.size} ${s.base}</div>
+        <div class="sub">${s.colorCode ? 'รหัสสี '+s.colorCode+' · ' : ''}x${s.qty}</div>
+      </div>
+      <div class="amt">${fmt(s.total)}฿</div>
+      ${s.seed ? '' : `<button class="del-btn" data-del="${s.id}">✕</button>`}
+    </div>
+  `).join('');
+  box.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', ()=>deleteSaleEntry(b.dataset.del)));
+}
+
+/* ================= dashboard ================= */
+function renderDashboard(){
+  const today = todayISO();
+  const mKey = monthKey(today);
+  const todaySales = SALES.filter(s=>s.date===today);
+  const monthSales = SALES.filter(s=>monthKey(s.date)===mKey);
+  const monthTotal = monthSales.reduce((a,s)=>a+s.total,0);
+  const target = getMonthTarget(mKey);
+
+  document.getElementById('dashToday').textContent = fmt(todaySales.reduce((a,s)=>a+s.total,0));
+  document.getElementById('dashTodayQty').textContent = fmt(todaySales.reduce((a,s)=>a+s.qty,0));
+  document.getElementById('dashMonth').textContent = fmt(monthTotal);
+  const pct = target>0 ? (monthTotal/target*100) : 0;
+  document.getElementById('dashPct').textContent = pct.toFixed(1)+'%';
+  document.getElementById('dashMonthLbl').textContent = formatMonthTH(mKey);
+
+  // 5-tier target table
+  const tierBox = document.getElementById('tierTable');
+  tierBox.innerHTML = TIER_PCTS.map(p=>{
+    const tierTarget = Math.round(target*p);
+    const reached = monthTotal >= tierTarget;
+    const gap = Math.max(0, tierTarget - monthTotal);
+    const progress = tierTarget>0 ? Math.min(100, monthTotal/tierTarget*100) : 0;
+    const isPassLevel = p === 0.8;
+    return `
+    <div class="tier-row ${reached?'reached':''} ${isPassLevel?'pass':''}">
+      <div class="tier-pct">${Math.round(p*100)}%</div>
+      <div class="tier-body">
+        <div class="amt">฿${fmt(tierTarget)} ${isPassLevel?'· ผ่านเกณฑ์':''}</div>
+        <div class="gap">${reached ? 'ถึงเป้าแล้ว 🎉' : 'ขาดอีก ฿'+fmt(gap)+' ('+progress.toFixed(0)+'%)'}</div>
+      </div>
+      <div class="tier-badge ${reached?'done':'pend'}">${reached?'✓ ถึงแล้ว':progress.toFixed(0)+'%'}</div>
+    </div>`;
+  }).join('');
+
+  // top sellers this month
+  const agg = {};
+  monthSales.forEach(s=>{
+    const key = s.name+'|'+s.size+'|'+s.base;
+    if(!agg[key]) agg[key] = {name:s.name, size:s.size, base:s.base, qty:0, total:0};
+    agg[key].qty += s.qty; agg[key].total += s.total;
+  });
+  const top = Object.values(agg).sort((a,b)=>b.qty-a.qty).slice(0,5);
+  const topBox = document.getElementById('topSellers');
+  if(!top.length){ topBox.innerHTML = '<div class="empty">ยังไม่มีข้อมูลยอดขายเดือนนี้</div>'; }
+  else{
+    topBox.innerHTML = top.map((t,i)=>`
+      <div class="list-row">
+        <div class="rank">${i+1}</div>
+        <div class="info">
+          <div class="name">${t.name} ${t.size} ${t.base}</div>
+          <div class="sub">ขายไป ${t.qty} ชิ้น</div>
+        </div>
+        <div class="amt">${fmt(t.total)}฿</div>
+      </div>
+    `).join('');
+  }
+
+  // restock alerts: most negative remain, top 6
+  const alerts = PRODUCTS.filter(r=>r.name && Number(r.remain) < 0)
+    .sort((a,b)=>Number(a.remain)-Number(b.remain)).slice(0,6);
+  const abox = document.getElementById('restockAlert');
+  if(!alerts.length){ abox.innerHTML = '<div class="empty">ไม่มีสินค้าติดลบสต็อก 🎉</div>'; }
+  else{
+    abox.innerHTML = alerts.map(r=>`
+      <div class="list-row">
+        <div class="info">
+          <div class="name">${r.name} ${r.size} ${r.base}</div>
+          <div class="sub">คงเหลือ ${r.remain}</div>
+        </div>
+        <div class="status-tag status-over">ขาด ${Math.abs(r.remain)}</div>
+      </div>
+    `).join('');
+  }
+}
+
+/* ================= history view ================= */
+document.querySelectorAll('#view-history .stbtn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#view-history .stbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const mode = btn.dataset.hist;
+    document.getElementById('histDayPanel').style.display = mode==='day' ? 'block':'none';
+    document.getElementById('histMonthPanel').style.display = mode==='month' ? 'block':'none';
+  });
+});
+document.getElementById('histDate').value = todayISO();
+document.getElementById('histDate').addEventListener('change', renderHistDay);
+
+function renderHistDay(){
+  const date = document.getElementById('histDate').value || todayISO();
+  const rows = SALES.filter(s=>s.date===date).slice().sort((a,b)=> (a.id>b.id?1:-1));
+  const total = rows.reduce((a,s)=>a+s.total,0);
+  document.getElementById('histDayTotal').textContent = fmt(total);
+  document.getElementById('histDayCount').textContent = rows.length;
+  const box = document.getElementById('histDayList');
+  if(!rows.length){ box.innerHTML = '<div class="empty">ไม่มีรายการขายในวันที่เลือก</div>'; return; }
+  box.innerHTML = rows.map(s=>`
+    <div class="list-row">
+      <div class="info">
+        <div class="name">${s.name} ${s.size} ${s.base}</div>
+        <div class="sub">${s.colorCode ? 'รหัสสี '+s.colorCode+' · ' : ''}x${s.qty}</div>
+      </div>
+      <div class="amt">${fmt(s.total)}฿</div>
+      <button class="del-btn" data-edit="${s.id}" title="แก้ไข">✎</button>
+      <button class="del-btn" data-delete="${s.id}" title="ลบ">×</button>
+    </div>
+  `).join('');
+  box.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>editSaleEntry(b.dataset.edit)));
+  box.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',()=>deleteSaleEntry(b.dataset.delete)));
+}
+
+function renderHistMonthOptions(){
+  const sel = document.getElementById('histMonth');
+  const mSet = new Set();
+  SALES.forEach(s=>mSet.add(monthKey(s.date)));
+  const months = Array.from(mSet).sort().reverse();
+  const prevVal = sel.value;
+  sel.innerHTML = months.map(m=>`<option value="${m}">${formatMonthTH(m)}</option>`).join('');
+  sel.value = months.includes(prevVal) ? prevVal : (months.includes(monthKey(todayISO())) ? monthKey(todayISO()) : months[0]);
+}
+document.getElementById('histMonth').addEventListener('change', renderHistMonth);
+
+function renderHistMonth(){
+  const mKey=document.getElementById('histMonth').value; if(!mKey) return;
+  const q=(document.getElementById('histMonthSearch').value||'').trim().toLowerCase();
+  const sort=document.getElementById('histMonthSort').value;
+  let rows=SALES.filter(s=>monthKey(s.date)===mKey);
+  if(q) rows=rows.filter(s=>`${s.name} ${s.sku||''} ${s.colorCode||''}`.toLowerCase().includes(q));
+  if(sort==='dateAsc') rows.sort((a,b)=>a.date.localeCompare(b.date));
+  else if(sort==='amountDesc') rows.sort((a,b)=>b.total-a.total);
+  else if(sort==='amountAsc') rows.sort((a,b)=>a.total-b.total);
+  else rows.sort((a,b)=>b.date.localeCompare(a.date));
+  const allMonth=SALES.filter(s=>monthKey(s.date)===mKey);
+  document.getElementById('histMonthTotal').textContent=fmt(allMonth.reduce((a,s)=>a+s.total,0));
+  document.getElementById('histMonthCount').textContent=allMonth.length;
+  const box=document.getElementById('histMonthList'); if(!rows.length){box.innerHTML='<div class="empty">ไม่พบรายการตามตัวกรอง</div>';return;}
+  const byDate={}; rows.forEach(s=>(byDate[s.date]??=[]).push(s));
+  const dates=Object.keys(byDate).sort((a,b)=>sort==='dateAsc'?a.localeCompare(b):b.localeCompare(a));
+  box.innerHTML=dates.map(d=>{const items=byDate[d],dTotal=items.reduce((a,s)=>a+s.total,0);return `<div class="day-group"><div class="dhead"><span>${formatDateTH(d)}</span><span class="dsum">${items.length} รายการ · ${fmt(dTotal)}฿</span></div><div class="card" style="padding:6px 12px;">${items.map(s=>`<div class="list-row"><div class="info"><div class="name">${s.name} ${s.size} ${s.base}</div><div class="sub">${s.colorCode?'รหัสสี '+s.colorCode+' · ':''}x${s.qty}</div></div><div class="amt">${fmt(s.total)}฿</div><button class="del-btn" data-edit="${s.id}" title="แก้ไข">✎</button><button class="del-btn" data-delete="${s.id}" title="ลบ">×</button></div>`).join('')}</div></div>`}).join('');
+  box.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>editSaleEntry(b.dataset.edit)));
+  box.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',()=>deleteSaleEntry(b.dataset.delete)));
+}
+document.getElementById('histMonthSearch').addEventListener('input',renderHistMonth);
+document.getElementById('histMonthSort').addEventListener('change',renderHistMonth);
+async function editSaleEntry(id){
+  if(!(await ensurePin())) return;
+  const s=SALES.find(x=>x.id===id); if(!s) return;
+  const source = s.seed ? 'ข้อมูลย้อนหลังจาก Excel' : 'รายการที่บันทึกในแอป';
+  const date=prompt(`วันที่ขาย (YYYY-MM-DD)\n${source}`,s.date)||s.date;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) return toast('รูปแบบวันที่ไม่ถูกต้อง');
+  const price=Number(prompt('ราคาสินค้าต่อหน่วย',s.price||0));
+  if(!Number.isFinite(price)||price<0) return toast('ราคาสินค้าไม่ถูกต้อง');
+  const qty=Number(prompt('จำนวน',s.qty));
+  if(!Number.isFinite(qty)||qty<=0) return toast('จำนวนไม่ถูกต้อง');
+  const tint=Number(prompt('ราคาแม่สี',s.tintPrice||0));
+  if(!Number.isFinite(tint)||tint<0) return toast('ราคาแม่สีไม่ถูกต้อง');
+  const color=prompt('รหัสสี',s.colorCode||'');
+  const row=findProductRow(s.sku,s.name,s.size,s.base);
+  if(row){
+    row.sold=Math.max(0,(Number(row.sold)||0)-Number(s.qty));
+    row.remain=(Number(row.remain)||0)+Number(s.qty);
+    row.sold+=qty;
+    row.remain-=qty;
+  }
+  s.date=date; s.price=price; s.qty=qty; s.tintPrice=tint; s.colorCode=color||''; s.total=(price+tint)*qty;
+  await saveSales(); await saveProducts();
+  await addAudit('แก้ไขประวัติขาย',`${s.seed?'[Excel] ':''}${s.name} ${s.size} x${qty} วันที่ ${date}`);
+  renderHistDay(); renderHistMonth(); renderRecent(); renderGauge(); renderDashboard(); renderStock();
+  toast('แก้ไขประวัติแล้ว');
+}
+
+async function deleteSaleEntry(id){
+  if(!(await ensurePin())) return;
+  const idx=SALES.findIndex(x=>x.id===id); if(idx<0) return;
+  const s=SALES[idx];
+  if(prompt(`พิมพ์ DELETE เพื่อยืนยันการลบ\n${s.name} ${s.size} x${s.qty}\n${s.seed?'รายการย้อนหลังจาก Excel':'รายการที่บันทึกในแอป'}`)!=='DELETE') return;
+  const row=findProductRow(s.sku,s.name,s.size,s.base);
+  if(row){
+    row.sold=Math.max(0,(Number(row.sold)||0)-Number(s.qty));
+    row.remain=(Number(row.remain)||0)+Number(s.qty);
+  }
+  SALES.splice(idx,1);
+  await saveSales(); await saveProducts();
+  await addAudit('ลบประวัติขาย',`${s.seed?'[Excel] ':''}${s.name} ${s.size} x${s.qty} วันที่ ${s.date}`);
+  renderHistDay(); renderHistMonthOptions(); renderHistMonth(); renderRecent(); renderGauge(); renderDashboard(); renderStock();
+  toast('ลบประวัติแล้ว');
+}
+
+/* ================= stock view ================= */
+let stockFilter = 'all';
+function statusOf(remain){
+  remain = Number(remain);
+  if(remain < 0) return 'over';
+  if(remain === 0) return 'out';
+  if(remain <= 3) return 'low';
+  return 'ok';
+}
+const statusLabel = { over:'ขายเกิน', out:'หมด', low:'ใกล้หมด', ok:'ปกติ' };
+const statusClass = { over:'status-over', out:'status-out', low:'status-low', ok:'status-ok' };
+
+document.querySelectorAll('#stockFilters .chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    document.querySelectorAll('#stockFilters .chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    stockFilter = chip.dataset.f;
+    renderStock();
+  });
+});
+document.getElementById('stockSearch').addEventListener('input', renderStock);
+
+document.querySelectorAll('#view-stock .subtab-row .stbtn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#view-stock .subtab-row .stbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const mode = btn.dataset.stk;
+    document.getElementById('stockPanel').style.display = mode==='stock' ? 'block':'none';
+    document.getElementById('productsPanel').style.display = mode==='products' ? 'block':'none';
+    if(mode==='products') renderProductsList();
+  });
+});
+
+function renderStock(){
+  const q = document.getElementById('stockSearch').value.trim().toLowerCase();
+  let rows = PRODUCTS.filter(r=>r.name);
+  if(q) rows = rows.filter(r=>r.name.toLowerCase().includes(q));
+  if(stockFilter !== 'all') rows = rows.filter(r=>statusOf(r.remain)===stockFilter);
+  rows = rows.slice().sort((a,b)=>Number(a.remain)-Number(b.remain));
+
+  const box = document.getElementById('stockList');
+  if(!rows.length){ box.innerHTML = '<div class="empty">ไม่พบสินค้า</div>'; return; }
+  box.innerHTML = rows.slice(0,150).map(r=>{
+    const st = statusOf(r.remain);
+    const idx = PRODUCTS.indexOf(r);
+    return `
+    <div class="stock-row" data-idx="${idx}">
+      <div class="info">
+        <div class="name">${r.name} ${r.size} ${r.base}</div>
+        <div class="meta">฿${fmt(r.price)} · คงเหลือ ${r.remain}</div>
+      </div>
+      <div class="status-tag ${statusClass[st]}">${statusLabel[st]}</div>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('.stock-row').forEach(el=>{
+    el.addEventListener('click', ()=>openStockModal(Number(el.dataset.idx)));
+  });
+}
+
+/* stock actions modal */
+let stockModalIdx = -1;
+function openStockModal(idx){
+  stockModalIdx = idx;
+  const r = PRODUCTS[idx];
+  if(!r) return;
+  document.getElementById('stockModalName').textContent = `${r.name} ${r.size} ${r.base}`;
+  document.getElementById('stockModalMeta').textContent = `คงเหลือปัจจุบัน ${r.remain} ชิ้น · สต็อกตั้งต้น ${r.init} · รับเข้าแล้ว ${r.inflow} · ขายสะสม ${r.sold}`;
+  document.getElementById('stockInQty').value = '';
+  document.getElementById('stockFixQty').value = r.remain;
+  document.querySelectorAll('#stockModalBg .subtab-row .stbtn').forEach((b,i)=>b.classList.toggle('active', i===0));
+  document.getElementById('stockInPanel').style.display='block';
+  document.getElementById('stockFixPanel').style.display='none';
+  document.getElementById('stockModalBg').classList.add('show');
+}
+document.querySelectorAll('#stockModalBg .subtab-row .stbtn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#stockModalBg .subtab-row .stbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const mode = btn.dataset.sm;
+    document.getElementById('stockInPanel').style.display = mode==='in' ? 'block':'none';
+    document.getElementById('stockFixPanel').style.display = mode==='fix' ? 'block':'none';
+  });
+});
+document.getElementById('stockModalBg').addEventListener('click', (e)=>{
+  if(e.target.id==='stockModalBg') e.currentTarget.classList.remove('show');
+});
+document.getElementById('stockInSaveBtn').addEventListener('click', async ()=>{
+  if(!(await ensurePin())) return;
+  const r = PRODUCTS[stockModalIdx];
+  if(!r) return;
+  const qty = Number(document.getElementById('stockInQty').value)||0;
+  if(qty <= 0){ toast('กรุณาระบุจำนวนที่รับเข้า'); return; }
+  r.inflow = (Number(r.inflow)||0) + qty;
+  r.remain = (Number(r.remain)||0) + qty;
+  await saveProducts();
+  await addAudit('รับสินค้าเข้า',`${r.name} ${r.size} ${r.base} +${qty} ชิ้น`);
+  toast('✓ บันทึกรับสินค้าเข้าแล้ว');
+  document.getElementById('stockModalBg').classList.remove('show');
+  renderStock(); renderDashboard();
+});
+document.getElementById('stockFixSaveBtn').addEventListener('click', async ()=>{
+  if(!(await ensurePin())) return;
+  const r = PRODUCTS[stockModalIdx];
+  if(!r) return;
+  const val = Number(document.getElementById('stockFixQty').value);
+  if(Number.isNaN(val)||val<0){ toast('จำนวนสต็อกต้องไม่ติดลบ'); return; }
+  const delta = val - (Number(r.remain)||0);
+  r.init = (Number(r.init)||0) + delta;
+  r.remain = val;
+  await saveProducts();
+  await addAudit('ปรับสต็อกตั้งต้น',`${r.name} ${r.size} ${r.base}: ${r.remain-delta} → ${val} ชิ้น`);
+  toast('✓ ปรับยอดสต็อกให้ตรงกับที่นับได้แล้ว');
+  document.getElementById('stockModalBg').classList.remove('show');
+  renderStock(); renderDashboard();
+});
+
+
+document.getElementById('stockAuditBtn').addEventListener('click',()=>{renderAudit();document.getElementById('auditModalBg').classList.add('show');});
+document.getElementById('closeAuditBtn').addEventListener('click',()=>document.getElementById('auditModalBg').classList.remove('show'));
+document.getElementById('auditModalBg').addEventListener('click',e=>{if(e.target.id==='auditModalBg')e.currentTarget.classList.remove('show');});
+/* ================= products / price management ================= */
+document.getElementById('productSearch2').addEventListener('input', renderProductsList);
+
+function renderProductsList(){
+  const q = document.getElementById('productSearch2').value.trim().toLowerCase();
+  let rows = PRODUCTS.filter(r=>r.name);
+  if(q) rows = rows.filter(r=>r.name.toLowerCase().includes(q));
+  rows = rows.slice().sort((a,b)=>a.name.localeCompare(b.name,'th'));
+  const box = document.getElementById('productsList');
+  if(!rows.length){ box.innerHTML = '<div class="empty">ไม่พบสินค้า</div>'; return; }
+  box.innerHTML = rows.slice(0,200).map(r=>{
+    const idx = PRODUCTS.indexOf(r);
+    return `
+    <div class="prod-row">
+      <div class="info">
+        <div class="name">${r.name} ${r.size} ${r.base}</div>
+        <div class="meta">${r.sku ? 'SKU '+r.sku+' · ' : ''}฿${fmt(r.price)}/หน่วย</div>
+      </div>
+      <button class="edit-btn" data-idx="${idx}">แก้ไข</button>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('.edit-btn').forEach(b=>b.addEventListener('click', ()=>openProductModal(Number(b.dataset.idx))));
+}
+
+function openProductModal(idx){
+  document.getElementById('prodEditIdx').value = idx;
+  const isNew = idx < 0;
+  document.getElementById('productModalTitle').textContent = isNew ? 'เพิ่มสินค้าใหม่' : 'แก้ไขสินค้า / ราคา';
+  document.getElementById('deleteProductBtn').style.display = isNew ? 'none' : 'block';
+  document.getElementById('prodInitWrap').style.display = isNew ? 'block' : 'none';
+  if(isNew){
+    document.getElementById('prodName').value='';
+    document.getElementById('prodSize').value='';
+    document.getElementById('prodBase').value='';
+    document.getElementById('prodSku').value='';
+    document.getElementById('prodPrice').value='';
+    document.getElementById('prodInit').value='0';
+  } else {
+    const r = PRODUCTS[idx];
+    document.getElementById('prodName').value = r.name;
+    document.getElementById('prodSize').value = r.size;
+    document.getElementById('prodBase').value = r.base;
+    document.getElementById('prodSku').value = r.sku;
+    document.getElementById('prodPrice').value = r.price;
+  }
+  document.getElementById('productModalBg').classList.add('show');
+}
+document.getElementById('addProductBtn').addEventListener('click', ()=>openProductModal(-1));
+document.getElementById('productModalBg').addEventListener('click', (e)=>{
+  if(e.target.id==='productModalBg') e.currentTarget.classList.remove('show');
+});
+document.getElementById('saveProductBtn').addEventListener('click', async ()=>{
+  if(!(await ensurePin())) return;
+  const idx = Number(document.getElementById('prodEditIdx').value);
+  const name = document.getElementById('prodName').value.trim();
+  const size = document.getElementById('prodSize').value.trim();
+  const base = document.getElementById('prodBase').value.trim();
+  const sku = document.getElementById('prodSku').value.trim();
+  const price = Number(document.getElementById('prodPrice').value)||0;
+  if(price<0){ toast('ราคาห้ามติดลบ'); return; }
+  if(!name){ toast('กรุณาระบุชื่อสินค้า'); return; }
+  if(idx < 0){
+    const init = Number(document.getElementById('prodInit').value)||0;
+    if(init<0){ toast('สต็อกตั้งต้นห้ามติดลบ'); return; }
+    PRODUCTS.push({sku, name, size, base, price, init, inflow:0, sold:0, remain:init});
+    toast('✓ เพิ่มสินค้าใหม่แล้ว');
+  } else {
+    const r = PRODUCTS[idx];
+    r.name = name; r.size = size; r.base = base; r.sku = sku; r.price = price;
+    toast('✓ อัปเดตราคา/ข้อมูลสินค้าแล้ว');
+  }
+  await saveProducts();
+  buildProductIndex();
+  document.getElementById('productModalBg').classList.remove('show');
+  renderProductsList(); renderStock();
+});
+document.getElementById('deleteProductBtn').addEventListener('click', async ()=>{
+  if(!(await ensurePin())) return;
+  const idx = Number(document.getElementById('prodEditIdx').value);
+  if(idx < 0) return;
+  if(!confirm('ลบสินค้านี้ออกจากระบบใช่หรือไม่? (ประวัติการขายเดิมจะยังอยู่)')) return;
+  PRODUCTS.splice(idx,1);
+  await saveProducts();
+  buildProductIndex();
+  document.getElementById('productModalBg').classList.remove('show');
+  toast('ลบสินค้าแล้ว');
+  renderProductsList(); renderStock();
+});
+
+/* ================= yearly view ================= */
+function renderYearly(){
+  const y = new Date().getFullYear();
+  document.getElementById('yearLbl').textContent = buddhistYear(y) + ' (' + THAI_MONTHS[0] + '–' + THAI_MONTHS[11] + ')';
+  const monthTotals = [];
+  for(let m=1; m<=12; m++){
+    const mKey = y + '-' + String(m).padStart(2,'0');
+    const total = SALES.filter(s=>monthKey(s.date)===mKey).reduce((a,s)=>a+s.total,0);
+    monthTotals.push({mKey, m, total, has: SALES.some(s=>monthKey(s.date)===mKey)});
+  }
+  const yearTotal = monthTotals.reduce((a,x)=>a+x.total,0);
+  const monthsWithData = monthTotals.filter(x=>x.has);
+  const avg = monthsWithData.length ? yearTotal/monthsWithData.length : 0;
+  document.getElementById('yearTotal').textContent = fmt(yearTotal);
+  document.getElementById('yearAvg').textContent = fmt(avg);
+
+  const maxVal = Math.max(1, ...monthTotals.map(x=>x.total));
+  let bestIdx = -1, worstIdx = -1;
+  if(monthsWithData.length){
+    let bestVal = -1, worstVal = Infinity;
+    monthTotals.forEach((x,i)=>{
+      if(!x.has) return;
+      if(x.total > bestVal){ bestVal = x.total; bestIdx = i; }
+      if(x.total < worstVal){ worstVal = x.total; worstIdx = i; }
+    });
+    if(bestIdx === worstIdx) worstIdx = -1;
+  }
+  const barsBox = document.getElementById('yearBars');
+  barsBox.innerHTML = monthTotals.map((x,i)=>{
+    const h = x.has ? Math.max(4, Math.round(x.total/maxVal*140)) : 3;
+    let cls = x.has ? 'has' : 'future';
+    if(i===bestIdx) cls = 'best';
+    if(i===worstIdx) cls = 'worst';
+    return `
+    <div class="bar-col">
+      <div class="bar ${cls}" style="height:${h}px;"></div>
+      <div class="mlabel">${THAI_MONTHS[i].slice(0,3)}</div>
+      <div class="mval">${x.has ? (x.total>=1000?Math.round(x.total/1000)+'k':x.total) : '-'}</div>
+    </div>`;
+  }).join('');
+
+  const listBox = document.getElementById('yearMonthList');
+  listBox.innerHTML = monthTotals.filter(x=>x.has).slice().reverse().map(x=>{
+    const cnt = SALES.filter(s=>monthKey(s.date)===x.mKey).length;
+    let tag = '';
+    const idx = monthTotals.indexOf(x);
+    if(idx===bestIdx) tag = ' 🏆';
+    if(idx===worstIdx) tag = ' 📉';
+    return `
+    <div class="list-row">
+      <div class="info">
+        <div class="name">${THAI_MONTHS[x.m-1]} ${buddhistYear(y)}${tag}</div>
+        <div class="sub">${cnt} รายการ</div>
+      </div>
+      <div class="amt">${fmt(x.total)}฿</div>
+    </div>`;
+  }).join('') || '<div class="empty">ยังไม่มีข้อมูล</div>';
+}
+
+/* ================= settings / reset ================= */
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  document.getElementById('resetModalBg').classList.add('show');
+});
+document.getElementById('closeSettingsBtn').addEventListener('click', ()=>{
+  document.getElementById('resetModalBg').classList.remove('show');
+});
+document.getElementById('resetModalBg').addEventListener('click', (e)=>{
+  if(e.target.id==='resetModalBg') e.currentTarget.classList.remove('show');
+});
+document.getElementById('confirmResetBtn').addEventListener('click', async ()=>{
+  if(!(await ensurePin())) return;
+  if(prompt('พิมพ์ RESET เพื่อยืนยันการรีเซ็ตข้อมูลทั้งหมด')!=='RESET') return;
+  PRODUCTS = seedProducts();
+  SALES = seedSales();
+  SETTINGS = { targets: Object.assign({}, TARGETS_SEED), defaultTarget: DEFAULT_TARGET, auditLog:[], pinhash:SETTINGS.pinhash||'', notifiedMonth:'' };
+  await saveProducts(); await saveSales(); await saveSettings();
+  buildProductIndex();
+  document.getElementById('resetModalBg').classList.remove('show');
+  toast('รีเซ็ตข้อมูลเรียบร้อย');
+  renderRecent(); renderGauge(); renderDashboard(); renderStock(); renderProductsList();
+});
+
+document.getElementById('exportBtn').addEventListener('click',async()=>{if(await ensurePin())await exportExcelFile();});
+document.getElementById('importBtn').addEventListener('click',async()=>{if(await ensurePin())document.getElementById('importFile').click();});
+document.getElementById('importFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{if(prompt('พิมพ์ IMPORT เพื่อยืนยันการนำเข้าข้อมูล')!=='IMPORT')return;await importBackupFile(f);}catch(err){toast('นำเข้าไม่สำเร็จ: '+err.message);}e.target.value='';});
+document.getElementById('setPinBtn').addEventListener('click',async()=>{const old=SETTINGS.pinhash;if(old && !(await ensurePin()))return;SETTINGS.pinhash='';await ensurePin();});
+
+/* ================= init ================= */
+(async function init(){
+  const authenticated = await window.NIPPON_AUTH.init();
+  if(!authenticated) return;
+  await loadAll();
+  document.getElementById('saleDate').value = todayISO();
+  renderGauge();
+  renderRecent();
+  renderDashboard();
+  renderStock();
+  checkGoalNotification();
+})();
+</script>
+<script>
+(() => {
+  if (!('serviceWorker' in navigator)) return;
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch((error) => {
+      console.error('NIPPON SALE Service Worker registration failed:', error);
+    });
+  });
+})();
+</script>
+</body>
+</html>
