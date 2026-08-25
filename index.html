@@ -332,6 +332,41 @@
   .auth-note{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);font-size:11px;line-height:1.6;color:var(--paper-faint);text-align:center}
   .auth-user{display:inline-flex;align-items:center;gap:6px;color:var(--paper-faint);font-size:11px;font-family:var(--mono)}
 
+  /* ================= DESKTOP LAYOUT ================= */
+  nav.tabs::before{content:"NIPPON SALE"; display:none;}
+  @media (min-width: 860px){
+    body{padding-bottom:0;}
+    main{margin-left:210px; max-width:800px; padding:0 32px;}
+    header.top{margin-left:210px; padding:26px 32px 18px; max-width:864px;}
+    nav.tabs{
+      top:0; bottom:0; left:0; right:auto; width:210px; height:100vh;
+      flex-direction:column; justify-content:flex-start; align-items:stretch;
+      padding:26px 14px; gap:2px;
+      background:var(--surface); border-top:none; border-right:1px solid var(--line-soft);
+      backdrop-filter:none;
+    }
+    nav.tabs::before{
+      display:block; font-family:var(--disp); font-weight:600; font-size:13px; letter-spacing:0.6px;
+      color:var(--paper); padding:4px 12px 22px; text-transform:uppercase;
+    }
+    nav.tabs button{
+      flex-direction:row; justify-content:flex-start; gap:12px; padding:11px 12px; border-radius:9px;
+      font-size:13px;
+    }
+    nav.tabs button.active{background:var(--surface2);}
+    nav.tabs button .ic{width:18px; height:18px;}
+    nav.tabs button .ic svg{width:18px; height:18px;}
+    .toast{bottom:32px;}
+    .modal-bg{align-items:center;}
+    .modal{border-radius:18px; max-width:460px; border:1px solid var(--line); max-height:80vh;}
+    .stat-grid{grid-template-columns:repeat(auto-fit, minmax(170px,1fr));}
+    .gauge-card{padding:26px 26px;}
+  }
+  @media (min-width: 1180px){
+    main{max-width:920px;}
+    header.top{max-width:984px;}
+  }
+
 </style>
 </head>
 <body>
