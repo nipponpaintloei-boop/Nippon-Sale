@@ -16,19 +16,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#181a17;
-    --surface:#22251f;
-    --surface2:#2b2e26;
-    --line: rgba(237,234,226,0.09);
-    --paper:#edeae2;
-    --paper-dim: rgba(237,234,226,0.58);
-    --paper-faint: rgba(237,234,226,0.34);
-    --ochre:#d9a441;
-    --ochre-ink:#3a2c0c;
-    --teal:#4a8a83;
-    --clay:#c1533a;
-    --moss:#7a9b57;
-    --radius: 16px;
+    --ink:#121310;
+    --surface:#1a1c17;
+    --surface2:#212319;
+    --line: rgba(237,234,226,0.07);
+    --line-soft: rgba(237,234,226,0.045);
+    --paper:#eeebe3;
+    --paper-dim: rgba(238,235,227,0.52);
+    --paper-faint: rgba(238,235,227,0.30);
+    --ochre:#c7995a;
+    --ochre-soft:#8a6a3a;
+    --ochre-ink:#241a09;
+    --teal:#6b9c93;
+    --clay:#b5654e;
+    --moss:#84a069;
+    --radius: 14px;
+    --radius-lg: 20px;
     --disp: 'Kanit', sans-serif;
     --body: 'IBM Plex Sans Thai', sans-serif;
     --mono: 'JetBrains Mono', monospace;
@@ -37,35 +40,35 @@
   html,body{margin:0;padding:0;background:var(--ink);color:var(--paper);font-family:var(--body);}
   body{
     min-height:100vh;
-    padding-bottom:88px;
-    background-image:
-      radial-gradient(ellipse 600px 300px at 15% -5%, rgba(217,164,65,0.10), transparent),
-      radial-gradient(ellipse 500px 300px at 100% 10%, rgba(74,138,131,0.08), transparent);
+    padding-bottom:92px;
+    background-image: radial-gradient(ellipse 700px 360px at 50% -10%, rgba(199,153,90,0.06), transparent);
   }
   ::selection{background:var(--ochre); color:var(--ochre-ink);}
   button, input, select{font-family:inherit;}
   input:focus, select:focus, button:focus-visible{outline:2px solid var(--ochre); outline-offset:2px;}
 
   header.top{
-    padding:22px 18px 14px;
+    padding:20px 18px 16px;
     display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid var(--line-soft);
+    margin-bottom:4px;
   }
-  .brand{display:flex; align-items:center; gap:10px;}
+  .brand{display:flex; align-items:center; gap:11px;}
   .brand-mark{
-    width:38px;height:38px;border-radius:10px;
-    background:linear-gradient(155deg, var(--ochre), #b5822c);
+    width:36px;height:36px;border-radius:9px;
+    background:var(--surface2); border:1px solid var(--line);
     display:flex;align-items:center;justify-content:center;
-    font-family:var(--disp); font-weight:800; font-size:15px; color:var(--ochre-ink);
-    box-shadow:0 3px 0 rgba(0,0,0,0.25);
+    font-family:var(--disp); font-weight:700; font-size:13px; letter-spacing:0.4px; color:var(--ochre);
   }
-  .brand-text .name{font-family:var(--disp); font-weight:700; font-size:19px; letter-spacing:0.2px;}
-  .brand-text .sub{font-size:11px; color:var(--paper-dim); margin-top:1px;}
+  .brand-text .name{font-family:var(--disp); font-weight:600; font-size:16.5px; letter-spacing:0.3px;}
+  .brand-text .sub{font-size:10.5px; color:var(--paper-faint); margin-top:1px;}
   .icon-btn{
-    width:38px;height:38px;border-radius:10px;border:1px solid var(--line);
-    background:var(--surface); color:var(--paper-dim); display:flex;align-items:center;justify-content:center;
-    font-size:16px; cursor:pointer;
+    width:36px;height:36px;border-radius:9px;border:1px solid var(--line);
+    background:transparent; color:var(--paper-dim); display:flex;align-items:center;justify-content:center;
+    font-size:15px; cursor:pointer;
   }
-  .hdr-actions{display:flex; gap:8px;}
+  .icon-btn:active{background:var(--surface2);}
+  .hdr-actions{display:flex; gap:6px; align-items:center;}
 
   main{padding:0 16px; max-width:560px; margin:0 auto;}
   .view{display:none;}
@@ -75,57 +78,57 @@
   .gauge-card{
     background:var(--surface);
     border:1px solid var(--line);
-    border-radius:20px;
-    padding:20px 18px;
+    border-radius:var(--radius-lg);
+    padding:22px 20px;
     display:flex; align-items:center; gap:18px;
-    margin-bottom:14px;
+    margin-bottom:20px;
   }
-  .can-wrap{flex-shrink:0; width:74px;}
+  .can-wrap{flex-shrink:0; width:70px;}
   .can-label{
-    text-align:center; font-family:var(--disp); font-weight:700; font-size:13px;
-    margin-top:6px; color:var(--ochre);
+    text-align:center; font-family:var(--disp); font-weight:600; font-size:12px;
+    margin-top:6px; color:var(--paper-dim);
   }
   .gauge-info{flex:1; min-width:0;}
-  .gauge-info .eyebrow{font-size:11px; letter-spacing:0.6px; color:var(--paper-dim); text-transform:uppercase;}
+  .gauge-info .eyebrow{font-size:10.5px; letter-spacing:0.8px; color:var(--paper-faint); text-transform:uppercase;}
   .gauge-info .big{
-    font-family:var(--disp); font-weight:700; font-size:26px; line-height:1.1; margin-top:2px;
+    font-family:var(--disp); font-weight:600; font-size:27px; line-height:1.15; margin-top:3px;
     display:flex; align-items:baseline; gap:6px; flex-wrap:wrap;
   }
-  .gauge-info .big .unit{font-size:14px; font-weight:500; color:var(--paper-dim);}
+  .gauge-info .big .unit{font-size:13px; font-weight:400; color:var(--paper-dim);}
   .gauge-info .target-row{
-    display:flex; justify-content:space-between; font-size:12px; color:var(--paper-dim);
-    margin-top:10px; font-family:var(--mono);
+    display:flex; justify-content:space-between; font-size:11.5px; color:var(--paper-faint);
+    margin-top:12px; font-family:var(--mono);
   }
   .gauge-info .target-row button{
-    background:none;border:none;color:var(--teal); font-family:var(--mono); font-size:12px; cursor:pointer; padding:0;
-    text-decoration:underline; text-underline-offset:2px;
+    background:none;border:none;color:var(--paper-dim); font-family:var(--mono); font-size:11.5px; cursor:pointer; padding:0;
+    text-decoration:underline; text-underline-offset:2px; text-decoration-color:var(--line);
   }
 
   .sec-title{
-    font-family:var(--disp); font-weight:600; font-size:14px; letter-spacing:0.3px;
-    color:var(--paper-dim); margin:22px 2px 10px; text-transform:uppercase;
+    font-family:var(--disp); font-weight:500; font-size:12px; letter-spacing:1px;
+    color:var(--paper-faint); margin:28px 2px 12px; text-transform:uppercase;
     display:flex; align-items:center; gap:8px; justify-content:space-between;
   }
   .sec-title .t{display:flex; align-items:center; gap:8px;}
-  .sec-title .dot{width:6px;height:6px;border-radius:50%;background:var(--ochre);}
+  .sec-title .dot{display:none;}
   .sec-title .link-btn{
-    background:none;border:none;color:var(--teal); font-family:var(--body); font-size:11.5px; cursor:pointer;
+    background:none;border:none;color:var(--paper-dim); font-family:var(--body); font-size:11.5px; cursor:pointer;
     text-decoration:underline; text-underline-offset:2px; text-transform:none; letter-spacing:0;
   }
 
   .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
   .stat-card{
-    background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:15px 14px;
   }
-  .stat-card .lbl{font-size:11.5px; color:var(--paper-dim);}
-  .stat-card .val{font-family:var(--mono); font-weight:700; font-size:19px; margin-top:5px;}
-  .stat-card .val.small{font-size:16px;}
+  .stat-card .lbl{font-size:11px; color:var(--paper-faint);}
+  .stat-card .val{font-family:var(--mono); font-weight:600; font-size:18px; margin-top:6px; color:var(--paper);}
+  .stat-card .val.small{font-size:15px;}
   .stat-card .val.good{color:var(--moss);}
   .stat-card .val.warn{color:var(--ochre);}
 
   .card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px; margin-bottom:12px;}
   label.field{display:block; margin-bottom:14px;}
-  label.field .lbl{font-size:12.5px; color:var(--paper-dim); margin-bottom:6px; display:block;}
+  label.field .lbl{font-size:12px; color:var(--paper-faint); margin-bottom:7px; display:block;}
   input[type=text], input[type=number], input[type=date], select{
     width:100%; background:var(--surface2); border:1px solid var(--line); color:var(--paper);
     border-radius:10px; padding:12px 12px; font-size:15px;
@@ -155,34 +158,36 @@
 
   .total-row{
     display:flex; justify-content:space-between; align-items:center;
-    padding-top:14px; margin-top:4px; border-top:1px dashed var(--line);
+    padding-top:16px; margin-top:6px; border-top:1px solid var(--line);
   }
-  .total-row .lbl{font-family:var(--disp); font-weight:600; font-size:14px;}
-  .total-row .val{font-family:var(--mono); font-weight:700; font-size:22px; color:var(--ochre);}
+  .total-row .lbl{font-family:var(--disp); font-weight:500; font-size:13px; color:var(--paper-dim);}
+  .total-row .val{font-family:var(--mono); font-weight:600; font-size:21px; color:var(--paper);}
 
   .btn{
-    width:100%; border:none; border-radius:12px; padding:14px; font-family:var(--disp);
-    font-weight:700; font-size:15.5px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+    width:100%; border:none; border-radius:11px; padding:14px; font-family:var(--disp);
+    font-weight:600; font-size:14.5px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+    letter-spacing:0.2px;
   }
   .btn-primary{background:var(--ochre); color:var(--ochre-ink);}
-  .btn-primary:active{transform:scale(0.98);}
-  .btn-ghost{background:var(--surface2); color:var(--paper); border:1px solid var(--line); margin-top:8px;}
-  .btn-danger-ghost{background:transparent; color:var(--clay); border:1px solid rgba(193,83,58,0.4);}
-  .btn-sm{width:auto; padding:9px 14px; font-size:13px; border-radius:10px;}
-  .btn-teal{background:var(--teal); color:#0d211f;}
+  .btn-primary:active{opacity:0.9;}
+  .btn-ghost{background:transparent; color:var(--paper-dim); border:1px solid var(--line); margin-top:8px;}
+  .btn-ghost:active{background:var(--surface2);}
+  .btn-danger-ghost{background:transparent; color:var(--clay); border:1px solid rgba(181,101,78,0.3);}
+  .btn-sm{width:auto; padding:9px 14px; font-size:13px; border-radius:9px;}
+  .btn-teal{background:transparent; color:var(--teal); border:1px solid rgba(107,156,147,0.35);}
 
   .list-row{
-    display:flex; align-items:center; gap:12px; padding:12px 4px; border-bottom:1px solid var(--line);
+    display:flex; align-items:center; gap:12px; padding:13px 4px; border-bottom:1px solid var(--line);
   }
   .list-row:last-child{border-bottom:none;}
   .rank{
-    width:26px;height:26px;border-radius:8px;background:var(--surface2); flex-shrink:0;
-    display:flex;align-items:center;justify-content:center; font-family:var(--mono); font-size:12px; color:var(--paper-dim);
+    width:24px;height:24px;border-radius:7px;background:var(--surface2); flex-shrink:0;
+    display:flex;align-items:center;justify-content:center; font-family:var(--mono); font-size:11px; color:var(--paper-faint);
   }
   .list-row .info{flex:1; min-width:0;}
-  .list-row .name{font-size:13.5px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .list-row .sub{font-size:11.5px; color:var(--paper-dim); margin-top:2px; font-family:var(--mono);}
-  .list-row .amt{font-family:var(--mono); font-weight:700; font-size:13.5px; color:var(--ochre); flex-shrink:0;}
+  .list-row .name{font-size:13.5px; font-weight:400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .list-row .sub{font-size:11px; color:var(--paper-faint); margin-top:2px; font-family:var(--mono);}
+  .list-row .amt{font-family:var(--mono); font-weight:600; font-size:13.5px; color:var(--paper); flex-shrink:0;}
   .list-row .del-btn{
     background:none; border:none; color:var(--paper-faint); font-size:15px; cursor:pointer; flex-shrink:0; padding:4px 2px;
   }
@@ -190,118 +195,120 @@
 
   .swatch{width:10px;height:10px;border-radius:3px; flex-shrink:0;}
 
-  .filter-chips{display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; margin-bottom:12px;}
+  .filter-chips{display:flex; gap:7px; overflow-x:auto; padding-bottom:2px; margin-bottom:14px;}
   .chip{
-    flex-shrink:0; padding:8px 14px; border-radius:999px; border:1px solid var(--line);
-    background:var(--surface); font-size:12.5px; color:var(--paper-dim); cursor:pointer; white-space:nowrap;
+    flex-shrink:0; padding:7px 13px; border-radius:999px; border:1px solid var(--line);
+    background:transparent; font-size:12px; color:var(--paper-dim); cursor:pointer; white-space:nowrap;
     display:flex; align-items:center; gap:6px;
   }
-  .chip.active{background:var(--ochre); color:var(--ochre-ink); border-color:var(--ochre); font-weight:600;}
-  .subtab-row{display:flex; gap:8px; margin-bottom:14px; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:4px;}
-  .subtab-row .stbtn{flex:1; text-align:center; padding:9px 6px; border-radius:9px; font-size:12.5px; font-weight:600; color:var(--paper-dim); cursor:pointer;}
-  .subtab-row .stbtn.active{background:var(--ochre); color:var(--ochre-ink);}
+  .chip.active{background:var(--paper); color:var(--ink); border-color:var(--paper); font-weight:600;}
+  .subtab-row{display:flex; gap:4px; margin-bottom:16px; background:var(--surface); border:1px solid var(--line); border-radius:11px; padding:3px;}
+  .subtab-row .stbtn{flex:1; text-align:center; padding:9px 6px; border-radius:8px; font-size:12.5px; font-weight:500; color:var(--paper-faint); cursor:pointer;}
+  .subtab-row .stbtn.active{background:var(--surface2); color:var(--paper); font-weight:600;}
 
   .stock-row{
-    background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:12px 14px; margin-bottom:8px;
+    background:var(--surface); border:1px solid var(--line); border-radius:13px; padding:13px 14px; margin-bottom:8px;
     display:flex; align-items:center; gap:12px; cursor:pointer;
   }
   .stock-row:active{background:var(--surface2);}
   .stock-row .info{flex:1; min-width:0;}
-  .stock-row .name{font-size:13.5px; font-weight:500;}
-  .stock-row .meta{font-size:11.5px; color:var(--paper-dim); margin-top:2px; font-family:var(--mono);}
+  .stock-row .name{font-size:13.5px; font-weight:400;}
+  .stock-row .meta{font-size:11px; color:var(--paper-faint); margin-top:2px; font-family:var(--mono);}
   .status-tag{
-    font-size:11px; font-family:var(--mono); font-weight:700; padding:5px 9px; border-radius:8px; flex-shrink:0; text-align:center;
+    font-size:10.5px; font-family:var(--mono); font-weight:600; padding:5px 9px; border-radius:7px; flex-shrink:0; text-align:center;
   }
-  .status-ok{background:rgba(122,155,87,0.16); color:var(--moss);}
-  .status-low{background:rgba(217,164,65,0.16); color:var(--ochre);}
-  .status-out{background:rgba(237,234,226,0.1); color:var(--paper-dim);}
-  .status-over{background:rgba(193,83,58,0.16); color:var(--clay);}
+  .status-ok{background:rgba(132,160,105,0.14); color:var(--moss);}
+  .status-low{background:rgba(199,153,90,0.14); color:var(--ochre);}
+  .status-out{background:var(--surface2); color:var(--paper-faint);}
+  .status-over{background:rgba(181,101,78,0.14); color:var(--clay);}
 
   .empty{
     text-align:center; padding:34px 10px; color:var(--paper-faint); font-size:13px;
   }
 
   /* tier table */
-  .tier-table{background:var(--surface); border:1px solid var(--line); border-radius:16px; overflow:hidden; margin-bottom:12px;}
-  .tier-row{display:flex; align-items:center; gap:10px; padding:12px 14px; border-bottom:1px solid var(--line);}
+  .tier-table{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; margin-bottom:12px;}
+  .tier-row{display:flex; align-items:center; gap:10px; padding:13px 14px; border-bottom:1px solid var(--line);}
   .tier-row:last-child{border-bottom:none;}
-  .tier-row.pass{background:rgba(122,155,87,0.08);}
+  .tier-row.pass{background:rgba(132,160,105,0.06);}
   .tier-pct{
-    width:44px; flex-shrink:0; font-family:var(--mono); font-weight:700; font-size:13px;
-    text-align:center; padding:4px 0; border-radius:8px; background:var(--surface2); color:var(--paper-dim);
+    width:42px; flex-shrink:0; font-family:var(--mono); font-weight:600; font-size:12.5px;
+    text-align:center; padding:4px 0; border-radius:7px; background:var(--surface2); color:var(--paper-faint);
   }
-  .tier-row.reached .tier-pct{background:var(--moss); color:#10200a;}
+  .tier-row.reached .tier-pct{background:var(--moss); color:#0e1a0a;}
   .tier-body{flex:1; min-width:0;}
   .tier-body .amt{font-family:var(--mono); font-size:12.5px; color:var(--paper);}
-  .tier-body .gap{font-size:11px; color:var(--paper-dim); margin-top:2px;}
-  .tier-badge{font-size:10.5px; flex-shrink:0; font-family:var(--mono); font-weight:700; padding:4px 8px; border-radius:7px;}
-  .tier-badge.done{background:rgba(122,155,87,0.18); color:var(--moss);}
-  .tier-badge.pend{background:rgba(237,234,226,0.08); color:var(--paper-faint);}
-  .pass-note{font-size:11px; color:var(--paper-dim); text-align:center; padding:8px 4px 2px;}
+  .tier-body .gap{font-size:11px; color:var(--paper-faint); margin-top:2px;}
+  .tier-badge{font-size:10px; flex-shrink:0; font-family:var(--mono); font-weight:600; padding:4px 8px; border-radius:7px;}
+  .tier-badge.done{background:rgba(132,160,105,0.16); color:var(--moss);}
+  .tier-badge.pend{background:var(--surface2); color:var(--paper-faint);}
+  .pass-note{font-size:11px; color:var(--paper-faint); text-align:center; padding:8px 4px 2px;}
 
   /* history */
-  .day-group{margin-bottom:16px;}
+  .day-group{margin-bottom:18px;}
   .day-group .dhead{
-    display:flex; justify-content:space-between; align-items:baseline; margin:0 2px 6px;
-    font-family:var(--disp); font-size:13px; font-weight:600; color:var(--ochre);
+    display:flex; justify-content:space-between; align-items:baseline; margin:0 2px 7px;
+    font-family:var(--disp); font-size:12.5px; font-weight:600; color:var(--paper-dim);
   }
-  .day-group .dhead .dsum{font-family:var(--mono); font-size:12px; color:var(--paper-dim); font-weight:400;}
+  .day-group .dhead .dsum{font-family:var(--mono); font-size:11.5px; color:var(--paper-faint); font-weight:400;}
 
   /* yearly chart */
-  .chart-card{background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:18px 14px 10px; margin-bottom:14px;}
+  .chart-card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg); padding:20px 14px 12px; margin-bottom:14px;}
   .bars{display:flex; align-items:flex-end; gap:6px; height:150px; padding:0 2px;}
   .bar-col{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; min-width:0;}
-  .bar-col .bar{width:100%; max-width:26px; border-radius:5px 5px 2px 2px; background:var(--surface2); transition:height .4s ease; position:relative;}
+  .bar-col .bar{width:100%; max-width:24px; border-radius:4px 4px 2px 2px; background:var(--surface2); transition:height .4s ease; position:relative;}
   .bar-col .bar.best{background:var(--moss);}
   .bar-col .bar.worst{background:var(--clay);}
   .bar-col .bar.has{background:var(--ochre);}
   .bar-col .bar.future{background:var(--surface2); border:1px dashed var(--line);}
-  .bar-col .mlabel{font-size:9.5px; color:var(--paper-dim); margin-top:6px; font-family:var(--mono); text-align:center;}
-  .bar-col .mval{font-size:8.5px; color:var(--paper-faint); margin-top:1px; font-family:var(--mono);}
-  .legend-row{display:flex; gap:14px; justify-content:center; margin-top:12px; font-size:11px; color:var(--paper-dim);}
+  .bar-col .mlabel{font-size:9.5px; color:var(--paper-faint); margin-top:7px; font-family:var(--mono); text-align:center;}
+  .bar-col .mval{font-size:8.5px; color:var(--paper-faint); margin-top:1px; font-family:var(--mono); opacity:0.7;}
+  .legend-row{display:flex; gap:14px; justify-content:center; margin-top:14px; font-size:10.5px; color:var(--paper-faint);}
   .legend-row .lg{display:flex; align-items:center; gap:5px;}
-  .legend-row .sw{width:9px;height:9px;border-radius:3px;}
+  .legend-row .sw{width:8px;height:8px;border-radius:3px;}
 
   /* product edit rows */
-  .prod-row{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:12px 14px; margin-bottom:8px; display:flex; align-items:center; gap:12px;}
+  .prod-row{background:var(--surface); border:1px solid var(--line); border-radius:13px; padding:13px 14px; margin-bottom:8px; display:flex; align-items:center; gap:12px;}
   .prod-row .info{flex:1; min-width:0;}
-  .prod-row .name{font-size:13.5px; font-weight:500;}
-  .prod-row .meta{font-size:11.5px; color:var(--paper-dim); margin-top:2px; font-family:var(--mono);}
-  .prod-row .edit-btn{background:var(--surface2); border:1px solid var(--line); color:var(--teal); font-size:12px; border-radius:9px; padding:8px 11px; cursor:pointer; flex-shrink:0;}
+  .prod-row .name{font-size:13.5px; font-weight:400;}
+  .prod-row .meta{font-size:11px; color:var(--paper-faint); margin-top:2px; font-family:var(--mono);}
+  .prod-row .edit-btn{background:transparent; border:1px solid var(--line); color:var(--paper-dim); font-size:12px; border-radius:8px; padding:8px 11px; cursor:pointer; flex-shrink:0;}
 
   nav.tabs{
     position:fixed; bottom:0; left:0; right:0; z-index:30;
-    background:rgba(24,26,23,0.92); backdrop-filter:blur(14px);
-    border-top:1px solid var(--line);
-    display:flex; padding:7px 4px calc(7px + env(safe-area-inset-bottom));
+    background:rgba(18,19,16,0.94); backdrop-filter:blur(16px);
+    border-top:1px solid var(--line-soft);
+    display:flex; padding:9px 4px calc(9px + env(safe-area-inset-bottom));
   }
   nav.tabs button{
     flex:1; background:none; border:none; color:var(--paper-faint);
-    display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 0; cursor:pointer;
-    font-size:9.5px; font-family:var(--body);
+    display:flex; flex-direction:column; align-items:center; gap:5px; padding:4px 0; cursor:pointer;
+    font-size:9.5px; font-family:var(--body); font-weight:500; position:relative;
   }
-  nav.tabs button .ic{font-size:18px;}
-  nav.tabs button.active{color:var(--ochre);}
+  nav.tabs button .ic{width:19px; height:19px; display:flex; align-items:center; justify-content:center;}
+  nav.tabs button .ic svg{width:19px; height:19px; stroke:currentColor; fill:none; stroke-width:1.6;}
+  nav.tabs button.active{color:var(--paper);}
+  nav.tabs button.active .ic svg{stroke:var(--ochre);}
 
   .toast{
     position:fixed; left:50%; bottom:96px; transform:translateX(-50%) translateY(20px);
-    background:var(--ochre); color:var(--ochre-ink); padding:11px 20px; border-radius:12px;
-    font-family:var(--disp); font-weight:600; font-size:13.5px; opacity:0; pointer-events:none;
-    transition:all .25s ease; z-index:50; white-space:nowrap; box-shadow:0 10px 24px rgba(0,0,0,0.35); max-width:90vw; overflow:hidden; text-overflow:ellipsis;
+    background:var(--paper); color:var(--ink); padding:11px 20px; border-radius:11px;
+    font-family:var(--disp); font-weight:600; font-size:13px; opacity:0; pointer-events:none;
+    transition:all .25s ease; z-index:50; white-space:nowrap; box-shadow:0 12px 28px rgba(0,0,0,0.4); max-width:90vw; overflow:hidden; text-overflow:ellipsis;
   }
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
   .modal-bg{
-    position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:60; display:none;
+    position:fixed; inset:0; background:rgba(8,9,7,0.6); z-index:60; display:none;
     align-items:flex-end; justify-content:center;
   }
   .modal-bg.show{display:flex;}
   .modal{
-    background:var(--surface); border-radius:20px 20px 0 0; padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+    background:var(--surface); border-radius:22px 22px 0 0; padding:22px 18px calc(20px + env(safe-area-inset-bottom));
     width:100%; max-width:560px; border:1px solid var(--line); border-bottom:none; max-height:88vh; overflow-y:auto;
   }
-  .modal h3{font-family:var(--disp); margin:0 0 14px; font-size:16px;}
-  .modal p.hint{font-size:12.5px; color:var(--paper-dim); line-height:1.6; margin:-6px 0 14px;}
+  .modal h3{font-family:var(--disp); font-weight:600; margin:0 0 14px; font-size:15.5px;}
+  .modal p.hint{font-size:12px; color:var(--paper-faint); line-height:1.65; margin:-6px 0 14px;}
   .audit-row{padding:10px 4px;border-bottom:1px solid var(--line);font-size:12px;}
   .audit-row:last-child{border-bottom:none;}
   .audit-row .meta{font-size:10.5px;color:var(--paper-faint);margin-top:3px;font-family:var(--mono);}
@@ -309,21 +316,21 @@
   .history-tools input{margin:0;}
 
   /* ================= AUTH GATE ================= */
-  .auth-gate{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(12,14,12,.96);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+  .auth-gate{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:24px;background:var(--ink);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
   .auth-gate.show{display:flex}
-  .auth-card{width:min(420px,100%);background:var(--surface);border:1px solid rgba(237,234,226,.12);border-radius:24px;padding:28px 22px 22px;box-shadow:0 24px 80px rgba(0,0,0,.45)}
-  .auth-brand{display:flex;align-items:center;gap:12px;margin-bottom:24px}
-  .auth-brand .brand-mark{width:48px;height:48px;border-radius:13px;font-family:var(--disp);font-weight:800;font-size:17px}
-  .auth-title{font-family:var(--disp);font-size:26px;font-weight:800;line-height:1.1}
-  .auth-subtitle{font-size:12px;color:var(--paper-dim);margin-top:4px}
-  .auth-label{display:block;font-size:12px;color:var(--paper-dim);margin:14px 0 6px}
-  .auth-input{width:100%;margin:0!important;background:var(--surface2)!important;border:1px solid var(--line)!important;color:var(--paper)!important;border-radius:12px!important;padding:13px 14px!important;font-size:16px!important}
-  .auth-submit{width:100%;margin-top:18px!important;padding:13px!important;border-radius:12px!important;font-weight:700;font-size:15px!important;background:var(--ochre)!important;color:var(--ochre-ink)!important;border:none!important}
-  .auth-submit:disabled{opacity:.55}
-  .auth-status{min-height:20px;margin-top:12px;font-size:12px;line-height:1.5;color:var(--paper-dim);text-align:center}
-  .auth-status.error{color:#e98a76}.auth-status.success{color:#9fc37b}
-  .auth-note{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);font-size:11px;line-height:1.55;color:var(--paper-faint);text-align:center}
-  .auth-user{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border:1px solid var(--line);border-radius:999px;color:var(--paper-dim);font-size:11px;margin-bottom:10px}
+  .auth-card{width:min(400px,100%);background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:30px 24px 24px}
+  .auth-brand{display:flex;align-items:center;gap:13px;margin-bottom:28px}
+  .auth-brand .brand-mark{width:44px;height:44px;border-radius:12px;font-family:var(--disp);font-weight:700;font-size:15px}
+  .auth-title{font-family:var(--disp);font-size:21px;font-weight:600;line-height:1.2;letter-spacing:0.2px}
+  .auth-subtitle{font-size:12px;color:var(--paper-faint);margin-top:3px}
+  .auth-label{display:block;font-size:11.5px;color:var(--paper-faint);margin:14px 0 6px;letter-spacing:0.3px}
+  .auth-input{width:100%;margin:0!important;background:var(--surface2)!important;border:1px solid var(--line)!important;color:var(--paper)!important;border-radius:11px!important;padding:13px 14px!important;font-size:16px!important}
+  .auth-submit{width:100%;margin-top:20px!important;padding:13px!important;border-radius:11px!important;font-weight:600;font-size:14.5px!important;background:var(--ochre)!important;color:var(--ochre-ink)!important;border:none!important}
+  .auth-submit:disabled{opacity:.5}
+  .auth-status{min-height:20px;margin-top:12px;font-size:12px;line-height:1.5;color:var(--paper-faint);text-align:center}
+  .auth-status.error{color:#c98876}.auth-status.success{color:var(--moss)}
+  .auth-note{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);font-size:11px;line-height:1.6;color:var(--paper-faint);text-align:center}
+  .auth-user{display:inline-flex;align-items:center;gap:6px;color:var(--paper-faint);font-size:11px;font-family:var(--mono)}
 
 </style>
 </head>
@@ -354,10 +361,10 @@
       <div class="sub">Nippon Paint · Global House เลย</div>
     </div>
   </div>
-  <div class="auth-user">👤 <span id="authUserBadge">ผู้ใช้</span></div>
+  <div class="auth-user"><span id="authUserBadge">ผู้ใช้</span></div>
   <div class="hdr-actions">
-    <button class="icon-btn" id="shareBtn" title="คัดลอกสรุปยอดขายวันนี้">🔗</button>
-    <button class="icon-btn" id="resetBtn" title="ตั้งค่า / ล้างข้อมูล">⚙</button>
+    <button class="icon-btn" id="shareBtn" title="คัดลอกสรุปยอดขายวันนี้"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg></button>
+    <button class="icon-btn" id="resetBtn" title="ตั้งค่า / ล้างข้อมูล"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
   </div>
 </header>
 
@@ -393,7 +400,7 @@
       </div>
     </div>
 
-    <div class="sec-title"><span class="t"><span class="dot"></span>บันทึกยอดขาย</span></div>
+    <div class="sec-title"><span class="t">บันทึกยอดขาย</span></div>
     <div class="card">
       <label class="field">
         <span class="lbl">วันที่ขาย</span>
@@ -433,10 +440,10 @@
         <div class="lbl">รวมทั้งหมด</div>
         <div class="val" id="totalVal">0 บาท</div>
       </div>
-      <button class="btn btn-primary" id="saveSaleBtn" style="margin-top:16px;">✓ บันทึกยอดขาย</button>
+      <button class="btn btn-primary" id="saveSaleBtn" style="margin-top:16px;">บันทึกยอดขาย</button>
     </div>
 
-    <div class="sec-title"><span class="t"><span class="dot"></span>รายการวันนี้</span></div>
+    <div class="sec-title"><span class="t">รายการวันนี้</span></div>
     <div class="card" id="recentList" style="padding:6px 12px;">
       <div class="empty">ยังไม่มีรายการขายวันนี้</div>
     </div>
@@ -445,8 +452,8 @@
   <!-- ============ VIEW: HISTORY ============ -->
   <section class="view" id="view-history">
     <div class="subtab-row">
-      <div class="stbtn active" data-hist="day">📅 รายวัน</div>
-      <div class="stbtn" data-hist="month">🗓️ รายเดือน</div>
+      <div class="stbtn active" data-hist="day">รายวัน</div>
+      <div class="stbtn" data-hist="month">รายเดือน</div>
     </div>
 
     <div id="histDayPanel">
@@ -511,24 +518,24 @@
       </div>
     </div>
 
-    <div class="sec-title"><span class="t"><span class="dot"></span>🎯 เป้าหมาย 5 ระดับ — <span id="dashMonthLbl"></span></span></div>
+    <div class="sec-title"><span class="t">เป้าหมาย 5 ระดับ — <span id="dashMonthLbl"></span></span></div>
     <div class="tier-table" id="tierTable"></div>
     <div class="pass-note">* ผ่านเกณฑ์เมื่อทำยอดถึงระดับ 80% ของเป้าหมายสูงสุด</div>
 
-    <div class="sec-title"><span class="t"><span class="dot"></span>🏆 ขายดีที่สุด (เดือนนี้)</span></div>
+    <div class="sec-title"><span class="t">ขายดีที่สุด (เดือนนี้)</span></div>
     <div class="card" id="topSellers" style="padding:6px 12px;">
       <div class="empty">ยังไม่มีข้อมูลยอดขายเดือนนี้</div>
     </div>
 
-    <div class="sec-title"><span class="t"><span class="dot"></span>⚠️ สินค้าควรเติมสต็อกด่วน</span></div>
+    <div class="sec-title"><span class="t">สินค้าควรเติมสต็อกด่วน</span></div>
     <div class="card" id="restockAlert" style="padding:6px 12px;"></div>
   </section>
 
   <!-- ============ VIEW: STOCK / PRODUCTS ============ -->
   <section class="view" id="view-stock">
     <div class="subtab-row">
-      <div class="stbtn active" data-stk="stock">📦 สต็อก</div>
-      <div class="stbtn" data-stk="products">🏷️ สินค้า/ราคา</div>
+      <div class="stbtn active" data-stk="stock">สต็อก</div>
+      <div class="stbtn" data-stk="products">สินค้า/ราคา</div>
     </div>
 
     <div id="stockPanel">
@@ -537,10 +544,10 @@
       </label>
       <div class="filter-chips" id="stockFilters">
         <div class="chip active" data-f="all">ทั้งหมด</div>
-        <div class="chip" data-f="over">🔴 ขายเกินสต็อก</div>
-        <div class="chip" data-f="out">⚪ หมด</div>
-        <div class="chip" data-f="low">🟡 ใกล้หมด</div>
-        <div class="chip" data-f="ok">🟢 ปกติ</div>
+        <div class="chip" data-f="over">ขายเกินสต็อก</div>
+        <div class="chip" data-f="out">หมด</div>
+        <div class="chip" data-f="low">ใกล้หมด</div>
+        <div class="chip" data-f="ok">ปกติ</div>
       </div>
       <div id="stockList"></div>
     </div>
@@ -549,7 +556,7 @@
       <label class="field">
         <input type="text" id="productSearch2" placeholder="ค้นหาสินค้า...">
       </label>
-      <button class="btn btn-teal" id="addProductBtn" style="margin-bottom:14px;">＋ เพิ่มสินค้าใหม่</button>
+      <button class="btn btn-teal" id="addProductBtn" style="margin-bottom:14px;">+ เพิ่มสินค้าใหม่</button>
       <div id="productsList"></div>
     </div>
   </section>
@@ -567,7 +574,7 @@
       </div>
     </div>
 
-    <div class="sec-title"><span class="t"><span class="dot"></span>ยอดขายรายเดือน</span></div>
+    <div class="sec-title"><span class="t">ยอดขายรายเดือน</span></div>
     <div class="chart-card">
       <div class="bars" id="yearBars"></div>
       <div class="legend-row">
@@ -577,18 +584,18 @@
       </div>
     </div>
 
-    <div class="sec-title"><span class="t"><span class="dot"></span>สรุปรายเดือน</span></div>
+    <div class="sec-title"><span class="t">สรุปรายเดือน</span></div>
     <div class="card" id="yearMonthList" style="padding:6px 12px;"></div>
   </section>
 
 </main>
 
 <nav class="tabs">
-  <button class="active" data-view="entry"><span class="ic">🧾</span>บันทึกขาย</button>
-  <button data-view="history"><span class="ic">🗓️</span>ประวัติ</button>
-  <button data-view="dash"><span class="ic">📊</span>แดชบอร์ด</button>
-  <button data-view="stock"><span class="ic">📦</span>สต็อก/สินค้า</button>
-  <button data-view="yearly"><span class="ic">📈</span>ทั้งปี</button>
+  <button class="active" data-view="entry"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>บันทึกขาย</button>
+  <button data-view="history"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/><path d="M3.5 9.5h17M8 3v3M16 3v3"/></svg></span>ประวัติ</button>
+  <button data-view="dash"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 20V10M12 20V4M20 20v-7"/></svg></span>แดชบอร์ด</button>
+  <button data-view="stock"><span class="ic"><svg viewBox="0 0 24 24"><path d="M3.5 7.5l8.5-4 8.5 4-8.5 4-8.5-4z"/><path d="M3.5 7.5V16l8.5 4 8.5-4V7.5M12 11.5V20"/></svg></span>สต็อก/สินค้า</button>
+  <button data-view="yearly"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 15l5-5 4 4 7-8"/><path d="M15 6h5v5"/></svg></span>ทั้งปี</button>
 </nav>
 
 <div class="toast" id="toast"></div>
@@ -654,8 +661,8 @@
     <h3 id="stockModalName">สินค้า</h3>
     <p class="hint" id="stockModalMeta"></p>
     <div class="subtab-row">
-      <div class="stbtn active" data-sm="in">📥 รับสินค้าเข้า</div>
-      <div class="stbtn" data-sm="fix">🛠️ แก้ไขสต็อกตั้งต้น</div>
+      <div class="stbtn active" data-sm="in">รับสินค้าเข้า</div>
+      <div class="stbtn" data-sm="fix">แก้ไขสต็อกตั้งต้น</div>
     </div>
     <div id="stockInPanel">
       <label class="field">
@@ -671,7 +678,7 @@
         <input type="number" id="stockFixQty" placeholder="0">
       </label>
       <button class="btn btn-primary" id="stockFixSaveBtn">ปรับยอดสต็อกให้ตรง</button>
-      <button class="btn btn-ghost" id="stockAuditBtn">📋 ประวัติการปรับสต็อก</button>
+      <button class="btn btn-ghost" id="stockAuditBtn">ประวัติการปรับสต็อก</button>
     </div>
   </div>
 </div>
@@ -679,7 +686,7 @@
 <!-- modal: stock audit -->
 <div class="modal-bg" id="auditModalBg">
   <div class="modal">
-    <h3>📋 ประวัติการปรับสต็อก</h3>
+    <h3>ประวัติการปรับสต็อก</h3>
     <div id="auditList"></div>
     <button class="btn btn-ghost" id="closeAuditBtn">ปิด</button>
   </div>
@@ -688,13 +695,13 @@
 <!-- modal: settings/reset -->
 <div class="modal-bg" id="resetModalBg">
   <div class="modal">
-    <h3>⚙ ตั้งค่า</h3>
-    <div class="auth-user" style="margin-bottom:14px">👤 <span id="settingsUserName">ผู้ใช้</span></div>
+    <h3>ตั้งค่า</h3>
+    <div class="auth-user" style="margin-bottom:14px"><span id="settingsUserName">ผู้ใช้</span></div>
     <p class="hint">ข้อมูลทั้งหมด (ยอดขาย, สต็อก, สินค้า, เป้าหมาย) ถูกเก็บไว้ในเครื่อง/บัญชีนี้เท่านั้น ข้อมูลย้อนหลังตั้งแต่ ม.ค.–ส.ค. 2569 ถูกดึงมาจากไฟล์ Excel ต้นฉบับให้แล้ว</p>
-    <button class="btn btn-teal" id="exportBtn">⬇️ ส่งออก Excel (.xlsx)</button>
-    <button class="btn btn-ghost" id="importBtn">⬆️ กู้คืน Backup (.xls)</button>
+    <button class="btn btn-teal" id="exportBtn">ส่งออก Excel (.xlsx)</button>
+    <button class="btn btn-ghost" id="importBtn">กู้คืน Backup (.xls)</button>
     <input type="file" id="importFile" accept=".xls,.html,.htm" style="display:none">
-    <button class="btn btn-ghost" id="setPinBtn">🔐 ตั้ง / เปลี่ยน PIN</button>
+    <button class="btn btn-ghost" id="setPinBtn">ตั้ง / เปลี่ยน PIN</button>
     <button class="btn btn-danger-ghost" id="confirmResetBtn">รีเซ็ตกลับเป็นค่าเริ่มต้นจากไฟล์ต้นฉบับ</button>
     <button class="btn btn-danger-ghost" id="authLogoutBtn">ออกจากระบบ</button>
     <button class="btn btn-ghost" id="closeSettingsBtn">ปิด</button>
@@ -813,17 +820,17 @@ async function loadAll(){
 
 async function saveProducts(){
   const ok=await storageSet(STORE_KEYS.products, JSON.stringify(PRODUCTS));
-  if(!ok) toast('⚠️ บันทึกสต็อกไม่สำเร็จ กรุณาอนุญาตการจัดเก็บข้อมูลของเบราว์เซอร์');
+  if(!ok) toast('บันทึกสต็อกไม่สำเร็จ กรุณาอนุญาตการจัดเก็บข้อมูลของเบราว์เซอร์');
   return ok;
 }
 async function saveSales(){
   const ok=await storageSet(STORE_KEYS.sales, JSON.stringify(SALES));
-  if(!ok) toast('⚠️ บันทึกยอดขายไม่สำเร็จ กรุณาอนุญาตการจัดเก็บข้อมูลของเบราว์เซอร์');
+  if(!ok) toast('บันทึกยอดขายไม่สำเร็จ กรุณาอนุญาตการจัดเก็บข้อมูลของเบราว์เซอร์');
   return ok;
 }
 async function saveSettings(){
   const ok=await storageSet(STORE_KEYS.settings, JSON.stringify(SETTINGS));
-  if(!ok) toast('⚠️ บันทึกการตั้งค่าไม่สำเร็จ กรุณาอนุญาตการจัดเก็บข้อมูลของเบราว์เซอร์');
+  if(!ok) toast('บันทึกการตั้งค่าไม่สำเร็จ กรุณาอนุญาตการจัดเก็บข้อมูลของเบราว์เซอร์');
   return ok;
 }
 async function hashText(text){
@@ -856,7 +863,7 @@ async function checkGoalNotification(){
   if(day<last-4 || SETTINGS.notifiedMonth===mKey) return;
   const total=SALES.filter(s=>monthKey(s.date)===mKey).reduce((a,s)=>a+s.total,0), target=getMonthTarget(mKey), pct=target?total/target:0;
   if(pct>=0.8) return;
-  const msg=`ใกล้สิ้นเดือนแล้ว: ยอดขาย ${Math.round(pct*100)}% ยังไม่ถึงเป้า 80%`; toast('⚠️ '+msg);
+  const msg=`ใกล้สิ้นเดือนแล้ว: ยอดขาย ${Math.round(pct*100)}% ยังไม่ถึงเป้า 80%`; toast(msg);
   if('Notification' in window){ try{ if(Notification.permission==='default') await Notification.requestPermission(); if(Notification.permission==='granted') new Notification('NIPPON SALE — แจ้งเตือนเป้ายอดขาย',{body:msg}); }catch(e){} }
   SETTINGS.notifiedMonth=mKey; await saveSettings();
 }
@@ -888,7 +895,7 @@ async function exportExcelFile(){
   const fileName=`NIPPON-SALE-${todayISO()}.xlsx`;
   XLSX.writeFile(wb,fileName,{compression:true});
   await addAudit('ส่งออก Excel',`ไฟล์ ${fileName} · ${SALES.length} รายการ`);
-  toast('✓ ส่งออก Excel แล้ว — ไฟล์อยู่ใน Downloads');
+  toast('ส่งออก Excel แล้ว — ไฟล์อยู่ใน Downloads');
 }
 
 function exportBackup(){
@@ -1084,7 +1091,7 @@ document.getElementById('saveSaleBtn').addEventListener('click', async ()=>{
   currentRow.remain = (Number(currentRow.remain)||0) - qty;
   await saveSales(); await saveProducts();
 
-  toast('✓ บันทึกยอดขายแล้ว');
+  toast('บันทึกยอดขายแล้ว');
   productSearch.value=''; currentProduct=null; currentRow=null;
   resetSizeBase();
   document.getElementById('colorCode').value='';
@@ -1232,9 +1239,9 @@ function renderDashboard(){
       <div class="tier-pct">${Math.round(p*100)}%</div>
       <div class="tier-body">
         <div class="amt">฿${fmt(tierTarget)} ${isPassLevel?'· ผ่านเกณฑ์':''}</div>
-        <div class="gap">${reached ? 'ถึงเป้าแล้ว 🎉' : 'ขาดอีก ฿'+fmt(gap)+' ('+progress.toFixed(0)+'%)'}</div>
+        <div class="gap">${reached ? 'ถึงเป้าแล้ว' : 'ขาดอีก ฿'+fmt(gap)+' ('+progress.toFixed(0)+'%)'}</div>
       </div>
-      <div class="tier-badge ${reached?'done':'pend'}">${reached?'✓ ถึงแล้ว':progress.toFixed(0)+'%'}</div>
+      <div class="tier-badge ${reached?'done':'pend'}">${reached?'ถึงแล้ว':progress.toFixed(0)+'%'}</div>
     </div>`;
   }).join('');
 
@@ -1265,7 +1272,7 @@ function renderDashboard(){
   const alerts = PRODUCTS.filter(r=>r.name && Number(r.remain) < 0)
     .sort((a,b)=>Number(a.remain)-Number(b.remain)).slice(0,6);
   const abox = document.getElementById('restockAlert');
-  if(!alerts.length){ abox.innerHTML = '<div class="empty">ไม่มีสินค้าติดลบสต็อก 🎉</div>'; }
+  if(!alerts.length){ abox.innerHTML = '<div class="empty">ไม่มีสินค้าติดลบสต็อก</div>'; }
   else{
     abox.innerHTML = alerts.map(r=>`
       <div class="list-row">
@@ -1488,7 +1495,7 @@ document.getElementById('stockInSaveBtn').addEventListener('click', async ()=>{
   r.remain = (Number(r.remain)||0) + qty;
   await saveProducts();
   await addAudit('รับสินค้าเข้า',`${r.name} ${r.size} ${r.base} +${qty} ชิ้น`);
-  toast('✓ บันทึกรับสินค้าเข้าแล้ว');
+  toast('บันทึกรับสินค้าเข้าแล้ว');
   document.getElementById('stockModalBg').classList.remove('show');
   renderStock(); renderDashboard();
 });
@@ -1503,7 +1510,7 @@ document.getElementById('stockFixSaveBtn').addEventListener('click', async ()=>{
   r.remain = val;
   await saveProducts();
   await addAudit('ปรับสต็อกตั้งต้น',`${r.name} ${r.size} ${r.base}: ${r.remain-delta} → ${val} ชิ้น`);
-  toast('✓ ปรับยอดสต็อกให้ตรงกับที่นับได้แล้ว');
+  toast('ปรับยอดสต็อกให้ตรงกับที่นับได้แล้ว');
   document.getElementById('stockModalBg').classList.remove('show');
   renderStock(); renderDashboard();
 });
@@ -1577,11 +1584,11 @@ document.getElementById('saveProductBtn').addEventListener('click', async ()=>{
     const init = Number(document.getElementById('prodInit').value)||0;
     if(init<0){ toast('สต็อกตั้งต้นห้ามติดลบ'); return; }
     PRODUCTS.push({sku, name, size, base, price, init, inflow:0, sold:0, remain:init});
-    toast('✓ เพิ่มสินค้าใหม่แล้ว');
+    toast('เพิ่มสินค้าใหม่แล้ว');
   } else {
     const r = PRODUCTS[idx];
     r.name = name; r.size = size; r.base = base; r.sku = sku; r.price = price;
-    toast('✓ อัปเดตราคา/ข้อมูลสินค้าแล้ว');
+    toast('อัปเดตราคา/ข้อมูลสินค้าแล้ว');
   }
   await saveProducts();
   buildProductIndex();
@@ -1647,8 +1654,8 @@ function renderYearly(){
     const cnt = SALES.filter(s=>monthKey(s.date)===x.mKey).length;
     let tag = '';
     const idx = monthTotals.indexOf(x);
-    if(idx===bestIdx) tag = ' 🏆';
-    if(idx===worstIdx) tag = ' 📉';
+    if(idx===bestIdx) tag = ' ●';
+    if(idx===worstIdx) tag = ' ○';
     return `
     <div class="list-row">
       <div class="info">
