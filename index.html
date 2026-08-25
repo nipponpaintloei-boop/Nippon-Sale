@@ -816,7 +816,12 @@
     <h3>ตั้งค่า</h3>
     <div class="auth-user" style="margin-bottom:14px"><span id="settingsUserName">ผู้ใช้</span></div>
     <p class="hint">ข้อมูลทั้งหมด (ยอดขาย, สต็อก, สินค้า, เป้าหมาย) ถูกเก็บไว้ในเครื่อง/บัญชีนี้เท่านั้น ข้อมูลย้อนหลังตั้งแต่ ม.ค.–ส.ค. 2569 ถูกดึงมาจากไฟล์ Excel ต้นฉบับให้แล้ว</p>
-    <button class="btn btn-teal" id="exportBtn">ส่งออก Excel (.xlsx)</button>
+    <button class="btn btn-teal" id="clearCacheBtn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+      ล้างแคช / รีเฟรชแอป
+    </button>
+    <p class="hint" style="margin-top:-10px;">ใช้เมื่ออัปโหลดโค้ดเวอร์ชันใหม่ขึ้น repo แล้วแอปยังแสดงเวอร์ชันเก่าอยู่ (ไม่ลบข้อมูลยอดขาย/สต็อก)</p>
+    <button class="btn btn-ghost" id="exportBtn">ส่งออก Excel (.xlsx)</button>
     <button class="btn btn-ghost" id="importBtn">กู้คืน Backup (.xls)</button>
     <input type="file" id="importFile" accept=".xls,.html,.htm" style="display:none">
     <button class="btn btn-ghost" id="setPinBtn">ตั้ง / เปลี่ยน PIN</button>
@@ -1897,6 +1902,30 @@ function renderYearly(){
 }
 
 /* ================= settings / reset ================= */
+document.getElementById('clearCacheBtn').addEventListener('click', async ()=>{
+  const btn=document.getElementById('clearCacheBtn');
+  const originalHTML=btn.innerHTML;
+  btn.disabled=true; btn.style.opacity='0.7'; btn.textContent='กำลังล้างแคช...';
+  try{
+    if('serviceWorker' in navigator){
+      const regs=await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r=>r.unregister()));
+    }
+    if('caches' in window){
+      const keys=await caches.keys();
+      await Promise.all(keys.map(k=>caches.delete(k)));
+    }
+    toast('ล้างแคชเรียบร้อย กำลังโหลดหน้าใหม่...');
+    setTimeout(()=>{
+      const url=new URL(location.href);
+      url.searchParams.set('_r', Date.now());
+      location.href=url.toString();
+    }, 600);
+  }catch(err){
+    btn.disabled=false; btn.style.opacity=''; btn.innerHTML=originalHTML;
+    toast('ล้างแคชไม่สำเร็จ: '+err.message);
+  }
+});
 document.getElementById('resetBtn').addEventListener('click', ()=>{
   document.getElementById('resetModalBg').classList.add('show');
 });
