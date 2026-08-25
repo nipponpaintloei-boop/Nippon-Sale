@@ -315,6 +315,49 @@
   .history-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
   .history-tools input{margin:0;}
 
+  /* ================= PROMPT DIALOG (PIN / confirm text) ================= */
+  .prompt-bg{
+    position:fixed; inset:0; z-index:9000; background:rgba(8,9,7,0.72);
+    backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+    display:none; align-items:center; justify-content:center; padding:24px;
+  }
+  .prompt-bg.show{display:flex; animation:fade .18s ease;}
+  .prompt-card{
+    width:min(336px,100%); background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius-lg); padding:24px 22px 20px;
+    box-shadow:0 24px 60px rgba(0,0,0,0.5);
+  }
+  .prompt-icon{
+    width:40px; height:40px; border-radius:11px; background:var(--surface2); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; color:var(--ochre); margin-bottom:14px;
+  }
+  .prompt-icon svg{width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;}
+  .prompt-icon.danger{color:var(--clay);}
+  .prompt-title{font-family:var(--disp); font-weight:600; font-size:16px; line-height:1.3;}
+  .prompt-sub{font-size:12px; color:var(--paper-faint); line-height:1.6; margin-top:5px; white-space:pre-line;}
+  .prompt-input-wrap{margin-top:18px;}
+  .prompt-input{
+    width:100%; background:var(--surface2); border:1px solid var(--line); color:var(--paper);
+    border-radius:11px; padding:13px 14px; font-size:17px; font-family:var(--mono);
+    text-align:center; letter-spacing:9px;
+  }
+  .prompt-input::placeholder{color:var(--paper-faint); letter-spacing:9px;}
+  .prompt-input.text-mode{letter-spacing:0.4px; text-align:left; font-family:var(--body); font-size:14.5px; text-transform:uppercase;}
+  .prompt-input.text-mode::placeholder{letter-spacing:0.4px; text-transform:none;}
+  .prompt-input:focus{outline:2px solid var(--ochre); outline-offset:2px;}
+  .prompt-input.error{outline:2px solid var(--clay); outline-offset:2px;}
+  .prompt-error{min-height:15px; font-size:11.5px; color:#c98876; margin-top:8px;}
+  .prompt-actions{display:flex; gap:8px; margin-top:16px;}
+  .prompt-actions button{
+    flex:1; padding:12px; border-radius:11px; border:none; font-family:var(--disp);
+    font-weight:600; font-size:13.5px; cursor:pointer;
+  }
+  .prompt-actions .p-cancel{background:transparent; color:var(--paper-dim); border:1px solid var(--line);}
+  .prompt-actions .p-cancel:active{background:var(--surface2);}
+  .prompt-actions .p-ok{background:var(--ochre); color:var(--ochre-ink);}
+  .prompt-actions .p-ok:active{opacity:0.9;}
+  .prompt-actions .p-ok.danger{background:var(--clay); color:#241109;}
+
   /* ================= AUTH GATE ================= */
   .auth-gate{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:24px;background:var(--ink);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
   .auth-gate.show{display:flex}
@@ -652,6 +695,46 @@
   </div>
 </div>
 
+<!-- modal: edit sale history entry -->
+<div class="modal-bg" id="editSaleModalBg">
+  <div class="modal">
+    <h3>แก้ไขประวัติขาย</h3>
+    <p class="hint" id="editSaleName"></p>
+    <p class="hint" id="editSaleSource" style="margin-top:-10px;"></p>
+    <label class="field">
+      <span class="lbl">วันที่ขาย</span>
+      <input type="date" id="editSaleDate">
+    </label>
+    <div class="row2">
+      <label class="field">
+        <span class="lbl">ราคาสินค้าต่อหน่วย</span>
+        <input type="number" inputmode="decimal" id="editSalePrice" min="0" step="0.01">
+      </label>
+      <label class="field">
+        <span class="lbl">จำนวน</span>
+        <input type="number" inputmode="numeric" id="editSaleQty" min="1" step="1">
+      </label>
+    </div>
+    <div class="row2">
+      <label class="field">
+        <span class="lbl">ราคาแม่สี</span>
+        <input type="number" inputmode="decimal" id="editSaleTint" min="0" step="0.01">
+      </label>
+      <label class="field">
+        <span class="lbl">รหัสสี</span>
+        <input type="text" id="editSaleColor" placeholder="เช่น NP OW 1234P">
+      </label>
+    </div>
+    <div class="total-row">
+      <span class="lbl">ยอดรวม</span>
+      <span class="val" id="editSaleTotal">0฿</span>
+    </div>
+    <div class="prompt-error" id="editSaleError" style="margin-top:2px;"></div>
+    <button class="btn btn-primary" id="saveEditSaleBtn" style="margin-top:14px;">บันทึกการแก้ไข</button>
+    <button class="btn btn-ghost" id="cancelEditSaleBtn">ยกเลิก</button>
+  </div>
+</div>
+
 <!-- modal: add/edit product -->
 <div class="modal-bg" id="productModalBg">
   <div class="modal">
@@ -740,6 +823,23 @@
     <button class="btn btn-danger-ghost" id="confirmResetBtn">รีเซ็ตกลับเป็นค่าเริ่มต้นจากไฟล์ต้นฉบับ</button>
     <button class="btn btn-danger-ghost" id="authLogoutBtn">ออกจากระบบ</button>
     <button class="btn btn-ghost" id="closeSettingsBtn">ปิด</button>
+  </div>
+</div>
+
+<!-- prompt dialog: PIN entry / text confirm (replaces window.prompt) -->
+<div class="prompt-bg" id="promptBg">
+  <div class="prompt-card">
+    <div class="prompt-icon" id="promptIcon"></div>
+    <div class="prompt-title" id="promptTitle">กรุณาใส่ PIN</div>
+    <div class="prompt-sub" id="promptSub"></div>
+    <div class="prompt-input-wrap">
+      <input class="prompt-input" id="promptInput" autocomplete="off" autocapitalize="off" spellcheck="false">
+    </div>
+    <div class="prompt-error" id="promptError"></div>
+    <div class="prompt-actions">
+      <button class="p-cancel" id="promptCancel" type="button">ยกเลิก</button>
+      <button class="p-ok" id="promptOk" type="button">ตกลง</button>
+    </div>
   </div>
 </div>
 
@@ -872,15 +972,71 @@ async function hashText(text){
   if(window.crypto && crypto.subtle){ const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text)); return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
   let h=0; for(let i=0;i<text.length;i++) h=((h<<5)-h)+text.charCodeAt(i)|0; return String(h);
 }
+const PROMPT_ICONS={
+  pin:'<svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2.2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
+  warn:'<svg viewBox="0 0 24 24"><path d="M10.3 3.9 2.7 17a2 2 0 0 0 1.75 3h15.1a2 2 0 0 0 1.75-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9.5v4.2"/><path d="M12 17h.01"/></svg>',
+};
+/* Styled replacement for window.prompt(): mode 'pin' shows a masked numeric pad-style
+   input, mode 'text' shows an uppercase confirm-word input (DELETE / RESET / IMPORT). */
+function askPrompt({title, sub='', mode='pin', okLabel='ตกลง', danger=false, expected=null}){
+  return new Promise(resolve=>{
+    const bg=document.getElementById('promptBg');
+    const input=document.getElementById('promptInput');
+    const err=document.getElementById('promptError');
+    const okBtn=document.getElementById('promptOk');
+    const cancelBtn=document.getElementById('promptCancel');
+    const icon=document.getElementById('promptIcon');
+
+    document.getElementById('promptTitle').textContent=title;
+    document.getElementById('promptSub').textContent=sub;
+    err.textContent=''; input.value=''; input.classList.remove('error');
+    okBtn.textContent=okLabel;
+    okBtn.classList.toggle('danger', !!danger);
+    icon.classList.toggle('danger', !!danger);
+    icon.innerHTML = mode==='pin' ? PROMPT_ICONS.pin : PROMPT_ICONS.warn;
+
+    if(mode==='pin'){
+      input.type='password'; input.setAttribute('inputmode','numeric'); input.maxLength=6;
+      input.classList.remove('text-mode'); input.placeholder='••••';
+    }else{
+      input.type='text'; input.removeAttribute('inputmode'); input.maxLength=20;
+      input.classList.add('text-mode'); input.placeholder=expected||'';
+    }
+
+    bg.classList.add('show');
+    setTimeout(()=>input.focus(),60);
+
+    function cleanup(){
+      bg.classList.remove('show');
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      input.removeEventListener('keydown', onKey);
+      bg.removeEventListener('click', onBgClick);
+    }
+    function onOk(){
+      const val=input.value;
+      if(!val){ err.textContent = mode==='pin' ? 'กรุณาใส่ PIN' : 'กรุณากรอกข้อความยืนยัน'; input.classList.add('error'); return; }
+      cleanup(); resolve(val);
+    }
+    function onCancel(){ cleanup(); resolve(null); }
+    function onKey(e){ if(e.key==='Enter'){ e.preventDefault(); onOk(); } else if(e.key==='Escape'){ onCancel(); } }
+    function onBgClick(e){ if(e.target===bg) onCancel(); }
+
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+    input.addEventListener('keydown', onKey);
+    bg.addEventListener('click', onBgClick);
+  });
+}
 async function ensurePin(){
   if(!SETTINGS.pinhash){
-    const pin=prompt('ตั้ง PIN 4–6 หลักสำหรับการแก้ไขข้อมูลสำคัญ');
+    const pin=await askPrompt({title:'ตั้ง PIN ใหม่', sub:'ตั้ง PIN 4–6 หลักสำหรับการแก้ไขข้อมูลสำคัญ', mode:'pin'});
     if(!pin || !/^\d{4,6}$/.test(pin)){ toast('PIN ต้องเป็นตัวเลข 4–6 หลัก'); return false; }
-    const pin2=prompt('ยืนยัน PIN อีกครั้ง');
+    const pin2=await askPrompt({title:'ยืนยัน PIN', sub:'กรอก PIN เดิมอีกครั้งเพื่อยืนยัน', mode:'pin'});
     if(pin!==pin2){ toast('PIN ไม่ตรงกัน'); return false; }
     SETTINGS.pinhash=await hashText(pin); await saveSettings(); toast('ตั้ง PIN เรียบร้อย'); return true;
   }
-  const pin=prompt('กรุณาใส่ PIN เพื่อดำเนินการ');
+  const pin=await askPrompt({title:'ยืนยันตัวตน', sub:'กรุณาใส่ PIN เพื่อดำเนินการ', mode:'pin'});
   if(!pin || await hashText(pin)!==SETTINGS.pinhash){ toast('PIN ไม่ถูกต้อง'); return false; }
   return true;
 }
@@ -1390,19 +1546,51 @@ function renderHistMonth(){
 }
 document.getElementById('histMonthSearch').addEventListener('input',renderHistMonth);
 document.getElementById('histMonthSort').addEventListener('change',renderHistMonth);
+let editSaleId = null;
 async function editSaleEntry(id){
   if(!(await ensurePin())) return;
   const s=SALES.find(x=>x.id===id); if(!s) return;
-  const source = s.seed ? 'ข้อมูลย้อนหลังจาก Excel' : 'รายการที่บันทึกในแอป';
-  const date=prompt(`วันที่ขาย (YYYY-MM-DD)\n${source}`,s.date)||s.date;
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) return toast('รูปแบบวันที่ไม่ถูกต้อง');
-  const price=Number(prompt('ราคาสินค้าต่อหน่วย',s.price||0));
-  if(!Number.isFinite(price)||price<0) return toast('ราคาสินค้าไม่ถูกต้อง');
-  const qty=Number(prompt('จำนวน',s.qty));
-  if(!Number.isFinite(qty)||qty<=0) return toast('จำนวนไม่ถูกต้อง');
-  const tint=Number(prompt('ราคาแม่สี',s.tintPrice||0));
-  if(!Number.isFinite(tint)||tint<0) return toast('ราคาแม่สีไม่ถูกต้อง');
-  const color=prompt('รหัสสี',s.colorCode||'');
+  editSaleId = id;
+  document.getElementById('editSaleName').textContent = `${s.name} ${s.size}${s.base?' · '+s.base:''}`;
+  document.getElementById('editSaleSource').textContent = s.seed ? 'รายการย้อนหลังจาก Excel' : 'รายการที่บันทึกในแอป';
+  document.getElementById('editSaleDate').value = s.date;
+  document.getElementById('editSalePrice').value = s.price||0;
+  document.getElementById('editSaleQty').value = s.qty;
+  document.getElementById('editSaleTint').value = s.tintPrice||0;
+  document.getElementById('editSaleColor').value = s.colorCode||'';
+  document.getElementById('editSaleError').textContent='';
+  updateEditSaleTotal();
+  document.getElementById('editSaleModalBg').classList.add('show');
+}
+function updateEditSaleTotal(){
+  const price=Number(document.getElementById('editSalePrice').value)||0;
+  const qty=Number(document.getElementById('editSaleQty').value)||0;
+  const tint=Number(document.getElementById('editSaleTint').value)||0;
+  document.getElementById('editSaleTotal').textContent = fmt((price+tint)*qty)+'฿';
+}
+['editSalePrice','editSaleQty','editSaleTint'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', updateEditSaleTotal);
+});
+document.getElementById('editSaleModalBg').addEventListener('click', (e)=>{
+  if(e.target.id==='editSaleModalBg') e.currentTarget.classList.remove('show');
+});
+document.getElementById('cancelEditSaleBtn').addEventListener('click', ()=>{
+  document.getElementById('editSaleModalBg').classList.remove('show');
+});
+document.getElementById('saveEditSaleBtn').addEventListener('click', async ()=>{
+  const err=document.getElementById('editSaleError');
+  err.textContent='';
+  const s=SALES.find(x=>x.id===editSaleId); if(!s) return;
+  const date=document.getElementById('editSaleDate').value;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){ err.textContent='รูปแบบวันที่ไม่ถูกต้อง'; return; }
+  const price=Number(document.getElementById('editSalePrice').value);
+  if(!Number.isFinite(price)||price<0){ err.textContent='ราคาสินค้าไม่ถูกต้อง'; return; }
+  const qty=Number(document.getElementById('editSaleQty').value);
+  if(!Number.isFinite(qty)||qty<=0){ err.textContent='จำนวนไม่ถูกต้อง'; return; }
+  const tint=Number(document.getElementById('editSaleTint').value);
+  if(!Number.isFinite(tint)||tint<0){ err.textContent='ราคาแม่สีไม่ถูกต้อง'; return; }
+  const color=document.getElementById('editSaleColor').value;
+
   const row=findProductRow(s.sku,s.name,s.size,s.base);
   if(row){
     row.sold=Math.max(0,(Number(row.sold)||0)-Number(s.qty));
@@ -1414,14 +1602,20 @@ async function editSaleEntry(id){
   await saveSales(); await saveProducts();
   await addAudit('แก้ไขประวัติขาย',`${s.seed?'[Excel] ':''}${s.name} ${s.size} x${qty} วันที่ ${date}`);
   renderHistDay(); renderHistMonth(); renderRecent(); renderGauge(); renderDashboard(); renderStock();
+  document.getElementById('editSaleModalBg').classList.remove('show');
   toast('แก้ไขประวัติแล้ว');
-}
+});
 
 async function deleteSaleEntry(id){
   if(!(await ensurePin())) return;
   const idx=SALES.findIndex(x=>x.id===id); if(idx<0) return;
   const s=SALES[idx];
-  if(prompt(`พิมพ์ DELETE เพื่อยืนยันการลบ\n${s.name} ${s.size} x${s.qty}\n${s.seed?'รายการย้อนหลังจาก Excel':'รายการที่บันทึกในแอป'}`)!=='DELETE') return;
+  const delConfirm=await askPrompt({
+    title:'ยืนยันการลบรายการ',
+    sub:`${s.name} ${s.size} x${s.qty}\n${s.seed?'รายการย้อนหลังจาก Excel':'รายการที่บันทึกในแอป'}\n\nพิมพ์ DELETE เพื่อยืนยัน`,
+    mode:'text', expected:'DELETE', okLabel:'ลบรายการ', danger:true
+  });
+  if(delConfirm!=='DELETE') return;
   const row=findProductRow(s.sku,s.name,s.size,s.base);
   if(row){
     row.sold=Math.max(0,(Number(row.sold)||0)-Number(s.qty));
@@ -1714,7 +1908,12 @@ document.getElementById('resetModalBg').addEventListener('click', (e)=>{
 });
 document.getElementById('confirmResetBtn').addEventListener('click', async ()=>{
   if(!(await ensurePin())) return;
-  if(prompt('พิมพ์ RESET เพื่อยืนยันการรีเซ็ตข้อมูลทั้งหมด')!=='RESET') return;
+  const resetConfirm=await askPrompt({
+    title:'ยืนยันการรีเซ็ตข้อมูล',
+    sub:'ข้อมูลทั้งหมดจะกลับไปเป็นค่าเริ่มต้นจากไฟล์ต้นฉบับ การกระทำนี้ย้อนกลับไม่ได้\n\nพิมพ์ RESET เพื่อยืนยัน',
+    mode:'text', expected:'RESET', okLabel:'รีเซ็ตข้อมูล', danger:true
+  });
+  if(resetConfirm!=='RESET') return;
   PRODUCTS = seedProducts();
   SALES = seedSales();
   SETTINGS = { targets: Object.assign({}, TARGETS_SEED), defaultTarget: DEFAULT_TARGET, auditLog:[], pinhash:SETTINGS.pinhash||'', notifiedMonth:'' };
@@ -1727,7 +1926,19 @@ document.getElementById('confirmResetBtn').addEventListener('click', async ()=>{
 
 document.getElementById('exportBtn').addEventListener('click',async()=>{if(await ensurePin())await exportExcelFile();});
 document.getElementById('importBtn').addEventListener('click',async()=>{if(await ensurePin())document.getElementById('importFile').click();});
-document.getElementById('importFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{if(prompt('พิมพ์ IMPORT เพื่อยืนยันการนำเข้าข้อมูล')!=='IMPORT')return;await importBackupFile(f);}catch(err){toast('นำเข้าไม่สำเร็จ: '+err.message);}e.target.value='';});
+document.getElementById('importFile').addEventListener('change',async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{
+    const importConfirm=await askPrompt({
+      title:'ยืนยันการนำเข้าข้อมูล',
+      sub:'ข้อมูลปัจจุบันจะถูกแทนที่ด้วยไฟล์ backup ที่เลือก\n\nพิมพ์ IMPORT เพื่อยืนยัน',
+      mode:'text', expected:'IMPORT', okLabel:'นำเข้าข้อมูล', danger:true
+    });
+    if(importConfirm!=='IMPORT')return;
+    await importBackupFile(f);
+  }catch(err){toast('นำเข้าไม่สำเร็จ: '+err.message);}
+  e.target.value='';
+});
 document.getElementById('setPinBtn').addEventListener('click',async()=>{const old=SETTINGS.pinhash;if(old && !(await ensurePin()))return;SETTINGS.pinhash='';await ensurePin();});
 
 /* ================= init ================= */
