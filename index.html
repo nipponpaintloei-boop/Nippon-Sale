@@ -358,6 +358,56 @@
   .prompt-actions .p-ok:active{opacity:0.9;}
   .prompt-actions .p-ok.danger{background:var(--clay); color:#241109;}
 
+  /* ================= MKS REPORT (daily/weekly competitor share) ================= */
+  .mks-row{background:var(--surface); border:1px solid var(--line); border-radius:13px; padding:13px 14px; margin-bottom:8px;}
+  .mks-row.us{border-color:rgba(199,153,90,0.4); background:rgba(199,153,90,0.06);}
+  .mks-row .mtop{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
+  .mks-row .mbrand{display:flex; align-items:center; gap:7px; font-family:var(--disp); font-weight:600; font-size:14px;}
+  .mks-row .mbrand .tag-us{font-size:9px; font-family:var(--body); font-weight:700; color:var(--ochre-ink); background:var(--ochre); padding:2px 7px; border-radius:6px; letter-spacing:0.3px;}
+  .mks-row .mpct{font-family:var(--mono); font-weight:700; font-size:15px; color:var(--ochre); flex-shrink:0;}
+  .mks-row .mfields{display:grid; grid-template-columns:74px 1fr; gap:8px; margin-bottom:8px;}
+  .mks-row .mfields.w3{grid-template-columns:1fr 1fr 1.2fr;}
+  .mks-row label.mf{display:block;}
+  .mks-row .mlbl{font-size:9.5px; color:var(--paper-faint); margin-bottom:4px; display:block;}
+  .mks-row input{
+    width:100%; background:var(--surface2); border:1px solid var(--line); color:var(--paper);
+    border-radius:9px; padding:9px 10px; font-size:13px; font-family:var(--mono); box-sizing:border-box;
+  }
+  .mks-row input:focus{outline:2px solid var(--ochre); outline-offset:1px;}
+  .mks-row input.mnote{font-family:var(--body); font-size:12.5px;}
+  .mks-total{
+    display:flex; align-items:center; justify-content:space-between; background:var(--surface2);
+    border-radius:13px; padding:13px 16px; margin:2px 0 16px; font-family:var(--disp); font-weight:600; font-size:13px;
+  }
+  .mks-total .v{font-family:var(--mono); color:var(--ochre); font-size:14.5px;}
+  .mks-actions{display:flex; gap:8px; margin-top:4px; margin-bottom:28px;}
+  .mks-actions button{flex:1; margin-top:0;}
+  .mks-actions button svg{width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2;}
+
+  /* hidden capture card used to render the shareable image */
+  .mks-capture{
+    position:fixed; left:-9999px; top:0; width:430px; background:var(--ink); color:var(--paper);
+    font-family:var(--body); padding:26px 22px 22px; box-sizing:border-box;
+  }
+  .mks-capture .cap-hdr{display:flex; align-items:center; gap:10px; margin-bottom:20px;}
+  .mks-capture .cap-mark{width:38px; height:38px; border-radius:10px; background:var(--surface2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-family:var(--disp); font-weight:700; color:var(--ochre); font-size:14px;}
+  .mks-capture .cap-name{font-family:var(--disp); font-weight:700; font-size:15px;}
+  .mks-capture .cap-sub{font-size:10.5px; color:var(--paper-faint); margin-top:1px;}
+  .mks-capture .cap-title{font-family:var(--disp); font-weight:600; font-size:17px; margin:2px 0 3px;}
+  .mks-capture .cap-date{font-size:12px; color:var(--paper-faint); margin-bottom:16px; font-family:var(--mono);}
+  .mks-capture .cap-row{display:flex; align-items:center; justify-content:space-between; padding:10px 2px; border-bottom:1px solid var(--line);}
+  .mks-capture .cap-row.us{background:rgba(199,153,90,0.08); margin:0 -10px; padding:10px 12px; border-radius:10px; border-bottom-color:rgba(199,153,90,0.18);}
+  .mks-capture .cap-left{min-width:0;}
+  .mks-capture .cap-brand{font-family:var(--disp); font-weight:600; font-size:13.5px; display:flex; align-items:center; gap:6px;}
+  .mks-capture .cap-brand .tag-us{font-size:8.5px; font-family:var(--body); font-weight:700; color:var(--ochre-ink); background:var(--ochre); padding:2px 6px; border-radius:5px;}
+  .mks-capture .cap-meta{font-size:10.5px; color:var(--paper-faint); margin-top:3px;}
+  .mks-capture .cap-right{text-align:right; flex-shrink:0; padding-left:10px;}
+  .mks-capture .cap-sales{font-family:var(--mono); font-weight:600; font-size:13.5px;}
+  .mks-capture .cap-mks{font-family:var(--mono); font-size:11px; color:var(--ochre); margin-top:2px;}
+  .mks-capture .cap-total{display:flex; align-items:center; justify-content:space-between; margin-top:14px; padding-top:14px; border-top:1px solid var(--line); font-family:var(--disp); font-weight:700; font-size:14px;}
+  .mks-capture .cap-total .v{font-family:var(--mono); color:var(--ochre);}
+  .mks-capture .cap-foot{margin-top:20px; text-align:center; font-size:9.5px; color:var(--paper-faint); font-family:var(--mono); letter-spacing:0.3px;}
+
   /* ================= AUTH GATE ================= */
   .auth-gate{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:24px;background:var(--ink);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
   .auth-gate.show{display:flex}
@@ -666,6 +716,59 @@
     <div class="card" id="yearMonthList" style="padding:6px 12px;"></div>
   </section>
 
+  <section class="view" id="view-report">
+    <div class="subtab-row">
+      <div class="stbtn active" data-mks="day">รายวัน</div>
+      <div class="stbtn" data-mks="week">รายสัปดาห์</div>
+    </div>
+
+    <div id="mksDayPanel">
+      <label class="field">
+        <span class="lbl">วันที่</span>
+        <input type="date" id="mksDayDate">
+      </label>
+      <div class="sec-title"><span class="t">ยอดขายแยกตามแบรนด์</span></div>
+      <div id="mksDayRows"></div>
+      <div class="mks-total">
+        <span>ยอดรวมทั้งแผนก</span>
+        <span class="v" id="mksDayTotalVal">0 บาท</span>
+      </div>
+      <div class="mks-actions">
+        <button class="btn btn-ghost" id="mksDaySaveBtn">บันทึก</button>
+        <button class="btn btn-primary" id="mksDayShareBtn">
+          <svg viewBox="0 0 24 24"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+          แชร์เป็นรูปภาพ
+        </button>
+      </div>
+    </div>
+
+    <div id="mksWeekPanel" style="display:none;">
+      <div class="row2">
+        <label class="field">
+          <span class="lbl">จากวันที่</span>
+          <input type="date" id="mksWeekFrom">
+        </label>
+        <label class="field">
+          <span class="lbl">ถึงวันที่</span>
+          <input type="date" id="mksWeekTo">
+        </label>
+      </div>
+      <div class="sec-title"><span class="t">ยอดขายแยกตามแบรนด์</span></div>
+      <div id="mksWeekRows"></div>
+      <div class="mks-total">
+        <span>ยอดรวมทั้งแผนก</span>
+        <span class="v" id="mksWeekTotalVal">0 บาท</span>
+      </div>
+      <div class="mks-actions">
+        <button class="btn btn-ghost" id="mksWeekSaveBtn">บันทึก</button>
+        <button class="btn btn-primary" id="mksWeekShareBtn">
+          <svg viewBox="0 0 24 24"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+          แชร์เป็นรูปภาพ
+        </button>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <nav class="tabs">
@@ -674,6 +777,7 @@
   <button data-view="dash"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 20V10M12 20V4M20 20v-7"/></svg></span>แดชบอร์ด</button>
   <button data-view="stock"><span class="ic"><svg viewBox="0 0 24 24"><path d="M3.5 7.5l8.5-4 8.5 4-8.5 4-8.5-4z"/><path d="M3.5 7.5V16l8.5 4 8.5-4V7.5M12 11.5V20"/></svg></span>สต็อก/สินค้า</button>
   <button data-view="yearly"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 15l5-5 4 4 7-8"/><path d="M15 6h5v5"/></svg></span>ทั้งปี</button>
+  <button data-view="report"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="12" r="6.5"/><circle cx="15" cy="12" r="6.5"/></svg></span>รายงาน</button>
 </nav>
 
 <div class="toast" id="toast"></div>
@@ -850,6 +954,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="/supabase-config.js"></script>
 <script src="/auth.js"></script>
 <script>
@@ -864,12 +969,24 @@ const DEFAULT_TARGET = 380000;
 const TIER_PCTS = [1, 0.95, 0.9, 0.85, 0.8];
 const THAI_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 
-const STORE_KEYS = { products:'tint:products', sales:'tint:sales', settings:'tint:settings' };
+const STORE_KEYS = { products:'tint:products', sales:'tint:sales', settings:'tint:settings', mksDay:'tint:mksDay', mksWeek:'tint:mksWeek' };
 const APP_VERSION = 'NIPPON-SALE-SECURE-2.1-PERSISTENT';
 
 let PRODUCTS = [];      // live, mutable — {sku,name,size,base,price,init,inflow,sold,remain}
 let SALES = [];         // full sales log (seed history + app-entered), each {id,date,name,size,base,price,colorCode,tintPrice,qty,total,sku,seed}
 let SETTINGS = { targets:{}, defaultTarget: DEFAULT_TARGET };
+const MKS_BRANDS = [
+  {key:'NIPPON', label:'NIPPON', us:true, pc:2, target:380000},
+  {key:'TOA', label:'TOA', pc:2, target:1150000},
+  {key:'BEGER', label:'BEGER', pc:2, target:550000},
+  {key:'JOTUN', label:'JOTUN', pc:1, target:170000},
+  {key:'CAPTAIN', label:'CAPTAIN', pc:2, target:380000},
+  {key:'DELTA', label:'DELTA', pc:2, target:330000},
+  {key:'DULUX', label:'DULUX', pc:1, target:220000},
+  {key:'JBP', label:'JBP', pc:2, target:350000},
+];
+let MKS_DAY_HISTORY = {};   // { 'YYYY-MM-DD': { date, rows:{BRAND:{pc,sales,note}} } }
+let MKS_WEEK_HISTORY = {};  // { 'from_to': { from, to, rows:{BRAND:{pcReg,pcPro,target,sales,note}} } }
 let PRODUCT_INDEX = {}; // name -> {size -> {base -> row}}
 
 function seedProducts(){
@@ -955,7 +1072,30 @@ async function loadAll(){
   SETTINGS.targets = SETTINGS.targets || {};
   SETTINGS.auditLog = SETTINGS.auditLog || [];
   SETTINGS.notifiedMonth = SETTINGS.notifiedMonth || '';
+  SETTINGS.mksDayDefaults = SETTINGS.mksDayDefaults || {};
+  SETTINGS.mksWeekDefaults = SETTINGS.mksWeekDefaults || {};
+
+  try{
+    const s = await storageGet(STORE_KEYS.mksDay);
+    if(s && s.value) MKS_DAY_HISTORY = JSON.parse(s.value);
+  }catch(e){ console.error('Load mksDay failed:', e); }
+  try{
+    const s = await storageGet(STORE_KEYS.mksWeek);
+    if(s && s.value) MKS_WEEK_HISTORY = JSON.parse(s.value);
+  }catch(e){ console.error('Load mksWeek failed:', e); }
+
   buildProductIndex();
+}
+
+async function saveMksDayHistory(){
+  const ok=await storageSet(STORE_KEYS.mksDay, JSON.stringify(MKS_DAY_HISTORY));
+  if(!ok) toast('บันทึกรายงานรายวันไม่สำเร็จ');
+  return ok;
+}
+async function saveMksWeekHistory(){
+  const ok=await storageSet(STORE_KEYS.mksWeek, JSON.stringify(MKS_WEEK_HISTORY));
+  if(!ok) toast('บันทึกรายงานรายสัปดาห์ไม่สำเร็จ');
+  return ok;
 }
 
 async function saveProducts(){
@@ -1173,6 +1313,10 @@ document.querySelectorAll('nav.tabs button').forEach(btn=>{
     if(btn.dataset.view === 'stock'){ renderStock(); renderProductsList(); }
     if(btn.dataset.view === 'history'){ renderHistDay(); renderHistMonthOptions(); renderHistMonth(); }
     if(btn.dataset.view === 'yearly') renderYearly();
+    if(btn.dataset.view === 'report'){
+      const activeSub=document.querySelector('#view-report .subtab-row .stbtn.active');
+      if(!activeSub || activeSub.dataset.mks==='day') renderMksDay(); else renderMksWeek();
+    }
   });
 });
 
@@ -1969,6 +2113,290 @@ document.getElementById('importFile').addEventListener('change',async e=>{
   e.target.value='';
 });
 document.getElementById('setPinBtn').addEventListener('click',async()=>{const old=SETTINGS.pinhash;if(old && !(await ensurePin()))return;SETTINGS.pinhash='';await ensurePin();});
+
+/* ================= MKS report: daily & weekly competitor share ================= */
+const THAI_MONTHS_SHORT=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const THAI_MONTHS_LONG=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+function beYear(d){ return d.getFullYear()+543; }
+function fmtThaiDateLong(iso){
+  if(!iso) return '';
+  const d=new Date(iso+'T00:00:00');
+  return `${d.getDate()} ${THAI_MONTHS_LONG[d.getMonth()]} ${beYear(d)}`;
+}
+function fmtThaiDateShort(iso){
+  if(!iso) return '';
+  const d=new Date(iso+'T00:00:00');
+  return `${d.getDate()}/${d.getMonth()+1}/${String(beYear(d)).slice(-2)}`;
+}
+function fmtThaiRange(fromIso,toIso){
+  if(!fromIso||!toIso) return '';
+  const a=new Date(fromIso+'T00:00:00'), b=new Date(toIso+'T00:00:00');
+  if(a.getMonth()===b.getMonth() && a.getFullYear()===b.getFullYear()){
+    return `${a.getDate()}-${b.getDate()}/${b.getMonth()+1}/${String(beYear(b)).slice(-2)}`;
+  }
+  return `${fmtThaiDateShort(fromIso)} - ${fmtThaiDateShort(toIso)}`;
+}
+function weekAgoISO(iso){
+  const d=new Date(iso+'T00:00:00'); d.setDate(d.getDate()-6);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+/* ---- daily ---- */
+let mksDayState=null; // {date, rows:{BRAND:{pc,sales,note}}}
+function newMksDayEntry(date){
+  const rows={};
+  MKS_BRANDS.forEach(b=>{
+    const def=(SETTINGS.mksDayDefaults||{})[b.key]||{};
+    rows[b.key]={ pc: def.pc!==undefined?def.pc:b.pc, sales:0, note:'' };
+  });
+  return {date, rows};
+}
+function loadMksDay(date){
+  mksDayState = MKS_DAY_HISTORY[date] ? JSON.parse(JSON.stringify(MKS_DAY_HISTORY[date])) : newMksDayEntry(date);
+  renderMksDayRows();
+}
+function computeMksDayTotal(){
+  return MKS_BRANDS.reduce((a,b)=>a+(Number(mksDayState.rows[b.key].sales)||0),0);
+}
+function renderMksDayRows(){
+  const box=document.getElementById('mksDayRows');
+  box.innerHTML = MKS_BRANDS.map(b=>{
+    const r=mksDayState.rows[b.key];
+    return `<div class="mks-row ${b.us?'us':''}" data-brand="${b.key}">
+      <div class="mtop">
+        <div class="mbrand">${b.label}${b.us?'<span class="tag-us">แบรนด์เรา</span>':''}</div>
+        <div class="mpct" data-pct="${b.key}">0%</div>
+      </div>
+      <div class="mfields">
+        <label class="mf"><span class="mlbl">PC</span><input type="number" inputmode="numeric" min="0" step="1" class="m-pc" value="${r.pc}"></label>
+        <label class="mf"><span class="mlbl">ยอดขาย (บาท)</span><input type="number" inputmode="decimal" min="0" step="1" class="m-sales" value="${r.sales||''}" placeholder="0"></label>
+      </div>
+      <label class="mf"><span class="mlbl">หมายเหตุ (ที่มาของยอด — เช่น จากหน้าร้าน / ลูกค้าประจำ)</span><input type="text" class="mnote m-note" value="${(r.note||'').replace(/"/g,'&quot;')}" placeholder="เช่น จากหน้าร้าน, ลูกค้าประจำ"></label>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('.mks-row').forEach(row=>{
+    const key=row.dataset.brand;
+    row.querySelector('.m-pc').addEventListener('input', e=>{ mksDayState.rows[key].pc=e.target.value; });
+    row.querySelector('.m-sales').addEventListener('input', e=>{ mksDayState.rows[key].sales=Number(e.target.value)||0; updateMksDayPercents(); });
+    row.querySelector('.m-note').addEventListener('input', e=>{ mksDayState.rows[key].note=e.target.value; });
+  });
+  updateMksDayPercents();
+}
+function updateMksDayPercents(){
+  const total=computeMksDayTotal();
+  MKS_BRANDS.forEach(b=>{
+    const sales=Number(mksDayState.rows[b.key].sales)||0;
+    const pct= total>0 ? (sales/total*100) : 0;
+    const el=document.querySelector(`#mksDayRows [data-pct="${b.key}"]`);
+    if(el) el.textContent = pct.toFixed(1)+'%';
+  });
+  document.getElementById('mksDayTotalVal').textContent = fmt(total)+' บาท';
+}
+function renderMksDay(){
+  const dateInput=document.getElementById('mksDayDate');
+  if(!dateInput.value) dateInput.value=todayISO();
+  loadMksDay(dateInput.value);
+}
+document.getElementById('mksDayDate').addEventListener('change', e=>{ loadMksDay(e.target.value||todayISO()); });
+document.getElementById('mksDaySaveBtn').addEventListener('click', async ()=>{
+  const date=document.getElementById('mksDayDate').value||todayISO();
+  mksDayState.date=date;
+  MKS_DAY_HISTORY[date]=JSON.parse(JSON.stringify(mksDayState));
+  const defaults={};
+  MKS_BRANDS.forEach(b=>{ defaults[b.key]={pc:mksDayState.rows[b.key].pc}; });
+  SETTINGS.mksDayDefaults=defaults;
+  await saveMksDayHistory(); await saveSettings();
+  await addAudit('บันทึกรายงาน MKS รายวัน', fmtThaiDateLong(date));
+  toast('บันทึกรายงานแล้ว');
+});
+document.getElementById('mksDayShareBtn').addEventListener('click', ()=>shareMksImage('day'));
+
+/* ---- weekly ---- */
+let mksWeekState=null; // {from,to, rows:{BRAND:{pcReg,pcPro,target,sales,note}}}
+function newMksWeekEntry(from,to){
+  const rows={};
+  MKS_BRANDS.forEach(b=>{
+    const def=(SETTINGS.mksWeekDefaults||{})[b.key]||{};
+    rows[b.key]={
+      pcReg: def.pcReg!==undefined?def.pcReg:b.pc,
+      pcPro: def.pcPro!==undefined?def.pcPro:'-',
+      target: def.target!==undefined?def.target:b.target,
+      sales:0, note:''
+    };
+  });
+  return {from,to,rows};
+}
+function mksWeekKey(from,to){ return from+'_'+to; }
+function loadMksWeek(from,to){
+  const key=mksWeekKey(from,to);
+  mksWeekState = MKS_WEEK_HISTORY[key] ? JSON.parse(JSON.stringify(MKS_WEEK_HISTORY[key])) : newMksWeekEntry(from,to);
+  renderMksWeekRows();
+}
+function computeMksWeekTotals(){
+  const totalTarget=MKS_BRANDS.reduce((a,b)=>a+(Number(mksWeekState.rows[b.key].target)||0),0);
+  const totalSales=MKS_BRANDS.reduce((a,b)=>a+(Number(mksWeekState.rows[b.key].sales)||0),0);
+  return {totalTarget,totalSales};
+}
+function renderMksWeekRows(){
+  const box=document.getElementById('mksWeekRows');
+  box.innerHTML = MKS_BRANDS.map(b=>{
+    const r=mksWeekState.rows[b.key];
+    return `<div class="mks-row ${b.us?'us':''}" data-brand="${b.key}">
+      <div class="mtop">
+        <div class="mbrand">${b.label}${b.us?'<span class="tag-us">แบรนด์เรา</span>':''}</div>
+        <div class="mpct" data-pct="${b.key}">0%</div>
+      </div>
+      <div class="mfields w3">
+        <label class="mf"><span class="mlbl">PC ประจำ</span><input type="text" inputmode="numeric" class="m-pcreg" value="${r.pcReg}"></label>
+        <label class="mf"><span class="mlbl">PC โปร</span><input type="text" class="m-pcpro" value="${r.pcPro}"></label>
+        <label class="mf"><span class="mlbl">เป้า (บาท)</span><input type="number" inputmode="decimal" min="0" step="1" class="m-target" value="${r.target||''}" placeholder="0"></label>
+      </div>
+      <label class="mf"><span class="mlbl">ยอดขายช่วงนี้ (บาท)</span><input type="number" inputmode="decimal" min="0" step="1" class="m-sales" value="${r.sales||''}" placeholder="0"></label>
+      <label class="mf"><span class="mlbl">หมายเหตุ (ที่มาของยอด — เช่น จากหน้าร้าน / ลูกค้าประจำ)</span><input type="text" class="mnote m-note" value="${(r.note||'').replace(/"/g,'&quot;')}" placeholder="เช่น จากหน้าร้าน, ลูกค้าประจำ"></label>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('.mks-row').forEach(row=>{
+    const key=row.dataset.brand;
+    row.querySelector('.m-pcreg').addEventListener('input', e=>{ mksWeekState.rows[key].pcReg=e.target.value; });
+    row.querySelector('.m-pcpro').addEventListener('input', e=>{ mksWeekState.rows[key].pcPro=e.target.value; });
+    row.querySelector('.m-target').addEventListener('input', e=>{ mksWeekState.rows[key].target=Number(e.target.value)||0; updateMksWeekPercents(); });
+    row.querySelector('.m-sales').addEventListener('input', e=>{ mksWeekState.rows[key].sales=Number(e.target.value)||0; updateMksWeekPercents(); });
+    row.querySelector('.m-note').addEventListener('input', e=>{ mksWeekState.rows[key].note=e.target.value; });
+  });
+  updateMksWeekPercents();
+}
+function updateMksWeekPercents(){
+  const {totalTarget,totalSales}=computeMksWeekTotals();
+  MKS_BRANDS.forEach(b=>{
+    const sales=Number(mksWeekState.rows[b.key].sales)||0;
+    const pct= totalTarget>0 ? (sales/totalTarget*100) : 0;
+    const el=document.querySelector(`#mksWeekRows [data-pct="${b.key}"]`);
+    if(el) el.textContent = pct.toFixed(1)+'%';
+  });
+  document.getElementById('mksWeekTotalVal').textContent = fmt(totalSales)+' บาท';
+}
+function renderMksWeek(){
+  const fromInput=document.getElementById('mksWeekFrom'), toInput=document.getElementById('mksWeekTo');
+  if(!toInput.value) toInput.value=todayISO();
+  if(!fromInput.value) fromInput.value=weekAgoISO(toInput.value);
+  loadMksWeek(fromInput.value, toInput.value);
+}
+document.getElementById('mksWeekFrom').addEventListener('change', ()=>renderMksWeek());
+document.getElementById('mksWeekTo').addEventListener('change', ()=>renderMksWeek());
+document.getElementById('mksWeekSaveBtn').addEventListener('click', async ()=>{
+  const from=document.getElementById('mksWeekFrom').value, to=document.getElementById('mksWeekTo').value;
+  if(!from||!to){ toast('กรุณาเลือกช่วงวันที่'); return; }
+  mksWeekState.from=from; mksWeekState.to=to;
+  MKS_WEEK_HISTORY[mksWeekKey(from,to)]=JSON.parse(JSON.stringify(mksWeekState));
+  const defaults={};
+  MKS_BRANDS.forEach(b=>{ defaults[b.key]={pcReg:mksWeekState.rows[b.key].pcReg, pcPro:mksWeekState.rows[b.key].pcPro, target:mksWeekState.rows[b.key].target}; });
+  SETTINGS.mksWeekDefaults=defaults;
+  await saveMksWeekHistory(); await saveSettings();
+  await addAudit('บันทึกรายงาน MKS รายสัปดาห์', fmtThaiRange(from,to));
+  toast('บันทึกรายงานแล้ว');
+});
+document.getElementById('mksWeekShareBtn').addEventListener('click', ()=>shareMksImage('week'));
+
+/* ---- report subtab toggle ---- */
+document.querySelectorAll('#view-report .subtab-row .stbtn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#view-report .subtab-row .stbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const isDay=btn.dataset.mks==='day';
+    document.getElementById('mksDayPanel').style.display = isDay?'':'none';
+    document.getElementById('mksWeekPanel').style.display = isDay?'none':'';
+    if(isDay) renderMksDay(); else renderMksWeek();
+  });
+});
+
+/* ---- share as image ---- */
+async function shareMksImage(type){
+  const btn=document.getElementById(type==='day'?'mksDayShareBtn':'mksWeekShareBtn');
+  const originalHTML=btn.innerHTML;
+  btn.disabled=true; btn.style.opacity='0.7'; btn.textContent='กำลังสร้างรูปภาพ...';
+  try{
+    const node=buildMksCaptureNode(type);
+    document.body.appendChild(node);
+    const canvas=await html2canvas(node, {backgroundColor:getComputedStyle(document.documentElement).getPropertyValue('--ink').trim()||'#121310', scale:2});
+    document.body.removeChild(node);
+    const filename = type==='day'
+      ? `MKS-รายวัน-${mksDayState.date}.png`
+      : `MKS-รายสัปดาห์-${mksWeekState.from}_${mksWeekState.to}.png`;
+    canvas.toBlob(async (blob)=>{
+      if(!blob){ toast('สร้างรูปภาพไม่สำเร็จ'); return; }
+      try{
+        const file=new File([blob], filename, {type:'image/png'});
+        if(navigator.canShare && navigator.canShare({files:[file]})){
+          await navigator.share({files:[file], title: filename});
+        }else{
+          const url=URL.createObjectURL(blob);
+          const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+          document.body.removeChild(a); URL.revokeObjectURL(url);
+          toast('บันทึกรูปภาพแล้ว');
+        }
+      }catch(shareErr){
+        if(shareErr && shareErr.name==='AbortError'){ /* user cancelled share sheet */ }
+        else toast('แชร์ไม่สำเร็จ: '+shareErr.message);
+      }
+    }, 'image/png');
+  }catch(err){
+    toast('สร้างรูปภาพไม่สำเร็จ: '+err.message);
+  }finally{
+    btn.disabled=false; btn.style.opacity=''; btn.innerHTML=originalHTML;
+  }
+}
+function buildMksCaptureNode(type){
+  const node=document.createElement('div');
+  node.className='mks-capture';
+  const isDay=type==='day';
+  const title = isDay ? 'รายงานยอดขายรายวัน' : 'รายงานยอดขายรายสัปดาห์';
+  const dateLabel = isDay ? fmtThaiDateLong(mksDayState.date) : fmtThaiRange(mksWeekState.from, mksWeekState.to);
+  const state = isDay ? mksDayState : mksWeekState;
+  const {totalTarget,totalSales} = isDay
+    ? {totalTarget:0, totalSales:computeMksDayTotal()}
+    : computeMksWeekTotals();
+
+  const rowsHtml = MKS_BRANDS.map(b=>{
+    const r=state.rows[b.key];
+    const sales=Number(r.sales)||0;
+    const pct = isDay
+      ? (totalSales>0 ? (sales/totalSales*100) : 0)
+      : (totalTarget>0 ? (sales/totalTarget*100) : 0);
+    const pcMeta = isDay ? `PC ${r.pc}` : `PC ${r.pcReg}${r.pcPro&&r.pcPro!=='-'?' + '+r.pcPro+' โปร':''}`;
+    const noteHtml = r.note ? `<div class="cap-meta">${escapeHtml(r.note)}</div>` : '';
+    return `<div class="cap-row ${b.us?'us':''}">
+      <div class="cap-left">
+        <div class="cap-brand">${b.label}${b.us?'<span class="tag-us">เรา</span>':''}</div>
+        <div class="cap-meta">${pcMeta}</div>
+        ${noteHtml}
+      </div>
+      <div class="cap-right">
+        <div class="cap-sales">${fmt(sales)}฿</div>
+        <div class="cap-mks">MKS ${pct.toFixed(1)}%</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  node.innerHTML = `
+    <div class="cap-hdr">
+      <div class="cap-mark">NS</div>
+      <div>
+        <div class="cap-name">NIPPON SALE</div>
+        <div class="cap-sub">Nippon Paint · Global House เลย</div>
+      </div>
+    </div>
+    <div class="cap-title">${title}</div>
+    <div class="cap-date">${dateLabel}</div>
+    ${rowsHtml}
+    <div class="cap-total">
+      <span>ยอดรวมทั้งแผนก</span>
+      <span class="v">${fmt(totalSales)}฿</span>
+    </div>
+    <div class="cap-foot">สร้างจากแอป NIPPON SALE · ${new Date().toLocaleString('th-TH')}</div>
+  `;
+  return node;
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 /* ================= init ================= */
 (async function init(){
