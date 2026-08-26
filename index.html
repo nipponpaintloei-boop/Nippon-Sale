@@ -2532,8 +2532,8 @@ function buildPcSelectMenu(){
     opt.addEventListener('click', ()=>{
       const v = Number(opt.dataset.val);
       syncPcSelectDisplay(v);
-      closePcSelectMenu();
       document.getElementById('commHeadcount').dispatchEvent(new Event('input', {bubbles:true}));
+      setTimeout(closePcSelectMenu, 150);
     });
   });
 }
