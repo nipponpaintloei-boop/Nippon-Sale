@@ -16,20 +16,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#121310;
-    --surface:#1a1c17;
-    --surface2:#212319;
-    --line: rgba(237,234,226,0.07);
-    --line-soft: rgba(237,234,226,0.045);
-    --paper:#eeebe3;
-    --paper-dim: rgba(238,235,227,0.52);
-    --paper-faint: rgba(238,235,227,0.30);
-    --ochre:#c7995a;
+    --ink:#1a1d17;
+    --surface:#242720;
+    --surface2:#2d3127;
+    --line: rgba(237,234,226,0.11);
+    --line-soft: rgba(237,234,226,0.07);
+    --paper:#f5f2e9;
+    --paper-dim: rgba(245,242,233,0.60);
+    --paper-faint: rgba(245,242,233,0.36);
+    --ochre:#d7a868;
     --ochre-soft:#8a6a3a;
     --ochre-ink:#241a09;
-    --teal:#6b9c93;
-    --clay:#b5654e;
-    --moss:#84a069;
+    --teal:#7bafa5;
+    --clay:#c97a61;
+    --moss:#95b57a;
     --radius: 14px;
     --radius-lg: 20px;
     --disp: 'Kanit', sans-serif;
@@ -41,7 +41,7 @@
   body{
     min-height:100vh;
     padding-bottom:92px;
-    background-image: radial-gradient(ellipse 700px 360px at 50% -10%, rgba(199,153,90,0.06), transparent);
+    background-image: radial-gradient(ellipse 700px 360px at 50% -10%, rgba(215,168,104,0.10), transparent);
   }
   ::selection{background:var(--ochre); color:var(--ochre-ink);}
   button, input, select{font-family:inherit;}
@@ -532,10 +532,28 @@
 
   /* ================= EXTRA: today target chip ================= */
   .today-target-chip{
-    margin-top:7px; text-align:center; font-family:var(--mono); font-size:9.5px; color:var(--paper-faint);
-    background:var(--surface2); border:1px solid var(--line); border-radius:20px; padding:3px 7px; white-space:nowrap;
+    margin-top:7px; text-align:center; font-family:var(--mono); font-weight:600; font-size:9.5px; color:var(--ochre);
+    background:rgba(215,168,104,0.14); border:1px solid rgba(215,168,104,0.32); border-radius:20px; padding:3px 8px; white-space:nowrap;
   }
-  .today-target-chip.hit{color:var(--moss); border-color:rgba(132,160,105,0.4);}
+  .today-target-chip.hit{color:var(--moss); background:rgba(149,181,122,0.16); border-color:rgba(149,181,122,0.4);}
+
+  /* ================= EXTRA: gap-to-target & daily-pace highlights ================= */
+  .gap-highlight{
+    margin-top:12px; display:flex; align-items:center; gap:7px;
+    font-family:var(--disp); font-weight:600; font-size:13.5px;
+    padding:9px 13px; border-radius:11px;
+    background:rgba(215,168,104,0.16); color:var(--ochre); border:1px solid rgba(215,168,104,0.3);
+  }
+  .gap-highlight b{font-family:var(--mono); font-weight:700; font-size:14px;}
+  .gap-highlight.done{background:rgba(149,181,122,0.18); color:var(--moss); border-color:rgba(149,181,122,0.38);}
+  .pace-highlight{
+    margin-top:8px; display:flex; align-items:center; justify-content:space-between; gap:8px;
+    font-size:11.5px; color:var(--paper-dim); font-family:var(--mono);
+    background:var(--surface2); border:1px solid var(--line); border-radius:11px; padding:9px 13px;
+  }
+  .pace-highlight b{color:var(--paper); font-weight:700; font-size:13px;}
+  .pace-highlight.urgent{background:rgba(201,122,97,0.14); border-color:rgba(201,122,97,0.34);}
+  .pace-highlight.urgent b{color:var(--clay);}
 
   /* ================= EXTRA: MKS mini card ================= */
   .mks-mini-card{display:flex; align-items:center;}
@@ -761,6 +779,8 @@
           <span>เป้า <span id="targetVal">0</span> บาท</span>
           <button id="editTargetBtn">แก้ไขเป้า</button>
         </div>
+        <div class="gap-highlight" id="monthGapLine">ขาดอีก <b id="monthGapVal">0</b> บาท ถึงเป้า</div>
+        <div class="pace-highlight" id="paceLine">ต้องทำเฉลี่ย <b id="paceVal">0</b> บาท/วัน (เหลือ <span id="daysLeftVal">0</span> วัน)</div>
       </div>
     </div>
 
@@ -1298,12 +1318,27 @@ async function saveSalesIncremental({added=[], updated=[], deletedIds=[]}={}){
 }
 /* Used only by explicit, rare, PIN-gated bulk operations (import backup / factory reset) where
  * replacing the whole sales history really is the intent, so a full table resync is correct there. */
+async function fetchAllSalesIds(){
+  const client = supaClient();
+  if(!client) return [];
+  const PAGE_SIZE = 1000;
+  let all = [], from = 0;
+  while(true){
+    const to = from + PAGE_SIZE - 1;
+    const {data,error} = await client.from('sales_entries').select('id').range(from,to);
+    if(error){ console.warn('fetchAllSalesIds failed:', error.message); return all; }
+    if(!data || !data.length) break;
+    all = all.concat(data);
+    if(data.length < PAGE_SIZE) break;
+    from += PAGE_SIZE;
+  }
+  return all;
+}
 async function resyncSalesTableFull(){
   const client = supaClient();
   if(!client) return false;
   try{
-    const {data,error} = await client.from('sales_entries').select('id');
-    if(error){ console.warn('resyncSalesTableFull read failed:', error.message); return false; }
+    const data = await fetchAllSalesIds();
     const currentIds = new Set(SALES.map(s=>String(s.id)));
     const toDelete = (data||[]).map(r=>r.id).filter(id=>!currentIds.has(id));
     if(toDelete.length){
@@ -1930,11 +1965,38 @@ function renderGauge(){
   const waveWrap = document.getElementById('canWaveWrap');
   if(waveWrap) waveWrap.style.transform = `translateY(${-h}px)`;
 
-  // today's target chip
+  // days context
   const now = new Date();
   const dim = daysInMonth(now.getFullYear(), now.getMonth()+1);
   const dailyTarget = target>0 ? target/dim : 0;
   const todayTotal = SALES.filter(s=>s.date===today).reduce((a,s)=>a+s.total,0);
+  const reached = target>0 && monthTotal>=target;
+  const gap = Math.max(0, target - monthTotal);
+  const daysLeft = Math.max(1, dim - now.getDate() + 1); // includes today
+  const pace = gap>0 ? gap/daysLeft : 0;
+
+  // highlighted: ยอดที่ขาดอีกกว่าจะถึงเป้าเดือนนี้
+  const gapEl = document.getElementById('monthGapLine');
+  const gapValEl = document.getElementById('monthGapVal');
+  if(gapEl){
+    gapEl.classList.toggle('done', reached);
+    if(reached){ gapEl.innerHTML = '🎉 ถึงเป้าหมายเดือนนี้แล้ว!'; }
+    else { gapEl.innerHTML = `ขาดอีก <b>${fmt(gap)}</b> บาท ถึงเป้า`; }
+  }
+
+  // highlighted: ยอดที่ต้องทำเฉลี่ยต่อวัน (จากวันที่เหลือในเดือน) เพื่อให้ถึงเป้า
+  const paceEl = document.getElementById('paceLine');
+  if(paceEl){
+    if(reached){
+      paceEl.style.display = 'none';
+    } else {
+      paceEl.style.display = '';
+      paceEl.innerHTML = `ต้องทำเฉลี่ย <b>${fmt(Math.round(pace))}</b> บาท/วัน (เหลือ ${daysLeft} วัน)`;
+      paceEl.classList.toggle('urgent', dailyTarget>0 && pace > dailyTarget*1.25);
+    }
+  }
+
+  // today's target chip
   const chip = document.getElementById('todayTargetChip');
   if(chip){
     chip.textContent = `เป้าวันนี้ ${fmt(todayTotal)}/${fmt(dailyTarget)}`;
@@ -2064,7 +2126,10 @@ function renderDashboard(){
   document.getElementById('dashTodayQty').textContent = fmt(todaySales.reduce((a,s)=>a+s.qty,0));
   document.getElementById('dashMonth').textContent = fmt(monthTotal);
   const pct = target>0 ? (monthTotal/target*100) : 0;
-  document.getElementById('dashPct').textContent = pct.toFixed(1)+'%';
+  const dashPctEl = document.getElementById('dashPct');
+  dashPctEl.textContent = pct.toFixed(1)+'%';
+  dashPctEl.classList.toggle('good', pct>=100);
+  dashPctEl.classList.toggle('warn', pct<100 && pct<80);
   document.getElementById('dashMonthLbl').textContent = formatMonthTH(mKey);
 
   // MKS mini card (today's market share)
