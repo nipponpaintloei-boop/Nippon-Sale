@@ -83,7 +83,9 @@
     display:flex; align-items:center; gap:18px;
     margin-bottom:20px;
   }
-  .can-wrap{flex-shrink:0; width:70px;}
+  .can-wrap{flex-shrink:0; width:84px;}
+  @keyframes waveMove{from{transform:translateX(0);} to{transform:translateX(28px);}}
+  .can-wave{animation:waveMove 2.2s linear infinite;}
   .can-label{
     text-align:center; font-family:var(--disp); font-weight:600; font-size:12px;
     margin-top:6px; color:var(--paper-dim);
@@ -290,6 +292,52 @@
   nav.tabs button.active{color:var(--paper);}
   nav.tabs button.active .ic svg{stroke:var(--ochre);}
 
+  /* elevated center FAB (บันทึกขาย) */
+  nav.tabs button.fab-btn{color:var(--paper-dim); gap:6px;}
+  nav.tabs button.fab-btn .ic{
+    width:48px; height:48px; border-radius:50%; margin-top:-26px;
+    background:linear-gradient(160deg,#e9be6c,#c7995a);
+    box-shadow:0 10px 22px rgba(199,153,90,0.4), 0 3px 10px rgba(0,0,0,0.35);
+    border:3px solid var(--ink);
+  }
+  nav.tabs button.fab-btn .ic svg{width:21px; height:21px; stroke:var(--ochre-ink); stroke-width:2.1;}
+  nav.tabs button.fab-btn .fab-txt{font-weight:600;}
+  nav.tabs button.fab-btn.active{color:var(--paper);}
+  nav.tabs button.fab-btn:active .ic{transform:scale(0.94);}
+
+  /* ================= SIDE MENU DRAWER ================= */
+  .drawer-bg{
+    position:fixed; inset:0; z-index:70; background:rgba(8,9,7,0.6);
+    opacity:0; visibility:hidden; transition:opacity .2s ease;
+  }
+  .drawer-bg.show{opacity:1; visibility:visible;}
+  .drawer{
+    position:fixed; top:0; right:0; bottom:0; width:min(300px,82vw);
+    background:var(--surface); border-left:1px solid var(--line);
+    padding:20px 16px calc(20px + env(safe-area-inset-bottom));
+    transform:translateX(100%); transition:transform .25s ease;
+    display:flex; flex-direction:column; gap:8px;
+    box-shadow:-16px 0 40px rgba(0,0,0,0.4);
+  }
+  .drawer-bg.show .drawer{transform:translateX(0);}
+  .drawer-hdr{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid var(--line-soft);
+  }
+  .drawer-item{
+    display:flex; align-items:center; gap:12px; width:100%; text-align:left;
+    background:none; border:1px solid var(--line); border-radius:12px; padding:13px 14px; cursor:pointer;
+  }
+  .drawer-item:active{background:var(--surface2);}
+  .drawer-item .di-ic{
+    width:34px; height:34px; flex-shrink:0; border-radius:9px; background:var(--surface2);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .drawer-item .di-ic svg{width:16px; height:16px;}
+  .drawer-item .di-txt{display:flex; flex-direction:column; gap:2px; min-width:0;}
+  .drawer-item .di-title{font-family:var(--disp); font-weight:600; font-size:13.5px; color:var(--paper);}
+  .drawer-item .di-sub{font-size:10.5px; color:var(--paper-faint);}
+
   .toast{
     position:fixed; left:50%; bottom:96px; transform:translateX(-50%) translateY(20px);
     background:var(--paper); color:var(--ink); padding:11px 20px; border-radius:11px;
@@ -449,7 +497,13 @@
     nav.tabs button.active{background:var(--surface2);}
     nav.tabs button .ic{width:18px; height:18px;}
     nav.tabs button .ic svg{width:18px; height:18px;}
+    nav.tabs button.fab-btn{flex-direction:row;}
+    nav.tabs button.fab-btn .ic{width:18px; height:18px; margin-top:0; border-radius:9px; border:none; box-shadow:none; background:var(--surface2);}
+    nav.tabs button.fab-btn .ic svg{width:18px; height:18px; stroke:var(--ochre);}
+    nav.tabs button.fab-btn.active .ic{background:var(--ochre); }
+    nav.tabs button.fab-btn.active .ic svg{stroke:var(--ochre-ink);}
     .toast{bottom:32px;}
+    .drawer{width:320px;}
     .modal-bg{align-items:center;}
     .modal{border-radius:18px; max-width:460px; border:1px solid var(--line); max-height:80vh;}
     .stat-grid{grid-template-columns:repeat(auto-fit, minmax(170px,1fr));}
@@ -492,42 +546,44 @@
   <div class="auth-user"><span id="authUserBadge">ผู้ใช้</span></div>
   <div class="hdr-actions">
     <button class="icon-btn" id="shareBtn" title="คัดลอกสรุปยอดขายวันนี้"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg></button>
-    <button class="icon-btn" id="resetBtn" title="ตั้งค่า / ล้างข้อมูล"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
+    <button class="icon-btn" id="menuBtn" title="เมนู"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
   </div>
 </header>
+
+<!-- ============ SIDE MENU DRAWER ============ -->
+<div class="drawer-bg" id="menuDrawerBg">
+  <div class="drawer">
+    <div class="drawer-hdr">
+      <div class="brand">
+        <div class="brand-mark">NS</div>
+        <div class="brand-text">
+          <div class="name">NIPPON SALE</div>
+          <div class="sub">เมนู</div>
+        </div>
+      </div>
+      <button class="icon-btn" id="closeMenuBtn" title="ปิด"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>
+    </div>
+    <button class="drawer-item" id="menuReportBtn">
+      <span class="di-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="12" r="6.5"/><circle cx="15" cy="12" r="6.5"/></svg></span>
+      <span class="di-txt">
+        <span class="di-title">รายงาน MKS</span>
+        <span class="di-sub">สรุปยอดขายเทียบคู่แข่งรายวัน/สัปดาห์</span>
+      </span>
+    </button>
+    <button class="drawer-item" id="menuSettingsBtn">
+      <span class="di-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
+      <span class="di-txt">
+        <span class="di-title">ตั้งค่า</span>
+        <span class="di-sub">Export/Import, PIN, รีเซ็ตข้อมูล</span>
+      </span>
+    </button>
+  </div>
+</div>
 
 <main>
 
   <!-- ============ VIEW: ENTRY ============ -->
-  <section class="view active" id="view-entry">
-    <div class="gauge-card">
-      <div class="can-wrap">
-        <svg viewBox="0 0 74 92" width="74" height="92">
-          <defs>
-            <clipPath id="canClip"><rect x="10" y="18" width="54" height="68" rx="6"/></clipPath>
-            <linearGradient id="fillGrad" x1="0" y1="1" x2="0" y2="0">
-              <stop offset="0%" stop-color="#b5822c"/>
-              <stop offset="100%" stop-color="#e9be6c"/>
-            </linearGradient>
-          </defs>
-          <rect x="10" y="18" width="54" height="68" rx="6" fill="none" stroke="rgba(237,234,226,0.28)" stroke-width="2"/>
-          <g clip-path="url(#canClip)">
-            <rect id="canFill" x="10" y="86" width="54" height="0" fill="url(#fillGrad)"/>
-          </g>
-          <rect x="24" y="10" width="26" height="10" rx="2" fill="rgba(237,234,226,0.28)"/>
-        </svg>
-        <div class="can-label" id="canPct">0%</div>
-      </div>
-      <div class="gauge-info">
-        <div class="eyebrow">ยอดขายเดือนนี้</div>
-        <div class="big"><span id="monthTotal">0</span><span class="unit">บาท</span></div>
-        <div class="target-row">
-          <span>เป้า <span id="targetVal">0</span> บาท</span>
-          <button id="editTargetBtn">แก้ไขเป้า</button>
-        </div>
-      </div>
-    </div>
-
+  <section class="view" id="view-entry">
     <div class="sec-title"><span class="t">บันทึกยอดขาย</span></div>
     <div class="card">
       <label class="field">
@@ -626,7 +682,39 @@
   </section>
 
   <!-- ============ VIEW: DASHBOARD ============ -->
-  <section class="view" id="view-dash">
+  <section class="view active" id="view-dash">
+    <div class="gauge-card">
+      <div class="can-wrap">
+        <svg viewBox="0 0 84 100" width="84" height="100">
+          <defs>
+            <clipPath id="bucketClip"><path d="M17 34 L67 34 L59 90 Q42 96 25 90 Z"/></clipPath>
+            <linearGradient id="fillGrad" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0%" stop-color="#8a6a3a"/>
+              <stop offset="100%" stop-color="#e9be6c"/>
+            </linearGradient>
+          </defs>
+          <path d="M27 34 Q42 6 57 34" fill="none" stroke="rgba(237,234,226,0.28)" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M17 34 L67 34 L59 90 Q42 96 25 90 Z" fill="none" stroke="rgba(237,234,226,0.28)" stroke-width="2"/>
+          <g clip-path="url(#bucketClip)">
+            <rect id="canFill" x="14" y="90" width="56" height="0" fill="url(#fillGrad)"/>
+            <g id="canWaveWrap">
+              <path class="can-wave" d="M-28 90 q14 -6 28 0 t28 0 t28 0 t28 0" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="2"/>
+            </g>
+          </g>
+          <rect x="14" y="30" width="56" height="7" rx="3" fill="rgba(237,234,226,0.28)"/>
+        </svg>
+        <div class="can-label" id="canPct">0%</div>
+      </div>
+      <div class="gauge-info">
+        <div class="eyebrow">ยอดขายเดือนนี้</div>
+        <div class="big"><span id="monthTotal">0</span><span class="unit">บาท</span></div>
+        <div class="target-row">
+          <span>เป้า <span id="targetVal">0</span> บาท</span>
+          <button id="editTargetBtn">แก้ไขเป้า</button>
+        </div>
+      </div>
+    </div>
+
     <div class="stat-grid">
       <div class="stat-card">
         <div class="lbl">ยอดขายวันนี้</div>
@@ -772,12 +860,11 @@
 </main>
 
 <nav class="tabs">
-  <button class="active" data-view="entry"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>บันทึกขาย</button>
+  <button class="active" data-view="dash"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 20V10M12 20V4M20 20v-7"/></svg></span>แดชบอร์ด</button>
   <button data-view="history"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/><path d="M3.5 9.5h17M8 3v3M16 3v3"/></svg></span>ประวัติ</button>
-  <button data-view="dash"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 20V10M12 20V4M20 20v-7"/></svg></span>แดชบอร์ด</button>
+  <button class="fab-btn" data-view="entry"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span class="fab-txt">บันทึกขาย</span></button>
   <button data-view="stock"><span class="ic"><svg viewBox="0 0 24 24"><path d="M3.5 7.5l8.5-4 8.5 4-8.5 4-8.5-4z"/><path d="M3.5 7.5V16l8.5 4 8.5-4V7.5M12 11.5V20"/></svg></span>สต็อก/สินค้า</button>
   <button data-view="yearly"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 15l5-5 4 4 7-8"/><path d="M15 6h5v5"/></svg></span>ทั้งปี</button>
-  <button data-view="report"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="12" r="6.5"/><circle cx="15" cy="12" r="6.5"/></svg></span>รายงาน</button>
 </nav>
 
 <div class="toast" id="toast"></div>
@@ -1299,25 +1386,46 @@ function findProductRow(sku, name, size, base){
 }
 
 /* ================= tabs ================= */
+function switchToView(viewName){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+  const navBtn = document.querySelector(`nav.tabs button[data-view="${viewName}"]`);
+  if(navBtn) navBtn.classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+viewName).classList.add('active');
+  if(viewName === 'entry'){
+    if(!currentProduct) document.getElementById('saleDate').value = todayISO();
+    renderRecent(); renderGauge();
+  }
+  if(viewName === 'dash'){ renderDashboard(); renderGauge(); }
+  if(viewName === 'stock'){ renderStock(); renderProductsList(); }
+  if(viewName === 'history'){ renderHistDay(); renderHistMonthOptions(); renderHistMonth(); }
+  if(viewName === 'yearly') renderYearly();
+  if(viewName === 'report'){
+    const activeSub=document.querySelector('#view-report .subtab-row .stbtn.active');
+    if(!activeSub || activeSub.dataset.mks==='day') renderMksDay(); else renderMksWeek();
+  }
+}
 document.querySelectorAll('nav.tabs button').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-    document.getElementById('view-'+btn.dataset.view).classList.add('active');
-    if(btn.dataset.view === 'entry'){
-      if(!currentProduct) document.getElementById('saleDate').value = todayISO();
-      renderRecent(); renderGauge();
-    }
-    if(btn.dataset.view === 'dash') renderDashboard();
-    if(btn.dataset.view === 'stock'){ renderStock(); renderProductsList(); }
-    if(btn.dataset.view === 'history'){ renderHistDay(); renderHistMonthOptions(); renderHistMonth(); }
-    if(btn.dataset.view === 'yearly') renderYearly();
-    if(btn.dataset.view === 'report'){
-      const activeSub=document.querySelector('#view-report .subtab-row .stbtn.active');
-      if(!activeSub || activeSub.dataset.mks==='day') renderMksDay(); else renderMksWeek();
-    }
-  });
+  btn.addEventListener('click', ()=> switchToView(btn.dataset.view));
+});
+
+/* ================= side menu drawer ================= */
+document.getElementById('menuBtn').addEventListener('click', ()=>{
+  document.getElementById('menuDrawerBg').classList.add('show');
+});
+document.getElementById('closeMenuBtn').addEventListener('click', ()=>{
+  document.getElementById('menuDrawerBg').classList.remove('show');
+});
+document.getElementById('menuDrawerBg').addEventListener('click', (e)=>{
+  if(e.target.id==='menuDrawerBg') e.currentTarget.classList.remove('show');
+});
+document.getElementById('menuReportBtn').addEventListener('click', ()=>{
+  document.getElementById('menuDrawerBg').classList.remove('show');
+  switchToView('report');
+});
+document.getElementById('menuSettingsBtn').addEventListener('click', ()=>{
+  document.getElementById('menuDrawerBg').classList.remove('show');
+  document.getElementById('resetModalBg').classList.add('show');
 });
 
 /* ================= entry form logic ================= */
@@ -1491,11 +1599,13 @@ function renderGauge(){
   document.getElementById('monthTotal').textContent = fmt(monthTotal);
   document.getElementById('targetVal').textContent = fmt(target);
   document.getElementById('canPct').textContent = Math.round(pct*100)+'%';
-  const maxH = 68;
+  const maxH = 56;
   const h = maxH*pct;
   const fillEl = document.getElementById('canFill');
   fillEl.setAttribute('height', h);
-  fillEl.setAttribute('y', 86-h);
+  fillEl.setAttribute('y', 90-h);
+  const waveWrap = document.getElementById('canWaveWrap');
+  if(waveWrap) waveWrap.style.transform = `translateY(${-h}px)`;
 }
 
 document.getElementById('editTargetBtn').addEventListener('click', openTargetModal);
@@ -2069,9 +2179,6 @@ document.getElementById('clearCacheBtn').addEventListener('click', async ()=>{
     btn.disabled=false; btn.style.opacity=''; btn.innerHTML=originalHTML;
     toast('ล้างแคชไม่สำเร็จ: '+err.message);
   }
-});
-document.getElementById('resetBtn').addEventListener('click', ()=>{
-  document.getElementById('resetModalBg').classList.add('show');
 });
 document.getElementById('closeSettingsBtn').addEventListener('click', ()=>{
   document.getElementById('resetModalBg').classList.remove('show');
