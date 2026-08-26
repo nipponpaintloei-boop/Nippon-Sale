@@ -977,6 +977,10 @@
           <input type="number" inputmode="decimal" id="commManualSales" placeholder="0">
         </label>
       </div>
+      <label class="field" style="margin-bottom:0;">
+        <span class="lbl">จำนวนพนักงาน (PC) ที่ร่วมทำยอดเดือนนี้</span>
+        <input type="number" inputmode="numeric" min="1" step="1" id="commHeadcount" placeholder="2">
+      </label>
     </div>
 
     <div class="stat-grid">
@@ -1008,7 +1012,7 @@
       </div>
     </div>
 
-    <div class="pass-note">* ค่าคอมหลักจ่ายเมื่อทำยอดถึง 80% ของเป้า (เป้า 200,000–600,000 บาท/เดือน ใช้ตารางเดียวกัน) · ค่าคอมพิเศษใช้เฉพาะเป้า 200,000–400,000 บาท · ค่าคอมต่อคนคิดจากยอดขายรวมของร้านทั้งเดือน (ไม่แยกพนักงาน) · ทุกรายการที่เข้าเงื่อนไขจะบวกรวมกันเป็นยอดคอมทั้งหมด</div>
+    <div class="pass-note">* ค่าคอมหลักจ่ายเมื่อทำยอดถึง 80% ของเป้า (เป้า 200,000–600,000 บาท/เดือน ใช้ตารางเดียวกัน) · ค่าคอมพิเศษใช้เฉพาะเป้า 200,000–400,000 บาท · ค่าคอมต่อคนคิดจากยอดขายรวมของร้าน ÷ จำนวนพนักงาน แล้วจ่ายเป็นค่าคอม "ต่อคน" (แสดงยอดเดียว ไม่คูณจำนวนคน) · ทุกรายการที่เข้าเงื่อนไขจะบวกรวมกันเป็นยอดคอมทั้งหมด</div>
   </section>
 
 </main>
@@ -1255,16 +1259,20 @@ function calcSpecialCommission(pct, target){
   if(!commissionInSpecialBand(target)) return 0;
   return pct >= 80 ? lookupTiered(COMMISSION_SPECIAL_TABLE, pct) : 0;
 }
-function calcPerHeadCommission(sales){
-  for(const t of COMMISSION_PERHEAD_TABLE){ if(sales >= t.min) return t.amt; }
+function calcPerHeadCommission(sales, headcount){
+  const hc = headcount>0 ? headcount : 1;
+  const perPerson = sales / hc;
+  for(const t of COMMISSION_PERHEAD_TABLE){ if(perPerson >= t.min) return t.amt; }
   return 0;
 }
-function calcCommissionBreakdown(target, sales){
+function calcCommissionBreakdown(target, sales, headcount){
   const pct = target > 0 ? (sales/target*100) : 0;
   const main = calcMainCommission(pct);
   const special = calcSpecialCommission(pct, target);
-  const perHead = calcPerHeadCommission(sales);
-  return { pct, main, special, perHead, total: main+special+perHead, inSpecialBand: commissionInSpecialBand(target) };
+  const hc = headcount>0 ? headcount : 1;
+  const perPersonSales = sales / hc;
+  const perHead = calcPerHeadCommission(sales, hc);
+  return { pct, main, special, perHead, perPersonSales, headcount: hc, total: main+special+perHead, inSpecialBand: commissionInSpecialBand(target) };
 }
 const THAI_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 
@@ -1587,6 +1595,7 @@ async function loadAll(){
   SETTINGS.notifiedMonth = SETTINGS.notifiedMonth || '';
   SETTINGS.mksDayDefaults = SETTINGS.mksDayDefaults || {};
   SETTINGS.mksWeekDefaults = SETTINGS.mksWeekDefaults || {};
+  SETTINGS.commHeadcount = SETTINGS.commHeadcount || (MKS_BRANDS.find(b=>b.key==='NIPPON')||{}).pc || 2;
 
   try{
     const s = await storageGet(STORE_KEYS.mksDay);
@@ -2364,8 +2373,11 @@ function renderCommission(){
     target = getMonthTarget(mKey);
     sales = SALES.filter(s=>monthKey(s.date)===mKey).reduce((a,s)=>a+s.total,0);
   }
+  const headcountInput = document.getElementById('commHeadcount');
+  if(!headcountInput.value) headcountInput.value = SETTINGS.commHeadcount || 2;
+  const headcount = Number(headcountInput.value)||1;
 
-  const r = calcCommissionBreakdown(target, sales);
+  const r = calcCommissionBreakdown(target, sales, headcount);
 
   document.getElementById('commTargetVal').textContent = fmt(target);
   document.getElementById('commSalesVal').textContent = fmt(sales);
@@ -2388,7 +2400,7 @@ function renderCommission(){
     },
     {
       label: 'ค่าคอมเพิ่ม sale ต่อคน',
-      note: `ยอดขายรวมร้าน ${fmt(sales)} บาท`,
+      note: `ยอดขายรวมร้าน ${fmt(sales)} ÷ ${r.headcount} คน = ${fmt(r.perPersonSales)} บาท/คน (จ่ายต่อคน)`,
       amt: r.perHead, reached: r.perHead>0
     }
   ];
@@ -2408,6 +2420,12 @@ document.getElementById('commMonthSelect').addEventListener('change', renderComm
 document.getElementById('commModeSelect').addEventListener('change', renderCommission);
 document.getElementById('commManualTarget').addEventListener('input', renderCommission);
 document.getElementById('commManualSales').addEventListener('input', renderCommission);
+document.getElementById('commHeadcount').addEventListener('input', ()=>{
+  const v = Number(document.getElementById('commHeadcount').value)||1;
+  SETTINGS.commHeadcount = v;
+  saveSettings();
+  renderCommission();
+});
 document.getElementById('menuCommissionBtn').addEventListener('click', ()=>{
   document.getElementById('menuDrawerBg').classList.remove('show');
   switchToView('commission');
