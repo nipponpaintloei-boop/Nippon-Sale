@@ -533,27 +533,31 @@
   /* ================= EXTRA: today target chip ================= */
   .today-target-chip{
     margin-top:7px; text-align:center; font-family:var(--mono); font-weight:600; font-size:9.5px; color:var(--ochre);
-    background:rgba(215,168,104,0.14); border:1px solid rgba(215,168,104,0.32); border-radius:20px; padding:3px 8px; white-space:nowrap;
+    background:rgba(215,168,104,0.14); border:1px solid rgba(215,168,104,0.32); border-radius:12px; padding:4px 6px;
+    line-height:1.4; white-space:normal;
   }
   .today-target-chip.hit{color:var(--moss); background:rgba(149,181,122,0.16); border-color:rgba(149,181,122,0.4);}
 
   /* ================= EXTRA: gap-to-target & daily-pace highlights ================= */
   .gap-highlight{
-    margin-top:12px; display:flex; align-items:center; gap:7px;
-    font-family:var(--disp); font-weight:600; font-size:13.5px;
-    padding:9px 13px; border-radius:11px;
+    margin-top:12px;
+    font-family:var(--disp); font-weight:600; font-size:13px; line-height:1.55;
+    padding:10px 14px; border-radius:11px;
     background:rgba(215,168,104,0.16); color:var(--ochre); border:1px solid rgba(215,168,104,0.3);
   }
-  .gap-highlight b{font-family:var(--mono); font-weight:700; font-size:14px;}
+  .gap-highlight b{font-family:var(--mono); font-weight:700; font-size:14.5px; white-space:nowrap;}
   .gap-highlight.done{background:rgba(149,181,122,0.18); color:var(--moss); border-color:rgba(149,181,122,0.38);}
   .pace-highlight{
-    margin-top:8px; display:flex; align-items:center; justify-content:space-between; gap:8px;
-    font-size:11.5px; color:var(--paper-dim); font-family:var(--mono);
-    background:var(--surface2); border:1px solid var(--line); border-radius:11px; padding:9px 13px;
+    margin-top:8px;
+    font-size:11px; line-height:1.5; color:var(--paper-dim); font-family:var(--body);
+    background:var(--surface2); border:1px solid var(--line); border-radius:11px; padding:10px 14px;
   }
-  .pace-highlight b{color:var(--paper); font-weight:700; font-size:13px;}
+  .pace-highlight .p-lbl{display:block; color:var(--paper-faint); font-size:11px; margin-bottom:4px;}
+  .pace-highlight .p-val{font-family:var(--mono); font-weight:700; font-size:17px; color:var(--paper);}
+  .pace-highlight .p-unit{font-family:var(--mono); font-size:11px; color:var(--paper-dim); margin-left:5px;}
+  .pace-highlight .p-days{display:block; margin-top:3px; font-size:10.5px; color:var(--paper-faint);}
   .pace-highlight.urgent{background:rgba(201,122,97,0.14); border-color:rgba(201,122,97,0.34);}
-  .pace-highlight.urgent b{color:var(--clay);}
+  .pace-highlight.urgent .p-val{color:var(--clay);}
 
   /* ================= EXTRA: MKS mini card ================= */
   .mks-mini-card{display:flex; align-items:center;}
@@ -780,7 +784,7 @@
           <button id="editTargetBtn">แก้ไขเป้า</button>
         </div>
         <div class="gap-highlight" id="monthGapLine">ขาดอีก <b id="monthGapVal">0</b> บาท ถึงเป้า</div>
-        <div class="pace-highlight" id="paceLine">ต้องทำเฉลี่ย <b id="paceVal">0</b> บาท/วัน (เหลือ <span id="daysLeftVal">0</span> วัน)</div>
+        <div class="pace-highlight" id="paceLine"><span class="p-lbl">ต้องทำเฉลี่ยต่อวัน เพื่อให้ถึงเป้า</span><span class="p-val">0</span><span class="p-unit">บาท/วัน</span></div>
       </div>
     </div>
 
@@ -1991,7 +1995,7 @@ function renderGauge(){
       paceEl.style.display = 'none';
     } else {
       paceEl.style.display = '';
-      paceEl.innerHTML = `ต้องทำเฉลี่ย <b>${fmt(Math.round(pace))}</b> บาท/วัน (เหลือ ${daysLeft} วัน)`;
+      paceEl.innerHTML = `<span class="p-lbl">ต้องทำเฉลี่ยต่อวัน เพื่อให้ถึงเป้า</span><span class="p-val">${fmt(Math.round(pace))}</span><span class="p-unit">บาท/วัน</span><span class="p-days">เหลืออีก ${daysLeft} วัน</span>`;
       paceEl.classList.toggle('urgent', dailyTarget>0 && pace > dailyTarget*1.25);
     }
   }
