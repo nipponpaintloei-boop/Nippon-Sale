@@ -245,6 +245,13 @@
   .tier-badge.done{background:rgba(132,160,105,0.16); color:var(--moss);}
   .tier-badge.pend{background:var(--surface2); color:var(--paper-faint);}
   .pass-note{font-size:11px; color:var(--paper-faint); text-align:center; padding:8px 4px 2px;}
+  .pass-note.warn-note{color:var(--clay);}
+
+  /* ================= EXTRA: gallon incentive (per-month product rules) ================= */
+  .tier-row .gdel{background:none; border:none; color:var(--clay); font-size:18px; cursor:pointer; padding:2px 6px; flex-shrink:0; line-height:1;}
+  .mode-toggle{display:flex; gap:8px; margin-bottom:14px;}
+  .mode-toggle button{flex:1; padding:11px; border-radius:10px; border:1px solid var(--line); background:var(--surface2); color:var(--paper-dim); font-family:var(--body); font-size:13px; cursor:pointer;}
+  .mode-toggle button.active{border-color:var(--ochre); color:var(--ochre); background:rgba(215,168,104,0.10); font-weight:600;}
 
   /* history */
   .day-group{margin-bottom:18px;}
@@ -1128,7 +1135,102 @@
     </div>
 
     <div class="pass-note">* ทุกส่วน (หลัก / พิเศษ / ต่อคน) จ่ายก็ต่อเมื่อยอดขายรวมของร้านถึง 80% ของเป้าเดือนนั้นก่อนเท่านั้น — ถ้าไม่ถึง 80% จะไม่ได้รับค่าคอมเลย · ค่าคอมหลักใช้ตารางเดียวกันทั้งเป้า 200,000–600,000 บาท/เดือน · ค่าคอมพิเศษใช้เฉพาะเป้า 200,000–400,000 บาท · ค่าคอมต่อคนคิดจากยอดขายรวมร้าน ÷ จำนวนพนักงาน ต้องได้อย่างน้อย 200,000 บาท/คน จึงจะจ่าย แล้วจ่ายเป็นค่าคอม "ต่อคน" (แสดงยอดเดียว ไม่คูณจำนวนคน) · ทุกรายการที่เข้าเงื่อนไขจะบวกรวมกันเป็นยอดคอมทั้งหมด</div>
+
+    <div id="gallonIncentiveSection">
+      <div class="sec-title">
+        <span class="t">อินเซนทีฟรายแกลลอน</span>
+        <button type="button" class="link-btn" id="addGallonRuleBtn">+ เพิ่มรายการ</button>
+      </div>
+      <div class="tier-table" id="gallonRuleList"></div>
+
+      <div class="card" style="margin-top:2px;">
+        <div class="total-row" style="padding-top:0; margin-top:0; border-top:none;">
+          <span class="lbl">ยอดอินเซนทีฟที่คำนวณได้ (ก่อนหาร)</span>
+          <span class="val small" id="gallonSubtotalVal">0 บาท</span>
+        </div>
+        <div class="pass-note" id="gallonGateNote" style="padding:8px 0 0;"></div>
+        <div class="total-row" style="margin-top:10px;">
+          <span class="lbl">จ่ายจริงหลังหารตาม PC (สูงสุด 5,000 บาท/คน)</span>
+          <span class="val" id="gallonPaidVal">0 บาท</span>
+        </div>
+        <div class="pass-note" id="gallonCapNote" style="padding:6px 0 0;"></div>
+      </div>
+
+      <div class="card" style="margin-top:2px;">
+        <div class="total-row" style="padding-top:0; margin-top:0; border-top:none;">
+          <span class="lbl">ยอดรวมสุทธิ (ค่าคอม + อินเซนทีฟ)</span>
+          <span class="val" id="commGrandTotalVal">0 บาท</span>
+        </div>
+      </div>
+      <div class="pass-note">* อินเซนทีฟรายแกลลอนใช้ได้เฉพาะโหมด "ใช้ข้อมูลจริง" และต้องยอดขายรวมร้านถึง 80% ของเป้าหลักก่อนจึงจะจ่าย · ระบบนับยอดขายจริงของสินค้า/ไซส์/เบสที่ตั้งไว้ในเดือนนั้นให้อัตโนมัติ</div>
+    </div>
   </section>
+
+<!-- modal: add gallon incentive rule -->
+<div class="modal-bg" id="gallonRuleModalBg">
+  <div class="modal">
+    <h3>เพิ่มรายการอินเซนทีฟรายแกลลอน</h3>
+    <label class="field">
+      <span class="lbl">สินค้า</span>
+      <div class="pc-select cselect">
+        <select id="ruleNameSelect" class="cselect-native"></select>
+        <button type="button" class="pc-select-trigger" aria-haspopup="listbox" aria-expanded="false">
+          <span class="pc-select-value"></span>
+          <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="pc-select-menu" role="listbox"></div>
+      </div>
+    </label>
+    <div class="row2">
+      <label class="field">
+        <span class="lbl">ไซส์</span>
+        <div class="pc-select cselect">
+          <select id="ruleSizeSelect" class="cselect-native" disabled><option>เลือกสินค้าก่อน</option></select>
+          <button type="button" class="pc-select-trigger" disabled aria-haspopup="listbox" aria-expanded="false">
+            <span class="pc-select-value">เลือกสินค้าก่อน</span>
+            <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="pc-select-menu" role="listbox"></div>
+        </div>
+      </label>
+      <label class="field">
+        <span class="lbl">เบส</span>
+        <div class="pc-select cselect">
+          <select id="ruleBaseSelect" class="cselect-native" disabled><option>—</option></select>
+          <button type="button" class="pc-select-trigger" disabled aria-haspopup="listbox" aria-expanded="false">
+            <span class="pc-select-value">—</span>
+            <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="pc-select-menu" role="listbox"></div>
+        </div>
+      </label>
+    </div>
+    <label class="field">
+      <span class="lbl">เงื่อนไขจ่าย</span>
+      <div class="mode-toggle">
+        <button type="button" class="active" id="ruleModePerUnitBtn">ต่อหน่วย</button>
+        <button type="button" id="ruleModePerBundleBtn">ทุก N หน่วย</button>
+      </div>
+    </label>
+    <div class="row2" id="ruleBundleRow" style="display:none;">
+      <label class="field">
+        <span class="lbl">ทุกกี่หน่วย</span>
+        <input type="number" inputmode="numeric" id="ruleBundleSizeInput" min="2" placeholder="4">
+      </label>
+      <label class="field" style="margin-bottom:0;">
+        <span class="lbl">ได้ (บาท) ต่อชุด</span>
+        <input type="number" inputmode="decimal" id="ruleValueBundleInput" placeholder="0">
+      </label>
+    </div>
+    <label class="field" id="ruleValueUnitRow">
+      <span class="lbl">ได้ (บาท) ต่อหน่วย</span>
+      <input type="number" inputmode="decimal" id="ruleValueUnitInput" placeholder="0">
+    </label>
+    <p class="hint">ระบบจะนับยอดขายจริงของสินค้า/ไซส์/เบสนี้ ในเดือนที่เลือกไว้ในหน้าคอมมิชชั่นให้อัตโนมัติ</p>
+    <button class="btn btn-primary" id="saveGallonRuleBtn">บันทึกรายการ</button>
+    <button class="btn btn-ghost" id="closeGallonRuleModalBtn">ยกเลิก</button>
+  </div>
+</div>
 
 </main>
 
@@ -2701,7 +2803,7 @@ function enhanceCSelect(selectId){
   buildMenu();
   syncDisplay();
 }
-['sizeSelect','baseSelect','histMonth','histMonthSort','commMonthSelect','commModeSelect','targetMonthSelect'].forEach(enhanceCSelect);
+['sizeSelect','baseSelect','histMonth','histMonthSort','commMonthSelect','commModeSelect','targetMonthSelect','ruleNameSelect','ruleSizeSelect','ruleBaseSelect'].forEach(enhanceCSelect);
 
 function renderCommissionMonthOptions(){
   const sel = document.getElementById('commMonthSelect');
@@ -2718,12 +2820,12 @@ function renderCommission(){
   const manualInputs = document.getElementById('commManualInputs');
   manualInputs.style.display = mode==='manual' ? '' : 'none';
 
-  let target, sales;
+  let target, sales, mKey = null;
   if(mode==='manual'){
     target = Number(document.getElementById('commManualTarget').value)||0;
     sales = Number(document.getElementById('commManualSales').value)||0;
   } else {
-    const mKey = document.getElementById('commMonthSelect').value || monthKey(todayISO());
+    mKey = document.getElementById('commMonthSelect').value || monthKey(todayISO());
     target = getMonthTarget(mKey);
     sales = SALES.filter(s=>monthKey(s.date)===mKey).reduce((a,s)=>a+s.total,0);
   }
@@ -2774,7 +2876,187 @@ function renderCommission(){
   `).join('');
 
   document.getElementById('commTotalVal').textContent = fmt(r.total)+' บาท';
+
+  renderGallonIncentive(mode, mKey, r);
 }
+
+/* ================= gallon incentive (per-month product incentive rules) ================= */
+function calcGallonIncentive(mKey, headcount){
+  const rules = (SETTINGS.gallonIncentives && SETTINGS.gallonIncentives[mKey]) || [];
+  const monthSales = SALES.filter(s=>monthKey(s.date)===mKey);
+  const rows = rules.map(rule=>{
+    const qty = monthSales
+      .filter(s=> s.name===rule.name && s.size===rule.size &&
+        (rule.base==='__ALL__' || (s.base||'')===(rule.base||'')))
+      .reduce((a,s)=>a+(Number(s.qty)||0),0);
+    const amount = (rule.mode==='perBundle' && rule.bundleSize>0)
+      ? Math.floor(qty/rule.bundleSize) * rule.value
+      : qty * rule.value;
+    return {rule, qty, amount};
+  });
+  const subtotal = rows.reduce((a,x)=>a+x.amount,0);
+  const hc = headcount>0 ? headcount : 1;
+  const perPersonRaw = subtotal / hc;
+  const perPersonCapped = Math.min(perPersonRaw, 5000);
+  const paidTotal = perPersonCapped * hc;
+  return { rows, subtotal, perPersonRaw, perPersonCapped, paidTotal, headcount: hc };
+}
+function renderGallonIncentive(mode, mKey, commResult){
+  const section = document.getElementById('gallonIncentiveSection');
+  if(mode !== 'auto' || !mKey){
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = '';
+
+  const rules = (SETTINGS.gallonIncentives && SETTINGS.gallonIncentives[mKey]) || [];
+  const list = document.getElementById('gallonRuleList');
+  const g = calcGallonIncentive(mKey, commResult.headcount);
+
+  if(!rules.length){
+    list.innerHTML = '<div class="empty">ยังไม่มีรายการอินเซนทีฟเดือนนี้ กด "+ เพิ่มรายการ" เพื่อเริ่มตั้งค่า</div>';
+  } else {
+    list.innerHTML = g.rows.map(x=>{
+      const baseLabel = x.rule.base==='__ALL__' ? 'ทุกเบส' : (x.rule.base ? `เบส ${x.rule.base}` : '');
+      const condLabel = x.rule.mode==='perBundle'
+        ? `ทุก ${x.rule.bundleSize} หน่วย รับ ${fmt(x.rule.value)} บาท`
+        : `หน่วยละ ${fmt(x.rule.value)} บาท`;
+      return `
+      <div class="tier-row">
+        <div class="tier-body">
+          <div class="amt">${x.rule.name} · ${x.rule.size}${baseLabel ? ' · '+baseLabel : ''}</div>
+          <div class="gap">${condLabel} — ขายได้ ${x.qty} หน่วย</div>
+        </div>
+        <div class="tier-badge done">${fmt(x.amount)} บาท</div>
+        <button type="button" class="gdel" data-id="${x.rule.id}" title="ลบรายการ">×</button>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('gallonSubtotalVal').textContent = fmt(g.subtotal)+' บาท';
+
+  const gateNote = document.getElementById('gallonGateNote');
+  gateNote.textContent = commResult.monthGoalReached
+    ? `ผ่านเกณฑ์ 80% ของเป้าหลักแล้ว (ทำได้ ${commResult.pct.toFixed(1)}%) — มีสิทธิ์รับอินเซนทีฟนี้`
+    : `ยังไม่ถึง 80% ของเป้าหลัก (ทำได้ ${commResult.pct.toFixed(1)}%) — ยังไม่จ่ายอินเซนทีฟส่วนนี้`;
+  gateNote.classList.toggle('warn-note', !commResult.monthGoalReached);
+
+  const paidTotal = commResult.monthGoalReached ? g.paidTotal : 0;
+  document.getElementById('gallonPaidVal').textContent = fmt(paidTotal)+' บาท';
+
+  const capNote = document.getElementById('gallonCapNote');
+  if(commResult.monthGoalReached && g.subtotal>0){
+    capNote.textContent = `${fmt(g.subtotal)} ÷ ${g.headcount} คน = ${fmt(g.perPersonRaw)} บาท/คน` +
+      (g.perPersonRaw>5000 ? ' (ตัดเหลือคนละ 5,000 บาท)' : '');
+  } else {
+    capNote.textContent = '';
+  }
+
+  document.getElementById('commGrandTotalVal').textContent = fmt(commResult.total + paidTotal)+' บาท';
+}
+document.getElementById('gallonRuleList').addEventListener('click', async (e)=>{
+  const btn = e.target.closest('.gdel');
+  if(!btn) return;
+  const mKey = document.getElementById('commMonthSelect').value || monthKey(todayISO());
+  const list = (SETTINGS.gallonIncentives && SETTINGS.gallonIncentives[mKey]) || [];
+  const idx = list.findIndex(rule=>rule.id===btn.dataset.id);
+  if(idx>=0){
+    list.splice(idx,1);
+    await saveSettings();
+    renderCommission();
+  }
+});
+
+/* ---- add-rule modal ---- */
+let gallonRuleMode = 'perUnit';
+function setGallonRuleMode(m){
+  gallonRuleMode = m;
+  document.getElementById('ruleModePerUnitBtn').classList.toggle('active', m==='perUnit');
+  document.getElementById('ruleModePerBundleBtn').classList.toggle('active', m==='perBundle');
+  document.getElementById('ruleBundleRow').style.display = m==='perBundle' ? '' : 'none';
+  document.getElementById('ruleValueUnitRow').style.display = m==='perUnit' ? '' : 'none';
+}
+document.getElementById('ruleModePerUnitBtn').addEventListener('click', ()=>setGallonRuleMode('perUnit'));
+document.getElementById('ruleModePerBundleBtn').addEventListener('click', ()=>setGallonRuleMode('perBundle'));
+
+function populateRuleSizeOptions(){
+  const name = document.getElementById('ruleNameSelect').value;
+  const sizeSel = document.getElementById('ruleSizeSelect');
+  if(!name || !PRODUCT_INDEX[name]){
+    sizeSel.disabled = true;
+    sizeSel.innerHTML = '<option>เลือกสินค้าก่อน</option>';
+    sizeSel.dispatchEvent(new Event('change'));
+    return;
+  }
+  const sizes = Object.keys(PRODUCT_INDEX[name]);
+  sizeSel.disabled = false;
+  sizeSel.innerHTML = sizes.map(s=>`<option value="${s}">${s}</option>`).join('');
+  sizeSel.dispatchEvent(new Event('change'));
+}
+function populateRuleBaseOptions(){
+  const name = document.getElementById('ruleNameSelect').value;
+  const size = document.getElementById('ruleSizeSelect').value;
+  const baseSel = document.getElementById('ruleBaseSelect');
+  if(!name || !size || !PRODUCT_INDEX[name] || !PRODUCT_INDEX[name][size]){
+    baseSel.disabled = true;
+    baseSel.innerHTML = '<option value="">—</option>';
+    return;
+  }
+  const bases = Object.keys(PRODUCT_INDEX[name][size]);
+  if(bases.length===1 && bases[0]==='—'){
+    baseSel.disabled = true;
+    baseSel.innerHTML = '<option value="">—</option>';
+  } else {
+    baseSel.disabled = false;
+    baseSel.innerHTML = '<option value="__ALL__">ทุกเบส (รวมทุก Base)</option>' + bases.map(b=>`<option value="${b}">${b}</option>`).join('');
+  }
+}
+document.getElementById('ruleNameSelect').addEventListener('change', populateRuleSizeOptions);
+document.getElementById('ruleSizeSelect').addEventListener('change', populateRuleBaseOptions);
+
+document.getElementById('addGallonRuleBtn').addEventListener('click', ()=>{
+  const nameSel = document.getElementById('ruleNameSelect');
+  const names = Object.keys(PRODUCT_INDEX).sort();
+  nameSel.innerHTML = names.map(n=>`<option value="${n.replace(/"/g,'&quot;')}">${n}</option>`).join('');
+  populateRuleSizeOptions();
+  setGallonRuleMode('perUnit');
+  document.getElementById('ruleBundleSizeInput').value = '';
+  document.getElementById('ruleValueBundleInput').value = '';
+  document.getElementById('ruleValueUnitInput').value = '';
+  document.getElementById('gallonRuleModalBg').classList.add('show');
+});
+document.getElementById('closeGallonRuleModalBtn').addEventListener('click', ()=>{
+  document.getElementById('gallonRuleModalBg').classList.remove('show');
+});
+document.getElementById('saveGallonRuleBtn').addEventListener('click', async ()=>{
+  const name = document.getElementById('ruleNameSelect').value;
+  const size = document.getElementById('ruleSizeSelect').value;
+  const baseSel = document.getElementById('ruleBaseSelect');
+  const base = baseSel.disabled ? '' : baseSel.value;
+  if(!name || !size){ toast('กรุณาเลือกสินค้าและไซส์'); return; }
+
+  let bundleSize = 0, value = 0;
+  if(gallonRuleMode==='perBundle'){
+    bundleSize = Number(document.getElementById('ruleBundleSizeInput').value)||0;
+    value = Number(document.getElementById('ruleValueBundleInput').value)||0;
+    if(bundleSize < 2){ toast('กรุณาระบุจำนวนหน่วยต่อชุด (อย่างน้อย 2)'); return; }
+  } else {
+    value = Number(document.getElementById('ruleValueUnitInput').value)||0;
+  }
+  if(value <= 0){ toast('กรุณาระบุมูลค่าที่มากกว่า 0'); return; }
+
+  const mKey = document.getElementById('commMonthSelect').value || monthKey(todayISO());
+  if(!SETTINGS.gallonIncentives) SETTINGS.gallonIncentives = {};
+  if(!SETTINGS.gallonIncentives[mKey]) SETTINGS.gallonIncentives[mKey] = [];
+  SETTINGS.gallonIncentives[mKey].push({
+    id: Date.now()+'-'+Math.random().toString(36).slice(2,7),
+    name, size, base, mode: gallonRuleMode, bundleSize, value
+  });
+  await saveSettings();
+  document.getElementById('gallonRuleModalBg').classList.remove('show');
+  renderCommission();
+});
+
 document.getElementById('commMonthSelect').addEventListener('change', renderCommission);
 document.getElementById('commModeSelect').addEventListener('change', renderCommission);
 document.getElementById('commManualTarget').addEventListener('input', renderCommission);
