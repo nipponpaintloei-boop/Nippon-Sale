@@ -330,10 +330,10 @@
   }
   .drawer-item:active{background:var(--surface2);}
   .drawer-item .di-ic{
-    width:34px; height:34px; flex-shrink:0; border-radius:9px; background:var(--surface2);
-    display:flex; align-items:center; justify-content:center;
+    width:34px; height:34px; flex-shrink:0; border-radius:9px; background:rgba(199,153,90,0.14);
+    display:flex; align-items:center; justify-content:center; color:var(--ochre);
   }
-  .drawer-item .di-ic svg{width:16px; height:16px;}
+  .drawer-item .di-ic svg{width:17px; height:17px; stroke-width:2;}
   .drawer-item .di-txt{display:flex; flex-direction:column; gap:2px; min-width:0;}
   .drawer-item .di-title{font-family:var(--disp); font-weight:600; font-size:13.5px; color:var(--paper);}
   .drawer-item .di-sub{font-size:10.5px; color:var(--paper-faint);}
@@ -514,6 +514,44 @@
     header.top{max-width:984px;}
   }
 
+  /* ================= EXTRA: history target row ================= */
+  .hist-target-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--surface); border:1px solid var(--line); border-radius:12px;
+    padding:11px 14px; margin-bottom:14px; font-size:11.5px; color:var(--paper-dim); font-family:var(--mono);
+  }
+  .hist-target-row b{color:var(--paper); font-weight:600;}
+  .hist-target-row button{
+    background:var(--surface2); border:1px solid var(--line); color:var(--ochre); font-family:var(--disp);
+    font-weight:600; font-size:11px; cursor:pointer; padding:7px 12px; border-radius:9px; flex-shrink:0; white-space:nowrap;
+  }
+
+  /* ================= EXTRA: bill cart ================= */
+  .bill-group{border:1px dashed var(--line); border-radius:12px; padding:2px 0; margin:8px 0;}
+  .bill-ghead{display:flex; justify-content:space-between; font-size:10px; color:var(--ochre); font-family:var(--mono); padding:7px 6px 4px; letter-spacing:0.3px;}
+
+  /* ================= EXTRA: today target chip ================= */
+  .today-target-chip{
+    margin-top:7px; text-align:center; font-family:var(--mono); font-size:9.5px; color:var(--paper-faint);
+    background:var(--surface2); border:1px solid var(--line); border-radius:20px; padding:3px 7px; white-space:nowrap;
+  }
+  .today-target-chip.hit{color:var(--moss); border-color:rgba(132,160,105,0.4);}
+
+  /* ================= EXTRA: MKS mini card ================= */
+  .mks-mini-card{display:flex; align-items:center;}
+  .mks-mini-row{display:flex; align-items:center; justify-content:space-between; width:100%;}
+  .mks-mini-lbl{font-size:11px; color:var(--paper-faint); margin-bottom:4px;}
+  .mks-mini-val{font-family:var(--disp); font-weight:600; font-size:19px; color:var(--ochre);}
+  .mks-mini-arrow{font-size:20px; color:var(--paper-faint); flex-shrink:0; padding-left:10px;}
+
+  /* ================= EXTRA: yearly MoM badge ================= */
+  .mom-badge{font-size:10.5px; font-family:var(--mono); margin-top:5px; color:var(--paper-faint);}
+  .mom-badge.up{color:var(--moss);}
+  .mom-badge.down{color:var(--clay);}
+
+  /* ================= EXTRA: confetti ================= */
+  .confetti-piece{position:absolute; will-change:transform, opacity;}
+
 </style>
 </head>
 <body>
@@ -624,8 +662,14 @@
         <div class="lbl">รวมทั้งหมด</div>
         <div class="val" id="totalVal">0 บาท</div>
       </div>
-      <button class="btn btn-primary" id="saveSaleBtn" style="margin-top:16px;">บันทึกยอดขาย</button>
+      <div class="row2" style="margin-top:16px;">
+        <button class="btn btn-ghost" id="addToBillBtn" style="margin-top:0;">+ เพิ่มลงบิล</button>
+        <button class="btn btn-primary" id="saveSaleBtn">บันทึกยอดขาย</button>
+      </div>
     </div>
+
+    <div class="sec-title" id="billCartTitle" style="display:none;"><span class="t">รายการในบิลนี้ (<span id="billCartCount">0</span>)</span></div>
+    <div class="card" id="billCartList" style="padding:6px 12px; display:none;"></div>
 
     <div class="sec-title"><span class="t">รายการวันนี้</span></div>
     <div class="card" id="recentList" style="padding:6px 12px;">
@@ -663,6 +707,10 @@
         <span class="lbl">เลือกเดือนที่ต้องการดูย้อนหลัง</span>
         <select id="histMonth"></select>
       </label>
+      <div class="hist-target-row" id="histMonthTargetRow">
+        <span>เป้าหมายเดือนนี้: <b id="histMonthTargetVal">0</b> บาท (<span id="histMonthTargetPct">0%</span>)</span>
+        <button id="histMonthEditTargetBtn">แก้ไข/กรอกเป้า</button>
+      </div>
       <div class="history-tools">
         <input type="text" id="histMonthSearch" placeholder="ค้นหาสินค้า / SKU / รหัสสี...">
         <select id="histMonthSort"><option value="dateDesc">ล่าสุดก่อน</option><option value="dateAsc">เก่าสุดก่อน</option><option value="amountDesc">ยอดสูง→ต่ำ</option><option value="amountAsc">ยอดต่ำ→สูง</option></select>
@@ -704,6 +752,7 @@
           <rect x="14" y="30" width="56" height="7" rx="3" fill="rgba(237,234,226,0.28)"/>
         </svg>
         <div class="can-label" id="canPct">0%</div>
+        <div class="today-target-chip" id="todayTargetChip">เป้าวันนี้ —</div>
       </div>
       <div class="gauge-info">
         <div class="eyebrow">ยอดขายเดือนนี้</div>
@@ -731,6 +780,17 @@
       <div class="stat-card">
         <div class="lbl">Ach% เดือนนี้</div>
         <div class="val" id="dashPct">0%</div>
+      </div>
+    </div>
+
+    <div class="sec-title"><span class="t">มาร์เก็ตแชร์วันนี้ (MKS)</span></div>
+    <div class="card mks-mini-card" id="mksMiniCard" style="padding:14px 16px; cursor:pointer;">
+      <div class="mks-mini-row">
+        <div>
+          <div class="mks-mini-lbl">ส่วนแบ่งของเรา (NIPPON) เทียบคู่แข่งวันนี้</div>
+          <div class="mks-mini-val" id="mksMiniPct">—</div>
+        </div>
+        <div class="mks-mini-arrow">›</div>
       </div>
     </div>
 
@@ -783,6 +843,7 @@
       <div class="stat-card">
         <div class="lbl">ยอดขายรวมทั้งปี <span id="yearLbl"></span></div>
         <div class="val small" id="yearTotal">0</div>
+        <div class="mom-badge" id="yearMoM"></div>
       </div>
       <div class="stat-card">
         <div class="lbl">ค่าเฉลี่ยยอดขาย/เดือน</div>
@@ -1423,6 +1484,7 @@ document.getElementById('menuReportBtn').addEventListener('click', ()=>{
   document.getElementById('menuDrawerBg').classList.remove('show');
   switchToView('report');
 });
+document.getElementById('mksMiniCard').addEventListener('click', ()=> switchToView('report'));
 document.getElementById('menuSettingsBtn').addEventListener('click', ()=>{
   document.getElementById('menuDrawerBg').classList.remove('show');
   document.getElementById('resetModalBg').classList.add('show');
@@ -1520,33 +1582,94 @@ function computeTotal(){
   return total;
 }
 
-document.getElementById('saveSaleBtn').addEventListener('click', async ()=>{
-  if(!currentRow){ toast('กรุณาเลือกสินค้าก่อน'); return; }
+/* ================= bill cart (multi-item single bill) ================= */
+let billCart = [];
+let billId = null;
+
+function buildEntryFromForm(){
+  if(!currentRow) return null;
   const qty = Number(qtyInput.value)||0;
-  if(qty <= 0 || !Number.isFinite(qty)){ toast('กรุณาระบุจำนวนที่มากกว่า 0'); return; }
-  const tintVal=Number(tintPriceInput.value)||0; if(tintVal<0){ toast('ราคาแม่สีห้ามติดลบ'); return; }
+  if(qty <= 0 || !Number.isFinite(qty)) return {error:'กรุณาระบุจำนวนที่มากกว่า 0'};
+  const tintVal = Number(tintPriceInput.value)||0;
+  if(tintVal < 0) return {error:'ราคาแม่สีห้ามติดลบ'};
   const date = document.getElementById('saleDate').value || todayISO();
   const total = computeTotal();
-
-  const entry = {
+  return {
     id: Date.now()+'-'+Math.random().toString(36).slice(2,7),
     date, name: currentProduct, size: sizeSelect.value, base: baseSelect.value === '—' ? '' : baseSelect.value,
     price: currentRow.price, colorCode: document.getElementById('colorCode').value.trim(),
-    tintPrice: Number(tintPriceInput.value)||0, qty, total, sku: currentRow.sku, seed:false
+    tintPrice: tintVal, qty, total, sku: currentRow.sku, seed:false
   };
-  SALES.push(entry);
-  currentRow.sold = (Number(currentRow.sold)||0) + qty;
-  currentRow.remain = (Number(currentRow.remain)||0) - qty;
-  await saveSales(); await saveProducts();
-
-  toast('บันทึกยอดขายแล้ว');
+}
+function clearEntryFormFields(){
   productSearch.value=''; currentProduct=null; currentRow=null;
   resetSizeBase();
   document.getElementById('colorCode').value='';
   tintPriceInput.value=''; qtyInput.value='1';
   computeTotal();
+}
+function ensureBillId(){
+  if(!billId) billId = 'bill-'+Date.now()+'-'+Math.random().toString(36).slice(2,6);
+  return billId;
+}
+function renderBillCart(){
+  const title = document.getElementById('billCartTitle');
+  const list = document.getElementById('billCartList');
+  if(!billCart.length){ title.style.display='none'; list.style.display='none'; return; }
+  title.style.display='flex'; list.style.display='block';
+  document.getElementById('billCartCount').textContent = billCart.length;
+  list.innerHTML = billCart.map((s,i)=>`
+    <div class="list-row">
+      <div class="info">
+        <div class="name">${s.name} ${s.size} ${s.base}</div>
+        <div class="sub">${s.colorCode ? 'รหัสสี '+s.colorCode+' · ' : ''}x${s.qty}</div>
+      </div>
+      <div class="amt">${fmt(s.total)}฿</div>
+      <button class="del-btn" data-billrm="${i}">✕</button>
+    </div>`).join('');
+  list.querySelectorAll('[data-billrm]').forEach(b=>b.addEventListener('click', ()=>{
+    billCart.splice(Number(b.dataset.billrm),1);
+    if(!billCart.length) billId = null;
+    renderBillCart();
+  }));
+}
+document.getElementById('addToBillBtn').addEventListener('click', ()=>{
+  if(!currentRow){ toast('กรุณาเลือกสินค้าก่อน'); return; }
+  const entry = buildEntryFromForm();
+  if(!entry){ toast('กรุณาเลือกสินค้าก่อน'); return; }
+  if(entry.error){ toast(entry.error); return; }
+  entry.billId = ensureBillId();
+  billCart.push(entry);
+  clearEntryFormFields();
+  renderBillCart();
+  toast(`เพิ่มลงบิลแล้ว (${billCart.length} รายการ)`);
+});
+
+document.getElementById('saveSaleBtn').addEventListener('click', async ()=>{
+  const items = billCart.slice();
+  if(currentRow){
+    const entry = buildEntryFromForm();
+    if(entry && entry.error){ toast(entry.error); return; }
+    if(entry){ entry.billId = items.length ? ensureBillId() : null; items.push(entry); }
+  }
+  if(!items.length){ toast('กรุณาเลือกสินค้าก่อน'); return; }
+
+  items.forEach(entry=>{
+    SALES.push(entry);
+    const row = findProductRow(entry.sku, entry.name, entry.size, entry.base);
+    if(row){ row.sold = (Number(row.sold)||0) + entry.qty; row.remain = (Number(row.remain)||0) - entry.qty; }
+  });
+  await saveSales(); await saveProducts();
+  if(navigator.vibrate) navigator.vibrate(35);
+
+  toast(items.length>1 ? `บันทึกบิล ${items.length} รายการแล้ว` : 'บันทึกยอดขายแล้ว');
+  billCart = []; billId = null;
+  clearEntryFormFields();
+  renderBillCart();
   renderRecent();
   renderGauge();
+  renderDashboard();
+  maybeCelebrateTarget();
 });
 
 async function deleteSaleEntry(id){
@@ -1592,7 +1715,8 @@ function fallbackCopy(text){
 
 /* ================= gauge ================= */
 function renderGauge(){
-  const mKey = monthKey(todayISO());
+  const today = todayISO();
+  const mKey = monthKey(today);
   const monthTotal = SALES.filter(s=>monthKey(s.date)===mKey).reduce((a,s)=>a+s.total,0);
   const target = getMonthTarget(mKey);
   const pct = target > 0 ? Math.min(1, monthTotal/target) : 0;
@@ -1606,17 +1730,64 @@ function renderGauge(){
   fillEl.setAttribute('y', 90-h);
   const waveWrap = document.getElementById('canWaveWrap');
   if(waveWrap) waveWrap.style.transform = `translateY(${-h}px)`;
+
+  // today's target chip
+  const now = new Date();
+  const dim = daysInMonth(now.getFullYear(), now.getMonth()+1);
+  const dailyTarget = target>0 ? target/dim : 0;
+  const todayTotal = SALES.filter(s=>s.date===today).reduce((a,s)=>a+s.total,0);
+  const chip = document.getElementById('todayTargetChip');
+  if(chip){
+    chip.textContent = `เป้าวันนี้ ${fmt(todayTotal)}/${fmt(dailyTarget)}`;
+    chip.classList.toggle('hit', dailyTarget>0 && todayTotal>=dailyTarget);
+  }
 }
 
-document.getElementById('editTargetBtn').addEventListener('click', openTargetModal);
-function openTargetModal(){
+/* ================= target celebration (confetti) ================= */
+function maybeCelebrateTarget(){
+  const mKey = monthKey(todayISO());
+  const monthTotal = SALES.filter(s=>monthKey(s.date)===mKey).reduce((a,s)=>a+s.total,0);
+  const target = getMonthTarget(mKey);
+  if(target>0 && monthTotal>=target && SETTINGS.celebratedMonth!==mKey){
+    launchConfetti();
+    SETTINGS.celebratedMonth = mKey;
+    saveSettings();
+  }
+}
+function launchConfetti(){
+  const colors=['#c7995a','#6b9c93','#b5654e','#84a069','#eeebe3'];
+  const container=document.createElement('div');
+  container.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:99998;overflow:hidden;';
+  document.body.appendChild(container);
+  const count=60;
+  for(let i=0;i<count;i++){
+    const el=document.createElement('div');
+    el.className='confetti-piece';
+    const size=6+Math.random()*6;
+    el.style.cssText=`top:-20px; left:${Math.random()*100}%; width:${size}px; height:${size*1.4}px; background:${colors[Math.floor(Math.random()*colors.length)]}; opacity:${(0.7+Math.random()*0.3).toFixed(2)}; border-radius:2px;`;
+    const dur=1800+Math.random()*1400, delay=Math.random()*300, drift=(Math.random()*140-70);
+    if(el.animate){
+      el.animate([
+        {transform:'translate(0,0) rotate(0deg)', opacity:1},
+        {transform:`translate(${drift}px, 100vh) rotate(${360+Math.random()*360}deg)`, opacity:0}
+      ], {duration:dur, delay, easing:'cubic-bezier(.2,.6,.4,1)', fill:'forwards'});
+    }
+    container.appendChild(el);
+  }
+  toast('🎉 ถึงเป้าหมาย 100% แล้ว!');
+  setTimeout(()=>container.remove(), 3800);
+}
+
+document.getElementById('editTargetBtn').addEventListener('click', ()=>openTargetModal());
+function openTargetModal(presetMonth){
   const sel = document.getElementById('targetMonthSelect');
   const mSet = new Set(Object.keys(SETTINGS.targets||{}));
   SALES.forEach(s=>mSet.add(monthKey(s.date)));
   mSet.add(monthKey(todayISO()));
+  if(presetMonth) mSet.add(presetMonth);
   const months = Array.from(mSet).sort();
   sel.innerHTML = months.map(m=>`<option value="${m}">${formatMonthTH(m)}</option>`).join('');
-  sel.value = monthKey(todayISO());
+  sel.value = (presetMonth && months.includes(presetMonth)) ? presetMonth : monthKey(todayISO());
   document.getElementById('targetInput').value = getMonthTarget(sel.value);
   document.getElementById('targetModalBg').classList.add('show');
 }
@@ -1632,7 +1803,7 @@ document.getElementById('saveTargetBtn').addEventListener('click', async ()=>{
     SETTINGS.targets[mKey] = v;
     SETTINGS.defaultTarget = v;
     await saveSettings();
-    renderGauge(); renderDashboard();
+    renderGauge(); renderDashboard(); renderHistMonth();
     toast('บันทึกเป้าหมายแล้ว');
   }
   document.getElementById('targetModalBg').classList.remove('show');
@@ -1641,22 +1812,43 @@ document.getElementById('targetModalBg').addEventListener('click', (e)=>{
   if(e.target.id==='targetModalBg') e.currentTarget.classList.remove('show');
 });
 
-/* ================= recent list (today, entry tab) ================= */
-function renderRecent(){
-  const today = todayISO();
-  const todays = SALES.filter(s=>s.date===today).slice().reverse();
-  const box = document.getElementById('recentList');
-  if(!todays.length){ box.innerHTML = '<div class="empty">ยังไม่มีรายการขายวันนี้</div>'; return; }
-  box.innerHTML = todays.map(s=>`
+/* ================= bill grouping helper ================= */
+function renderBillGroupedRows(rows, opts={}){
+  const mode = opts.mode || 'simple'; // 'simple' = single ✕ delete, 'full' = ✎ edit + × delete
+  const groups = [];
+  rows.forEach(s=>{
+    const last = groups[groups.length-1];
+    if(s.billId && last && last.billId===s.billId){ last.items.push(s); }
+    else groups.push({billId:s.billId||null, items:[s]});
+  });
+  const rowHtml = s => `
     <div class="list-row">
       <div class="info">
         <div class="name">${s.name} ${s.size} ${s.base}</div>
         <div class="sub">${s.colorCode ? 'รหัสสี '+s.colorCode+' · ' : ''}x${s.qty}</div>
       </div>
       <div class="amt">${fmt(s.total)}฿</div>
-      ${s.seed ? '' : `<button class="del-btn" data-del="${s.id}">✕</button>`}
-    </div>
-  `).join('');
+      ${s.seed ? '' : (mode==='full'
+        ? `<button class="del-btn" data-edit="${s.id}" title="แก้ไข">✎</button><button class="del-btn" data-delete="${s.id}" title="ลบ">×</button>`
+        : `<button class="del-btn" data-del="${s.id}">✕</button>`)}
+    </div>`;
+  return groups.map(g=>{
+    const rowsHtml = g.items.map(rowHtml).join('');
+    if(g.items.length>1){
+      const gTotal = g.items.reduce((a,s)=>a+s.total,0);
+      return `<div class="bill-group"><div class="bill-ghead"><span>บิลเดียว · ${g.items.length} รายการ</span><span>${fmt(gTotal)}฿</span></div>${rowsHtml}</div>`;
+    }
+    return rowsHtml;
+  }).join('');
+}
+
+/* ================= recent list (today, entry tab) ================= */
+function renderRecent(){
+  const today = todayISO();
+  const todays = SALES.filter(s=>s.date===today).slice().reverse();
+  const box = document.getElementById('recentList');
+  if(!todays.length){ box.innerHTML = '<div class="empty">ยังไม่มีรายการขายวันนี้</div>'; return; }
+  box.innerHTML = renderBillGroupedRows(todays, {mode:'simple'});
   box.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', ()=>deleteSaleEntry(b.dataset.del)));
 }
 
@@ -1675,6 +1867,21 @@ function renderDashboard(){
   const pct = target>0 ? (monthTotal/target*100) : 0;
   document.getElementById('dashPct').textContent = pct.toFixed(1)+'%';
   document.getElementById('dashMonthLbl').textContent = formatMonthTH(mKey);
+
+  // MKS mini card (today's market share)
+  const mmEntry = MKS_DAY_HISTORY[today];
+  const mmBox = document.getElementById('mksMiniPct');
+  if(mmBox){
+    if(mmEntry){
+      const mmTotal = MKS_BRANDS.reduce((a,b)=>a+(Number((mmEntry.rows[b.key]||{}).sales)||0),0);
+      const mmOurs = Number((mmEntry.rows.NIPPON||{}).sales)||0;
+      mmBox.textContent = mmTotal>0 ? (mmOurs/mmTotal*100).toFixed(1)+'%' : '0%';
+    } else {
+      mmBox.textContent = 'ยังไม่กรอกวันนี้ →';
+    }
+  }
+
+  maybeCelebrateTarget();
 
   // 5-tier target table
   const tierBox = document.getElementById('tierTable');
@@ -1757,17 +1964,7 @@ function renderHistDay(){
   document.getElementById('histDayCount').textContent = rows.length;
   const box = document.getElementById('histDayList');
   if(!rows.length){ box.innerHTML = '<div class="empty">ไม่มีรายการขายในวันที่เลือก</div>'; return; }
-  box.innerHTML = rows.map(s=>`
-    <div class="list-row">
-      <div class="info">
-        <div class="name">${s.name} ${s.size} ${s.base}</div>
-        <div class="sub">${s.colorCode ? 'รหัสสี '+s.colorCode+' · ' : ''}x${s.qty}</div>
-      </div>
-      <div class="amt">${fmt(s.total)}฿</div>
-      <button class="del-btn" data-edit="${s.id}" title="แก้ไข">✎</button>
-      <button class="del-btn" data-delete="${s.id}" title="ลบ">×</button>
-    </div>
-  `).join('');
+  box.innerHTML = renderBillGroupedRows(rows, {mode:'full'});
   box.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>editSaleEntry(b.dataset.edit)));
   box.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',()=>deleteSaleEntry(b.dataset.delete)));
 }
@@ -1794,17 +1991,24 @@ function renderHistMonth(){
   else if(sort==='amountAsc') rows.sort((a,b)=>a.total-b.total);
   else rows.sort((a,b)=>b.date.localeCompare(a.date));
   const allMonth=SALES.filter(s=>monthKey(s.date)===mKey);
-  document.getElementById('histMonthTotal').textContent=fmt(allMonth.reduce((a,s)=>a+s.total,0));
+  const monthTotalAmt=allMonth.reduce((a,s)=>a+s.total,0);
+  document.getElementById('histMonthTotal').textContent=fmt(monthTotalAmt);
   document.getElementById('histMonthCount').textContent=allMonth.length;
+  const hTarget=getMonthTarget(mKey);
+  document.getElementById('histMonthTargetVal').textContent=fmt(hTarget);
+  document.getElementById('histMonthTargetPct').textContent=(hTarget>0?(monthTotalAmt/hTarget*100).toFixed(1):'0')+'%';
   const box=document.getElementById('histMonthList'); if(!rows.length){box.innerHTML='<div class="empty">ไม่พบรายการตามตัวกรอง</div>';return;}
   const byDate={}; rows.forEach(s=>(byDate[s.date]??=[]).push(s));
   const dates=Object.keys(byDate).sort((a,b)=>sort==='dateAsc'?a.localeCompare(b):b.localeCompare(a));
-  box.innerHTML=dates.map(d=>{const items=byDate[d],dTotal=items.reduce((a,s)=>a+s.total,0);return `<div class="day-group"><div class="dhead"><span>${formatDateTH(d)}</span><span class="dsum">${items.length} รายการ · ${fmt(dTotal)}฿</span></div><div class="card" style="padding:6px 12px;">${items.map(s=>`<div class="list-row"><div class="info"><div class="name">${s.name} ${s.size} ${s.base}</div><div class="sub">${s.colorCode?'รหัสสี '+s.colorCode+' · ':''}x${s.qty}</div></div><div class="amt">${fmt(s.total)}฿</div><button class="del-btn" data-edit="${s.id}" title="แก้ไข">✎</button><button class="del-btn" data-delete="${s.id}" title="ลบ">×</button></div>`).join('')}</div></div>`}).join('');
+  box.innerHTML=dates.map(d=>{const items=byDate[d],dTotal=items.reduce((a,s)=>a+s.total,0);return `<div class="day-group"><div class="dhead"><span>${formatDateTH(d)}</span><span class="dsum">${items.length} รายการ · ${fmt(dTotal)}฿</span></div><div class="card" style="padding:6px 12px;">${renderBillGroupedRows(items,{mode:'full'})}</div></div>`}).join('');
   box.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>editSaleEntry(b.dataset.edit)));
   box.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',()=>deleteSaleEntry(b.dataset.delete)));
 }
 document.getElementById('histMonthSearch').addEventListener('input',renderHistMonth);
 document.getElementById('histMonthSort').addEventListener('change',renderHistMonth);
+document.getElementById('histMonthEditTargetBtn').addEventListener('click', ()=>{
+  openTargetModal(document.getElementById('histMonth').value);
+});
 let editSaleId = null;
 async function editSaleEntry(id){
   if(!(await ensurePin())) return;
@@ -2111,6 +2315,24 @@ function renderYearly(){
   const avg = monthsWithData.length ? yearTotal/monthsWithData.length : 0;
   document.getElementById('yearTotal').textContent = fmt(yearTotal);
   document.getElementById('yearAvg').textContent = fmt(avg);
+
+  // MoM growth vs previous month with data
+  const momBox = document.getElementById('yearMoM');
+  if(momBox){
+    if(monthsWithData.length>=2){
+      const sortedM = monthsWithData.slice().sort((a,b)=>a.m-b.m);
+      const latestM = sortedM[sortedM.length-1], prevM = sortedM[sortedM.length-2];
+      if(prevM.total>0){
+        const growth = (latestM.total-prevM.total)/prevM.total*100;
+        momBox.textContent = (growth>=0?'▲ +':'▼ ')+Math.abs(growth).toFixed(1)+'% เทียบ '+THAI_MONTHS[prevM.m-1].slice(0,3);
+        momBox.className = 'mom-badge '+(growth>=0?'up':'down');
+      } else {
+        momBox.textContent = 'เดือนก่อนหน้าไม่มียอด'; momBox.className='mom-badge';
+      }
+    } else {
+      momBox.textContent = ''; momBox.className='mom-badge';
+    }
+  }
 
   const maxVal = Math.max(1, ...monthTotals.map(x=>x.total));
   let bestIdx = -1, worstIdx = -1;
