@@ -2956,13 +2956,17 @@ function renderGallonIncentive(mode, mKey, commResult){
 document.getElementById('gallonRuleList').addEventListener('click', async (e)=>{
   const btn = e.target.closest('.gdel');
   if(!btn) return;
+  if(!(await ensurePin())) return;
   const mKey = document.getElementById('commMonthSelect').value || monthKey(todayISO());
   const list = (SETTINGS.gallonIncentives && SETTINGS.gallonIncentives[mKey]) || [];
   const idx = list.findIndex(rule=>rule.id===btn.dataset.id);
   if(idx>=0){
+    const removed = list[idx];
     list.splice(idx,1);
     await saveSettings();
+    await addAudit('ลบรายการอินเซนทีฟรายแกลลอน', `${removed.name||''} ${removed.size||''}`.trim());
     renderCommission();
+    toast('ลบรายการแล้ว');
   }
 });
 
