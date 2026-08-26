@@ -630,6 +630,13 @@
         <span class="di-sub">สรุปยอดขายเทียบคู่แข่งรายวัน/สัปดาห์</span>
       </span>
     </button>
+    <button class="drawer-item" id="menuCommissionBtn">
+      <span class="di-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 6.5v11M15.2 9c0-1.4-1.4-2.5-3.2-2.5s-3.2 1-3.2 2.3c0 3 6.4 1.4 6.4 4.4 0 1.4-1.5 2.3-3.2 2.3s-3.2-1.1-3.2-2.5"/></svg></span>
+      <span class="di-txt">
+        <span class="di-title">คำนวณค่าคอมมิชชั่น</span>
+        <span class="di-sub">ค่าคอมหลัก + พิเศษ + ต่อคน</span>
+      </span>
+    </button>
     <button class="drawer-item" id="menuSettingsBtn">
       <span class="di-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
       <span class="di-txt">
@@ -942,6 +949,68 @@
     </div>
   </section>
 
+  <!-- ============ VIEW: COMMISSION CALCULATOR ============ -->
+  <section class="view" id="view-commission">
+    <div class="sec-title"><span class="t">คำนวณค่าคอมมิชชั่น</span></div>
+
+    <div class="card">
+      <div class="row2">
+        <label class="field">
+          <span class="lbl">เดือน</span>
+          <select id="commMonthSelect"></select>
+        </label>
+        <label class="field">
+          <span class="lbl">โหมด</span>
+          <select id="commModeSelect">
+            <option value="auto">ใช้ข้อมูลจริง</option>
+            <option value="manual">กรอกเอง (จำลอง)</option>
+          </select>
+        </label>
+      </div>
+      <div class="row2" id="commManualInputs" style="display:none;">
+        <label class="field">
+          <span class="lbl">เป้าหมาย (บาท)</span>
+          <input type="number" inputmode="decimal" id="commManualTarget" placeholder="0">
+        </label>
+        <label class="field" style="margin-bottom:0;">
+          <span class="lbl">ยอดขายจริง (บาท)</span>
+          <input type="number" inputmode="decimal" id="commManualSales" placeholder="0">
+        </label>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="lbl">เป้าหมาย</div>
+        <div class="val small" id="commTargetVal">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="lbl">ยอดขาย</div>
+        <div class="val small" id="commSalesVal">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="lbl">% ที่ทำได้</div>
+        <div class="val" id="commPctVal">0%</div>
+      </div>
+      <div class="stat-card">
+        <div class="lbl">ช่วงเป้าที่ใช้</div>
+        <div class="val small" id="commBandVal">—</div>
+      </div>
+    </div>
+
+    <div class="sec-title"><span class="t">รายละเอียดค่าคอม</span></div>
+    <div class="tier-table" id="commBreakdown"></div>
+
+    <div class="card" style="margin-top:2px;">
+      <div class="total-row" style="padding-top:0; margin-top:0; border-top:none;">
+        <span class="lbl">รวมค่าคอมทั้งหมด</span>
+        <span class="val" id="commTotalVal">0 บาท</span>
+      </div>
+    </div>
+
+    <div class="pass-note">* ค่าคอมหลักจ่ายเมื่อทำยอดถึง 80% ของเป้า (เป้า 200,000–600,000 บาท/เดือน ใช้ตารางเดียวกัน) · ค่าคอมพิเศษใช้เฉพาะเป้า 200,000–400,000 บาท · ค่าคอมต่อคนคิดจากยอดขายรวมของร้านทั้งเดือน (ไม่แยกพนักงาน) · ทุกรายการที่เข้าเงื่อนไขจะบวกรวมกันเป็นยอดคอมทั้งหมด</div>
+  </section>
+
 </main>
 
 <nav class="tabs">
@@ -1140,6 +1209,63 @@ const SALES_SEED = [["2026-01-01","อื่นๆ","","",0,"",129856,1,129856,"
 const TARGETS_SEED = {"2026-01":380000,"2026-02":380000,"2026-03":420000,"2026-04":420000,"2026-05":250000,"2026-06":400000,"2026-07":380000,"2026-08":380000};
 const DEFAULT_TARGET = 380000;
 const TIER_PCTS = [1, 0.95, 0.9, 0.85, 0.8];
+
+/* ================= commission calculator tables ================= */
+/* ตารางค่าคอมหลัก: ใช้ค่าเดียวกันทั้งช่วงเป้า 400K-600K และ 200K-400K (ตั้งใจให้เหมือนกัน) */
+const COMMISSION_MAIN_TABLE = [
+  {pct:80,  amt:6000},
+  {pct:85,  amt:6500},
+  {pct:90,  amt:7000},
+  {pct:95,  amt:7500},
+  {pct:100, amt:10000},
+  {pct:105, amt:11000},
+  {pct:110, amt:12000},
+  {pct:115, amt:13000},
+  {pct:120, amt:14250},
+  {pct:125, amt:15500},
+  {pct:130, amt:16750},
+];
+/* ค่าคอมพิเศษ: ใช้เฉพาะเมื่อเป้าต่อเดือนอยู่ในช่วง 200,000-400,000 บาท */
+const COMMISSION_SPECIAL_TABLE = [
+  {pct:80,  amt:1000},
+  {pct:90,  amt:1500},
+  {pct:100, amt:2000},
+];
+/* ค่าคอมเพิ่ม sale ต่อคน: คิดจากยอดขายรวมของร้านทั้งเดือน (ไม่แยกพนักงาน) */
+const COMMISSION_PERHEAD_TABLE = [
+  {min:400000, amt:3000},
+  {min:350000, amt:2500},
+  {min:300000, amt:2000},
+  {min:250000, amt:1500},
+  {min:200000, amt:1000},
+  {min:150000, amt:0},
+];
+function lookupTiered(table, pct){
+  let amt = 0;
+  for(const t of table){ if(pct >= t.pct) amt = t.amt; }
+  return amt;
+}
+function commissionInSpecialBand(target){
+  return target >= 200000 && target <= 400000;
+}
+function calcMainCommission(pct){
+  return pct >= 80 ? lookupTiered(COMMISSION_MAIN_TABLE, pct) : 0;
+}
+function calcSpecialCommission(pct, target){
+  if(!commissionInSpecialBand(target)) return 0;
+  return pct >= 80 ? lookupTiered(COMMISSION_SPECIAL_TABLE, pct) : 0;
+}
+function calcPerHeadCommission(sales){
+  for(const t of COMMISSION_PERHEAD_TABLE){ if(sales >= t.min) return t.amt; }
+  return 0;
+}
+function calcCommissionBreakdown(target, sales){
+  const pct = target > 0 ? (sales/target*100) : 0;
+  const main = calcMainCommission(pct);
+  const special = calcSpecialCommission(pct, target);
+  const perHead = calcPerHeadCommission(sales);
+  return { pct, main, special, perHead, total: main+special+perHead, inSpecialBand: commissionInSpecialBand(target) };
+}
 const THAI_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 
 const STORE_KEYS = { products:'tint:products', sales:'tint:sales', settings:'tint:settings', mksDay:'tint:mksDay', mksWeek:'tint:mksWeek' };
@@ -1704,6 +1830,7 @@ function switchToView(viewName){
     const activeSub=document.querySelector('#view-report .subtab-row .stbtn.active');
     if(!activeSub || activeSub.dataset.mks==='day') renderMksDay(); else renderMksWeek();
   }
+  if(viewName === 'commission'){ renderCommissionMonthOptions(); renderCommission(); }
 }
 document.querySelectorAll('nav.tabs button').forEach(btn=>{
   btn.addEventListener('click', ()=> switchToView(btn.dataset.view));
@@ -2211,6 +2338,80 @@ function renderDashboard(){
     `).join('');
   }
 }
+
+/* ================= commission calculator view ================= */
+function renderCommissionMonthOptions(){
+  const sel = document.getElementById('commMonthSelect');
+  const mSet = new Set(Object.keys(SETTINGS.targets||{}));
+  SALES.forEach(s=>mSet.add(monthKey(s.date)));
+  mSet.add(monthKey(todayISO()));
+  const months = Array.from(mSet).sort().reverse();
+  const prevVal = sel.value;
+  sel.innerHTML = months.map(m=>`<option value="${m}">${formatMonthTH(m)}</option>`).join('');
+  sel.value = months.includes(prevVal) ? prevVal : (months.includes(monthKey(todayISO())) ? monthKey(todayISO()) : months[0]);
+}
+function renderCommission(){
+  const mode = document.getElementById('commModeSelect').value;
+  const manualInputs = document.getElementById('commManualInputs');
+  manualInputs.style.display = mode==='manual' ? '' : 'none';
+
+  let target, sales;
+  if(mode==='manual'){
+    target = Number(document.getElementById('commManualTarget').value)||0;
+    sales = Number(document.getElementById('commManualSales').value)||0;
+  } else {
+    const mKey = document.getElementById('commMonthSelect').value || monthKey(todayISO());
+    target = getMonthTarget(mKey);
+    sales = SALES.filter(s=>monthKey(s.date)===mKey).reduce((a,s)=>a+s.total,0);
+  }
+
+  const r = calcCommissionBreakdown(target, sales);
+
+  document.getElementById('commTargetVal').textContent = fmt(target);
+  document.getElementById('commSalesVal').textContent = fmt(sales);
+  const pctEl = document.getElementById('commPctVal');
+  pctEl.textContent = r.pct.toFixed(1)+'%';
+  pctEl.classList.toggle('good', r.pct>=100);
+  pctEl.classList.toggle('warn', r.pct<80);
+  document.getElementById('commBandVal').textContent = r.inSpecialBand ? '200,000-400,000' : (target>0 ? 'นอกช่วง 200K-400K' : '—');
+
+  const rows = [
+    {
+      label: 'ค่าคอมหลัก (ตามเป้า)',
+      note: target>0 ? `ทำได้ ${r.pct.toFixed(1)}% ของเป้า ${fmt(target)} บาท` : 'ยังไม่ได้ตั้งเป้า',
+      amt: r.main, reached: r.main>0
+    },
+    {
+      label: 'ค่าคอมพิเศษ (เป้า 200K-400K)',
+      note: r.inSpecialBand ? `ทำได้ ${r.pct.toFixed(1)}% ของเป้า` : 'ใช้ได้เฉพาะเป้า 200,000-400,000 บาท',
+      amt: r.special, reached: r.special>0
+    },
+    {
+      label: 'ค่าคอมเพิ่ม sale ต่อคน',
+      note: `ยอดขายรวมร้าน ${fmt(sales)} บาท`,
+      amt: r.perHead, reached: r.perHead>0
+    }
+  ];
+  document.getElementById('commBreakdown').innerHTML = rows.map(row=>`
+    <div class="tier-row ${row.reached?'reached pass':''}">
+      <div class="tier-body">
+        <div class="amt">${row.label}</div>
+        <div class="gap">${row.note}</div>
+      </div>
+      <div class="tier-badge ${row.reached?'done':'pend'}">${fmt(row.amt)} บาท</div>
+    </div>
+  `).join('');
+
+  document.getElementById('commTotalVal').textContent = fmt(r.total)+' บาท';
+}
+document.getElementById('commMonthSelect').addEventListener('change', renderCommission);
+document.getElementById('commModeSelect').addEventListener('change', renderCommission);
+document.getElementById('commManualTarget').addEventListener('input', renderCommission);
+document.getElementById('commManualSales').addEventListener('input', renderCommission);
+document.getElementById('menuCommissionBtn').addEventListener('click', ()=>{
+  document.getElementById('menuDrawerBg').classList.remove('show');
+  switchToView('commission');
+});
 
 /* ================= history view ================= */
 document.querySelectorAll('#view-history .stbtn').forEach(btn=>{
