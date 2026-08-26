@@ -570,6 +570,42 @@
   .bars.daily-bars .bar-col .bar{max-width:14px; border-radius:2px 2px 1px 1px;}
   .bars.daily-bars .bar-col .mlabel{font-size:8px; margin-top:5px;}
 
+  /* ================= EXTRA: premium PC headcount dropdown ================= */
+  .pc-select{position:relative;}
+  .pc-select-trigger{
+    width:100%; display:flex; align-items:center; justify-content:space-between;
+    background:var(--surface2); border:1px solid var(--line); color:var(--paper);
+    border-radius:10px; padding:12px 14px; font-size:15px; font-family:var(--body);
+    cursor:pointer; transition:border-color .15s ease, background .15s ease; text-align:left;
+  }
+  .pc-select-trigger:active{background:var(--surface);}
+  .pc-select.open .pc-select-trigger{border-color:var(--ochre); background:var(--surface);}
+  .pc-select-value{font-family:var(--mono); font-weight:600; letter-spacing:0.2px; color:var(--paper);}
+  .pc-select-chevron{color:var(--paper-faint); transition:transform .2s ease; flex-shrink:0; margin-left:8px;}
+  .pc-select.open .pc-select-chevron{transform:rotate(180deg); color:var(--ochre);}
+
+  .pc-select-menu{
+    position:absolute; z-index:30; top:calc(100% + 8px); left:0; right:0;
+    background:linear-gradient(180deg, var(--surface2), var(--surface));
+    border:1px solid var(--line); border-radius:14px;
+    box-shadow:0 16px 36px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.3);
+    padding:6px; opacity:0; visibility:hidden; pointer-events:none;
+    transform:translateY(-6px) scale(0.98); transform-origin:top center;
+    transition:opacity .16s ease, transform .16s ease, visibility .16s;
+  }
+  .pc-select.open .pc-select-menu{opacity:1; visibility:visible; pointer-events:auto; transform:translateY(0) scale(1);}
+
+  .pc-select-option{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:11px 13px; border-radius:9px; font-size:14.5px; font-family:var(--body);
+    color:var(--paper-dim); cursor:pointer; transition:background .12s ease, color .12s ease;
+  }
+  .pc-select-option + .pc-select-option{margin-top:2px;}
+  .pc-select-option:active{background:rgba(215,168,104,0.10);}
+  .pc-select-option.active{background:rgba(215,168,104,0.14); color:var(--ochre); font-weight:600;}
+  .pc-select-option .pc-select-check{opacity:0; color:var(--ochre); transition:opacity .12s ease; flex-shrink:0; margin-left:8px;}
+  .pc-select-option.active .pc-select-check{opacity:1;}
+
   /* ================= EXTRA: MKS mini card ================= */
   .mks-mini-card{display:flex; align-items:center;}
   .mks-mini-row{display:flex; align-items:center; justify-content:space-between; width:100%;}
@@ -1003,7 +1039,14 @@
       </div>
       <label class="field" style="margin-bottom:0;">
         <span class="lbl">จำนวนพนักงาน (PC) ที่ร่วมทำยอดเดือนนี้</span>
-        <input type="number" inputmode="numeric" min="1" step="1" id="commHeadcount" placeholder="2">
+        <div class="pc-select" id="pcSelectWrap">
+          <button type="button" class="pc-select-trigger" id="pcSelectTrigger" aria-haspopup="listbox" aria-expanded="false">
+            <span class="pc-select-value" id="pcSelectValue">1 คน</span>
+            <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="pc-select-menu" id="pcSelectMenu" role="listbox"></div>
+        </div>
+        <input type="hidden" id="commHeadcount" value="">
       </label>
     </div>
 
@@ -2475,6 +2518,57 @@ function renderDailyTrend(){
 }
 
 /* ================= commission calculator view ================= */
+const PC_SELECT_OPTIONS = [1,2,3,4,5];
+function buildPcSelectMenu(){
+  const menu = document.getElementById('pcSelectMenu');
+  if(!menu) return;
+  menu.innerHTML = PC_SELECT_OPTIONS.map(n=>`
+    <div class="pc-select-option" data-val="${n}" role="option">
+      <span>${n} คน</span>
+      <svg class="pc-select-check" width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5L5 9.5L13 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  `).join('');
+  menu.querySelectorAll('.pc-select-option').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      const v = Number(opt.dataset.val);
+      syncPcSelectDisplay(v);
+      closePcSelectMenu();
+      document.getElementById('commHeadcount').dispatchEvent(new Event('input', {bubbles:true}));
+    });
+  });
+}
+function syncPcSelectDisplay(v){
+  const hidden = document.getElementById('commHeadcount');
+  if(hidden) hidden.value = v;
+  const label = document.getElementById('pcSelectValue');
+  if(label) label.textContent = v+' คน';
+  document.querySelectorAll('#pcSelectMenu .pc-select-option').forEach(opt=>{
+    opt.classList.toggle('active', Number(opt.dataset.val)===v);
+  });
+}
+function openPcSelectMenu(){
+  const wrap = document.getElementById('pcSelectWrap');
+  if(wrap) wrap.classList.add('open');
+  const trg = document.getElementById('pcSelectTrigger');
+  if(trg) trg.setAttribute('aria-expanded','true');
+}
+function closePcSelectMenu(){
+  const wrap = document.getElementById('pcSelectWrap');
+  if(wrap) wrap.classList.remove('open');
+  const trg = document.getElementById('pcSelectTrigger');
+  if(trg) trg.setAttribute('aria-expanded','false');
+}
+document.getElementById('pcSelectTrigger').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  const wrap = document.getElementById('pcSelectWrap');
+  wrap.classList.contains('open') ? closePcSelectMenu() : openPcSelectMenu();
+});
+document.addEventListener('click', (e)=>{
+  const wrap = document.getElementById('pcSelectWrap');
+  if(wrap && !wrap.contains(e.target)) closePcSelectMenu();
+});
+buildPcSelectMenu();
+
 function renderCommissionMonthOptions(){
   const sel = document.getElementById('commMonthSelect');
   const mSet = new Set(Object.keys(SETTINGS.targets||{}));
@@ -2500,7 +2594,8 @@ function renderCommission(){
     sales = SALES.filter(s=>monthKey(s.date)===mKey).reduce((a,s)=>a+s.total,0);
   }
   const headcountInput = document.getElementById('commHeadcount');
-  if(!headcountInput.value) headcountInput.value = SETTINGS.commHeadcount || 2;
+  if(!headcountInput.value) headcountInput.value = Math.min(5, Math.max(1, SETTINGS.commHeadcount || 2));
+  syncPcSelectDisplay(Number(headcountInput.value)||1);
   const headcount = Number(headcountInput.value)||1;
 
   const r = calcCommissionBreakdown(target, sales, headcount);
