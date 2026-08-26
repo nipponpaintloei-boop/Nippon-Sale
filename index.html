@@ -592,6 +592,7 @@
     padding:6px; opacity:0; visibility:hidden; pointer-events:none;
     transform:translateY(-6px) scale(0.98); transform-origin:top center;
     transition:opacity .16s ease, transform .16s ease, visibility .16s;
+    max-height:280px; overflow-y:auto;
   }
   .pc-select.open .pc-select-menu{opacity:1; visibility:visible; pointer-events:auto; transform:translateY(0) scale(1);}
 
@@ -605,6 +606,11 @@
   .pc-select-option.active{background:rgba(215,168,104,0.14); color:var(--ochre); font-weight:600;}
   .pc-select-option .pc-select-check{opacity:0; color:var(--ochre); transition:opacity .12s ease; flex-shrink:0; margin-left:8px;}
   .pc-select-option.active .pc-select-check{opacity:1;}
+
+  /* ================= EXTRA: generic custom-select (wraps native <select> app-wide, same style as PC dropdown) ================= */
+  .cselect-native{display:none !important;}
+  .pc-select-trigger:disabled{opacity:0.45; cursor:not-allowed;}
+  .pc-select-trigger .pc-select-value:empty::before{content:'\00a0';}
 
   /* ================= EXTRA: MKS mini card ================= */
   .mks-mini-card{display:flex; align-items:center;}
@@ -712,11 +718,25 @@
       <div class="row2">
         <label class="field">
           <span class="lbl">ขนาด</span>
-          <select id="sizeSelect" disabled><option>เลือกสินค้าก่อน</option></select>
+          <div class="pc-select cselect">
+            <select id="sizeSelect" class="cselect-native" disabled><option>เลือกสินค้าก่อน</option></select>
+            <button type="button" class="pc-select-trigger" disabled aria-haspopup="listbox" aria-expanded="false">
+              <span class="pc-select-value">เลือกสินค้าก่อน</span>
+              <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="pc-select-menu" role="listbox"></div>
+          </div>
         </label>
         <label class="field">
           <span class="lbl">เบส (Base)</span>
-          <select id="baseSelect" disabled><option>—</option></select>
+          <div class="pc-select cselect">
+            <select id="baseSelect" class="cselect-native" disabled><option>—</option></select>
+            <button type="button" class="pc-select-trigger" disabled aria-haspopup="listbox" aria-expanded="false">
+              <span class="pc-select-value">—</span>
+              <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="pc-select-menu" role="listbox"></div>
+          </div>
         </label>
       </div>
       <div class="price-chip" id="priceChip" style="display:none;">฿<span id="priceVal">0</span> / หน่วย</div>
@@ -781,7 +801,14 @@
     <div id="histMonthPanel" style="display:none;">
       <label class="field">
         <span class="lbl">เลือกเดือนที่ต้องการดูย้อนหลัง</span>
-        <select id="histMonth"></select>
+        <div class="pc-select cselect">
+          <select id="histMonth" class="cselect-native"></select>
+          <button type="button" class="pc-select-trigger" aria-haspopup="listbox" aria-expanded="false">
+            <span class="pc-select-value"></span>
+            <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="pc-select-menu" role="listbox"></div>
+        </div>
       </label>
       <div class="hist-target-row" id="histMonthTargetRow">
         <span>เป้าหมายเดือนนี้: <b id="histMonthTargetVal">0</b> บาท (<span id="histMonthTargetPct">0%</span>)</span>
@@ -789,7 +816,14 @@
       </div>
       <div class="history-tools">
         <input type="text" id="histMonthSearch" placeholder="ค้นหาสินค้า / SKU / รหัสสี...">
-        <select id="histMonthSort"><option value="dateDesc">ล่าสุดก่อน</option><option value="dateAsc">เก่าสุดก่อน</option><option value="amountDesc">ยอดสูง→ต่ำ</option><option value="amountAsc">ยอดต่ำ→สูง</option></select>
+        <div class="pc-select cselect">
+          <select id="histMonthSort" class="cselect-native"><option value="dateDesc">ล่าสุดก่อน</option><option value="dateAsc">เก่าสุดก่อน</option><option value="amountDesc">ยอดสูง→ต่ำ</option><option value="amountAsc">ยอดต่ำ→สูง</option></select>
+          <button type="button" class="pc-select-trigger" aria-haspopup="listbox" aria-expanded="false">
+            <span class="pc-select-value">ล่าสุดก่อน</span>
+            <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="pc-select-menu" role="listbox"></div>
+        </div>
       </div>
       <div class="stat-grid" style="margin-bottom:14px;">
         <div class="stat-card">
@@ -1017,14 +1051,28 @@
       <div class="row2">
         <label class="field">
           <span class="lbl">เดือน</span>
-          <select id="commMonthSelect"></select>
+          <div class="pc-select cselect">
+            <select id="commMonthSelect" class="cselect-native"></select>
+            <button type="button" class="pc-select-trigger" aria-haspopup="listbox" aria-expanded="false">
+              <span class="pc-select-value"></span>
+              <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="pc-select-menu" role="listbox"></div>
+          </div>
         </label>
         <label class="field">
           <span class="lbl">โหมด</span>
-          <select id="commModeSelect">
-            <option value="auto">ใช้ข้อมูลจริง</option>
-            <option value="manual">กรอกเอง (จำลอง)</option>
-          </select>
+          <div class="pc-select cselect">
+            <select id="commModeSelect" class="cselect-native">
+              <option value="auto">ใช้ข้อมูลจริง</option>
+              <option value="manual">กรอกเอง (จำลอง)</option>
+            </select>
+            <button type="button" class="pc-select-trigger" aria-haspopup="listbox" aria-expanded="false">
+              <span class="pc-select-value">ใช้ข้อมูลจริง</span>
+              <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="pc-select-menu" role="listbox"></div>
+          </div>
         </label>
       </div>
       <div class="row2" id="commManualInputs" style="display:none;">
@@ -1100,7 +1148,14 @@
     <h3>ตั้งเป้าหมายยอดขาย</h3>
     <label class="field">
       <span class="lbl">เดือน</span>
-      <select id="targetMonthSelect"></select>
+      <div class="pc-select cselect">
+        <select id="targetMonthSelect" class="cselect-native"></select>
+        <button type="button" class="pc-select-trigger" aria-haspopup="listbox" aria-expanded="false">
+          <span class="pc-select-value"></span>
+          <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="pc-select-menu" role="listbox"></div>
+      </div>
     </label>
     <label class="field">
       <span class="lbl">เป้าหมาย 100% (บาท)</span>
@@ -1232,16 +1287,16 @@
     <h3>ตั้งค่า</h3>
     <div class="auth-user" style="margin-bottom:14px"><span id="settingsUserName">ผู้ใช้</span></div>
     <p class="hint">ข้อมูลทั้งหมด (ยอดขาย, สต็อก, สินค้า, เป้าหมาย) ถูกเก็บไว้ในเครื่อง/บัญชีนี้เท่านั้น ข้อมูลย้อนหลังตั้งแต่ ม.ค.–ส.ค. 2569 ถูกดึงมาจากไฟล์ Excel ต้นฉบับให้แล้ว</p>
-    <button class="btn btn-teal" id="clearCacheBtn">
+    <button class="btn btn-teal" id="clearCacheBtn" style="margin-top:8px;">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
       ล้างแคช / รีเฟรชแอป
     </button>
-    <p class="hint" style="margin-top:-10px;">ใช้เมื่ออัปโหลดโค้ดเวอร์ชันใหม่ขึ้น repo แล้วแอปยังแสดงเวอร์ชันเก่าอยู่ (ไม่ลบข้อมูลยอดขาย/สต็อก)</p>
+    <p class="hint" style="margin-top:8px;">ใช้เมื่ออัปโหลดโค้ดเวอร์ชันใหม่ขึ้น repo แล้วแอปยังแสดงเวอร์ชันเก่าอยู่ (ไม่ลบข้อมูลยอดขาย/สต็อก)</p>
     <button class="btn btn-ghost" id="exportBtn">ส่งออก Excel (.xlsx)</button>
     <button class="btn btn-ghost" id="importBtn">กู้คืน Backup (.xls)</button>
     <input type="file" id="importFile" accept=".xls,.html,.htm" style="display:none">
     <button class="btn btn-ghost" id="autoBackupToggleBtn">สำรอง Excel อัตโนมัติทุกสิ้นเดือน: ปิด</button>
-    <p class="hint" style="margin-top:-10px;">เมื่อเปิดไว้ แอปจะดาวน์โหลดไฟล์ Excel สำรองให้อัตโนมัติช่วง 1–2 วันสุดท้ายของทุกเดือน กันข้อมูลหาย</p>
+    <p class="hint" style="margin-top:8px;">เมื่อเปิดไว้ แอปจะดาวน์โหลดไฟล์ Excel สำรองให้อัตโนมัติช่วง 1–2 วันสุดท้ายของทุกเดือน กันข้อมูลหาย</p>
     <button class="btn btn-ghost" id="setPinBtn">ตั้ง / เปลี่ยน PIN</button>
     <button class="btn btn-danger-ghost" id="removePinBtn">ลบ PIN ออก (ปิดการล็อก)</button>
     <button class="btn btn-danger-ghost" id="confirmResetBtn">รีเซ็ตกลับเป็นค่าเริ่มต้นจากไฟล์ต้นฉบับ</button>
@@ -2568,6 +2623,85 @@ document.addEventListener('click', (e)=>{
   if(wrap && !wrap.contains(e.target)) closePcSelectMenu();
 });
 buildPcSelectMenu();
+
+/* ================= EXTRA: generic custom-select enhancer =================
+   Wraps every remaining native <select> in the app with the same premium
+   dropdown style/behaviour used above for the PC headcount select, while
+   keeping the original <select> element (same id) alive and hidden so all
+   existing code that reads/sets .value, .disabled, .innerHTML or listens
+   for 'change' keeps working exactly as before. */
+function enhanceCSelect(selectId){
+  const select = document.getElementById(selectId);
+  if(!select) return;
+  const wrap = select.closest('.cselect');
+  if(!wrap) return;
+  const trigger = wrap.querySelector('.pc-select-trigger');
+  const valueEl = wrap.querySelector('.pc-select-value');
+  const menu = wrap.querySelector('.pc-select-menu');
+
+  function buildMenu(){
+    menu.innerHTML = Array.from(select.options).map((opt,i)=>`
+      <div class="pc-select-option${i===select.selectedIndex?' active':''}" data-idx="${i}" role="option">
+        <span>${opt.textContent}</span>
+        <svg class="pc-select-check" width="14" height="11" viewBox="0 0 14 11" fill="none"><path d="M1 5.5L5 9.5L13 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    `).join('');
+    menu.querySelectorAll('.pc-select-option').forEach(optEl=>{
+      optEl.addEventListener('click', ()=>{
+        const idx = Number(optEl.dataset.idx);
+        if(select.selectedIndex !== idx){
+          select.selectedIndex = idx;
+          select.dispatchEvent(new Event('change', {bubbles:true}));
+        }
+        syncDisplay();
+        setTimeout(closeMenu, 150);
+      });
+    });
+  }
+  function syncDisplay(){
+    const opt = select.options[select.selectedIndex];
+    valueEl.textContent = opt ? opt.textContent : '';
+    trigger.disabled = select.disabled;
+    menu.querySelectorAll('.pc-select-option').forEach(optEl=>{
+      optEl.classList.toggle('active', Number(optEl.dataset.idx)===select.selectedIndex);
+    });
+  }
+  function openMenu(){
+    if(select.disabled) return;
+    wrap.classList.add('open');
+    trigger.setAttribute('aria-expanded','true');
+  }
+  function closeMenu(){
+    wrap.classList.remove('open');
+    trigger.setAttribute('aria-expanded','false');
+  }
+
+  trigger.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    if(select.disabled) return;
+    wrap.classList.contains('open') ? closeMenu() : openMenu();
+  });
+  document.addEventListener('click', (e)=>{
+    if(!wrap.contains(e.target)) closeMenu();
+  });
+
+  // catch options being rebuilt (innerHTML=...) or disabled toggled elsewhere
+  const obs = new MutationObserver(()=>{ buildMenu(); syncDisplay(); });
+  obs.observe(select, {childList:true, subtree:true, attributes:true, attributeFilter:['disabled']});
+  select.addEventListener('change', syncDisplay);
+
+  // catch plain `select.value = ...` assignments (no DOM mutation happens for those)
+  const nativeDesc = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+  Object.defineProperty(select, 'value', {
+    configurable:true,
+    get(){ return nativeDesc.get.call(select); },
+    set(v){ nativeDesc.set.call(select, v); syncDisplay(); }
+  });
+
+  buildMenu();
+  syncDisplay();
+}
+['sizeSelect','baseSelect','histMonth','histMonthSort','commMonthSelect','commModeSelect','targetMonthSelect'].forEach(enhanceCSelect);
 
 function renderCommissionMonthOptions(){
   const sel = document.getElementById('commMonthSelect');
