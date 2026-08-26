@@ -1235,9 +1235,23 @@ async function fetchSalesTable(){
   const client = supaClient();
   if(!client) return null;
   try{
-    const {data,error} = await client.from('sales_entries').select('*').order('date',{ascending:true});
-    if(error){ console.warn('fetchSalesTable failed (table may not exist yet — see migration SQL):', error.message); return null; }
-    return data.map(fromSalesRow);
+    // Supabase/PostgREST caps any unbounded select at 1000 rows by default, so a single
+    // query silently truncates once the table grows past that — the missing rows are the
+    // newest ones (since we order ascending by date), which looks like "recent sales vanished".
+    // Page through with .range() until a page comes back short of PAGE_SIZE.
+    const PAGE_SIZE = 1000;
+    let all = [];
+    let from = 0;
+    while(true){
+      const to = from + PAGE_SIZE - 1;
+      const {data,error} = await client.from('sales_entries').select('*').order('date',{ascending:true}).range(from,to);
+      if(error){ console.warn('fetchSalesTable failed (table may not exist yet — see migration SQL):', error.message); return all.length ? all.map(fromSalesRow) : null; }
+      if(!data || !data.length) break;
+      all = all.concat(data);
+      if(data.length < PAGE_SIZE) break;
+      from += PAGE_SIZE;
+    }
+    return all.map(fromSalesRow);
   }catch(e){ console.warn('fetchSalesTable failed:', e); return null; }
 }
 async function upsertSalesRows(entries){
