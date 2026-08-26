@@ -8,7 +8,7 @@
 <link rel="icon" href="/favicon-16.png" sizes="16x16">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#181a17">
+<meta name="theme-color" content="#14161c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="NIPPON SALE">
@@ -16,20 +16,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#1a1d17;
-    --surface:#242720;
-    --surface2:#2d3127;
+    --ink:#14161c;
+    --surface:#1c212b;
+    --surface2:#252c39;
     --line: rgba(237,234,226,0.11);
     --line-soft: rgba(237,234,226,0.07);
     --paper:#f5f2e9;
     --paper-dim: rgba(245,242,233,0.60);
     --paper-faint: rgba(245,242,233,0.36);
-    --ochre:#d7a868;
-    --ochre-soft:#8a6a3a;
+    --ochre:#f0b23c;
+    --ochre-soft:#a8761f;
     --ochre-ink:#241a09;
-    --teal:#7bafa5;
-    --clay:#c97a61;
-    --moss:#95b57a;
+    --teal:#5f8fd8;
+    --clay:#d35b4e;
+    --moss:#7cbf72;
     --radius: 14px;
     --radius-lg: 20px;
     --disp: 'Kanit', sans-serif;
@@ -41,7 +41,7 @@
   body{
     min-height:100vh;
     padding-bottom:92px;
-    background-image: radial-gradient(ellipse 700px 360px at 50% -10%, rgba(215,168,104,0.10), transparent);
+    background-image: radial-gradient(ellipse 700px 360px at 50% -10%, rgba(240,178,60,0.10), transparent);
   }
   ::selection{background:var(--ochre); color:var(--ochre-ink);}
   button, input, select{font-family:inherit;}
@@ -59,7 +59,9 @@
     background:var(--surface2); border:1px solid var(--line);
     display:flex;align-items:center;justify-content:center;
     font-family:var(--disp); font-weight:700; font-size:13px; letter-spacing:0.4px; color:var(--ochre);
+    overflow:hidden;
   }
+  .brand-mark img{width:100%; height:100%; object-fit:cover; display:block;}
   .brand-text .name{font-family:var(--disp); font-weight:600; font-size:16.5px; letter-spacing:0.3px;}
   .brand-text .sub{font-size:10.5px; color:var(--paper-faint); margin-top:1px;}
   .icon-btn{
@@ -149,7 +151,7 @@
   }
   .suggest-item{padding:11px 13px; font-size:14px; border-bottom:1px solid var(--line); cursor:pointer;}
   .suggest-item:last-child{border-bottom:none;}
-  .suggest-item:active, .suggest-item.hl{background:rgba(217,164,65,0.14);}
+  .suggest-item:active, .suggest-item.hl{background:rgba(240,178,60,0.14);}
   .suggest-item .meta{font-size:11.5px; color:var(--paper-dim); margin-top:2px; font-family:var(--mono);}
 
   .price-chip{
@@ -174,9 +176,9 @@
   .btn-primary:active{opacity:0.9;}
   .btn-ghost{background:transparent; color:var(--paper-dim); border:1px solid var(--line); margin-top:8px;}
   .btn-ghost:active{background:var(--surface2);}
-  .btn-danger-ghost{background:transparent; color:var(--clay); border:1px solid rgba(181,101,78,0.3);}
+  .btn-danger-ghost{background:transparent; color:var(--clay); border:1px solid rgba(191,70,59,0.3);}
   .btn-sm{width:auto; padding:9px 14px; font-size:13px; border-radius:9px;}
-  .btn-teal{background:transparent; color:var(--teal); border:1px solid rgba(107,156,147,0.35);}
+  .btn-teal{background:transparent; color:var(--teal); border:1px solid rgba(95,143,216,0.35);}
 
   .list-row{
     display:flex; align-items:center; gap:12px; padding:13px 4px; border-bottom:1px solid var(--line);
@@ -219,10 +221,10 @@
   .status-tag{
     font-size:10.5px; font-family:var(--mono); font-weight:600; padding:5px 9px; border-radius:7px; flex-shrink:0; text-align:center;
   }
-  .status-ok{background:rgba(132,160,105,0.14); color:var(--moss);}
-  .status-low{background:rgba(199,153,90,0.14); color:var(--ochre);}
+  .status-ok{background:rgba(107,170,97,0.14); color:var(--moss);}
+  .status-low{background:rgba(224,163,46,0.14); color:var(--ochre);}
   .status-out{background:var(--surface2); color:var(--paper-faint);}
-  .status-over{background:rgba(181,101,78,0.14); color:var(--clay);}
+  .status-over{background:rgba(191,70,59,0.14); color:var(--clay);}
 
   .empty{
     text-align:center; padding:34px 10px; color:var(--paper-faint); font-size:13px;
@@ -232,7 +234,7 @@
   .tier-table{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; margin-bottom:12px;}
   .tier-row{display:flex; align-items:center; gap:10px; padding:13px 14px; border-bottom:1px solid var(--line);}
   .tier-row:last-child{border-bottom:none;}
-  .tier-row.pass{background:rgba(132,160,105,0.06);}
+  .tier-row.pass{background:rgba(107,170,97,0.06);}
   .tier-pct{
     width:42px; flex-shrink:0; font-family:var(--mono); font-weight:600; font-size:12.5px;
     text-align:center; padding:4px 0; border-radius:7px; background:var(--surface2); color:var(--paper-faint);
@@ -242,7 +244,7 @@
   .tier-body .amt{font-family:var(--mono); font-size:12.5px; color:var(--paper);}
   .tier-body .gap{font-size:11px; color:var(--paper-faint); margin-top:2px;}
   .tier-badge{font-size:10px; flex-shrink:0; font-family:var(--mono); font-weight:600; padding:4px 8px; border-radius:7px;}
-  .tier-badge.done{background:rgba(132,160,105,0.16); color:var(--moss);}
+  .tier-badge.done{background:rgba(107,170,97,0.16); color:var(--moss);}
   .tier-badge.pend{background:var(--surface2); color:var(--paper-faint);}
   .pass-note{font-size:11px; color:var(--paper-faint); text-align:center; padding:8px 4px 2px;}
   .pass-note.warn-note{color:var(--clay);}
@@ -251,7 +253,7 @@
   .tier-row .gdel{background:none; border:none; color:var(--clay); font-size:18px; cursor:pointer; padding:2px 6px; flex-shrink:0; line-height:1;}
   .mode-toggle{display:flex; gap:8px; margin-bottom:14px;}
   .mode-toggle button{flex:1; padding:11px; border-radius:10px; border:1px solid var(--line); background:var(--surface2); color:var(--paper-dim); font-family:var(--body); font-size:13px; cursor:pointer;}
-  .mode-toggle button.active{border-color:var(--ochre); color:var(--ochre); background:rgba(215,168,104,0.10); font-weight:600;}
+  .mode-toggle button.active{border-color:var(--ochre); color:var(--ochre); background:rgba(240,178,60,0.10); font-weight:600;}
 
   /* history */
   .day-group{margin-bottom:18px;}
@@ -304,7 +306,7 @@
   nav.tabs button.fab-btn .ic{
     width:48px; height:48px; border-radius:50%; margin-top:-26px;
     background:linear-gradient(160deg,#e9be6c,#c7995a);
-    box-shadow:0 10px 22px rgba(199,153,90,0.4), 0 3px 10px rgba(0,0,0,0.35);
+    box-shadow:0 10px 22px rgba(224,163,46,0.4), 0 3px 10px rgba(0,0,0,0.35);
     border:3px solid var(--ink);
   }
   nav.tabs button.fab-btn .ic svg{width:21px; height:21px; stroke:var(--ochre-ink); stroke-width:2.1;}
@@ -337,7 +339,7 @@
   }
   .drawer-item:active{background:var(--surface2);}
   .drawer-item .di-ic{
-    width:34px; height:34px; flex-shrink:0; border-radius:9px; background:rgba(199,153,90,0.14);
+    width:34px; height:34px; flex-shrink:0; border-radius:9px; background:rgba(224,163,46,0.14);
     display:flex; align-items:center; justify-content:center; color:var(--ochre);
   }
   .drawer-item .di-ic svg{width:17px; height:17px; stroke-width:2;}
@@ -415,7 +417,7 @@
 
   /* ================= MKS REPORT (daily/weekly competitor share) ================= */
   .mks-row{background:var(--surface); border:1px solid var(--line); border-radius:13px; padding:13px 14px; margin-bottom:8px;}
-  .mks-row.us{border-color:rgba(199,153,90,0.4); background:rgba(199,153,90,0.06);}
+  .mks-row.us{border-color:rgba(224,163,46,0.4); background:rgba(224,163,46,0.06);}
   .mks-row .mtop{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
   .mks-row .mbrand{display:flex; align-items:center; gap:7px; font-family:var(--disp); font-weight:600; font-size:14px;}
   .mks-row .mbrand .tag-us{font-size:9px; font-family:var(--body); font-weight:700; color:var(--ochre-ink); background:var(--ochre); padding:2px 7px; border-radius:6px; letter-spacing:0.3px;}
@@ -451,7 +453,7 @@
   .mks-capture .cap-title{font-family:var(--disp); font-weight:600; font-size:17px; margin:2px 0 3px;}
   .mks-capture .cap-date{font-size:12px; color:var(--paper-faint); margin-bottom:16px; font-family:var(--mono);}
   .mks-capture .cap-row{display:flex; align-items:center; justify-content:space-between; padding:10px 2px; border-bottom:1px solid var(--line);}
-  .mks-capture .cap-row.us{background:rgba(199,153,90,0.08); margin:0 -10px; padding:10px 12px; border-radius:10px; border-bottom-color:rgba(199,153,90,0.18);}
+  .mks-capture .cap-row.us{background:rgba(224,163,46,0.08); margin:0 -10px; padding:10px 12px; border-radius:10px; border-bottom-color:rgba(224,163,46,0.18);}
   .mks-capture .cap-left{min-width:0;}
   .mks-capture .cap-brand{font-family:var(--disp); font-weight:600; font-size:13.5px; display:flex; align-items:center; gap:6px;}
   .mks-capture .cap-brand .tag-us{font-size:8.5px; font-family:var(--body); font-weight:700; color:var(--ochre-ink); background:var(--ochre); padding:2px 6px; border-radius:5px;}
@@ -540,20 +542,20 @@
   /* ================= EXTRA: today target chip ================= */
   .today-target-chip{
     margin-top:7px; text-align:center; font-family:var(--mono); font-weight:600; font-size:9.5px; color:var(--ochre);
-    background:rgba(215,168,104,0.14); border:1px solid rgba(215,168,104,0.32); border-radius:12px; padding:4px 6px;
+    background:rgba(240,178,60,0.14); border:1px solid rgba(240,178,60,0.32); border-radius:12px; padding:4px 6px;
     line-height:1.4; white-space:normal;
   }
-  .today-target-chip.hit{color:var(--moss); background:rgba(149,181,122,0.16); border-color:rgba(149,181,122,0.4);}
+  .today-target-chip.hit{color:var(--moss); background:rgba(124,191,114,0.16); border-color:rgba(124,191,114,0.4);}
 
   /* ================= EXTRA: gap-to-target & daily-pace highlights ================= */
   .gap-highlight{
     margin-top:12px;
     font-family:var(--disp); font-weight:600; font-size:13px; line-height:1.55;
     padding:10px 14px; border-radius:11px;
-    background:rgba(215,168,104,0.16); color:var(--ochre); border:1px solid rgba(215,168,104,0.3);
+    background:rgba(240,178,60,0.16); color:var(--ochre); border:1px solid rgba(240,178,60,0.3);
   }
   .gap-highlight b{font-family:var(--mono); font-weight:700; font-size:14.5px; white-space:nowrap;}
-  .gap-highlight.done{background:rgba(149,181,122,0.18); color:var(--moss); border-color:rgba(149,181,122,0.38);}
+  .gap-highlight.done{background:rgba(124,191,114,0.18); color:var(--moss); border-color:rgba(124,191,114,0.38);}
   .pace-highlight{
     margin-top:8px;
     font-size:11px; line-height:1.5; color:var(--paper-dim); font-family:var(--body);
@@ -563,13 +565,13 @@
   .pace-highlight .p-val{font-family:var(--mono); font-weight:700; font-size:17px; color:var(--paper);}
   .pace-highlight .p-unit{font-family:var(--mono); font-size:11px; color:var(--paper-dim); margin-left:5px;}
   .pace-highlight .p-days{display:block; margin-top:3px; font-size:10.5px; color:var(--paper-faint);}
-  .pace-highlight.urgent{background:rgba(201,122,97,0.14); border-color:rgba(201,122,97,0.34);}
+  .pace-highlight.urgent{background:rgba(211,91,78,0.14); border-color:rgba(211,91,78,0.34);}
   .pace-highlight.urgent .p-val{color:var(--clay);}
 
   /* ================= EXTRA: recent-edits warning badge & daily trend bars ================= */
   .warn-badge{
     display:inline-block; font-family:var(--body); font-weight:600; font-size:9.5px; letter-spacing:0.3px;
-    color:var(--clay); background:rgba(201,122,97,0.16); border:1px solid rgba(201,122,97,0.34);
+    color:var(--clay); background:rgba(211,91,78,0.16); border:1px solid rgba(211,91,78,0.34);
     border-radius:999px; padding:2px 7px; margin-right:5px; vertical-align:middle;
   }
   .time-tag{font-family:var(--mono); font-size:10.5px; color:var(--paper-faint); white-space:nowrap;}
@@ -609,8 +611,8 @@
     color:var(--paper-dim); cursor:pointer; transition:background .12s ease, color .12s ease;
   }
   .pc-select-option + .pc-select-option{margin-top:2px;}
-  .pc-select-option:active{background:rgba(215,168,104,0.10);}
-  .pc-select-option.active{background:rgba(215,168,104,0.14); color:var(--ochre); font-weight:600;}
+  .pc-select-option:active{background:rgba(240,178,60,0.10);}
+  .pc-select-option.active{background:rgba(240,178,60,0.14); color:var(--ochre); font-weight:600;}
   .pc-select-option .pc-select-check{opacity:0; color:var(--ochre); transition:opacity .12s ease; flex-shrink:0; margin-left:8px;}
   .pc-select-option.active .pc-select-check{opacity:1;}
 
@@ -640,7 +642,7 @@
 <div class="auth-gate" id="authGate" aria-modal="true" role="dialog">
   <div class="auth-card">
     <div class="auth-brand">
-      <div class="brand-mark">NS</div>
+      <div class="brand-mark"><img src="/icon-192.png" alt="Nippon Sale"></div>
       <div>
         <div class="auth-title">NIPPON SALE</div>
         <div class="auth-subtitle">เข้าสู่ระบบเพื่อใช้งานแอป</div>
@@ -657,7 +659,7 @@
 </div>
 <header class="top">
   <div class="brand">
-    <div class="brand-mark">NS</div>
+    <div class="brand-mark"><img src="/icon-192.png" alt="Nippon Sale"></div>
     <div class="brand-text">
       <div class="name">NIPPON SALE</div>
       <div class="sub">Nippon Paint · Global House เลย</div>
@@ -675,7 +677,7 @@
   <div class="drawer">
     <div class="drawer-hdr">
       <div class="brand">
-        <div class="brand-mark">NS</div>
+        <div class="brand-mark"><img src="/icon-192.png" alt="Nippon Sale"></div>
         <div class="brand-text">
           <div class="name">NIPPON SALE</div>
           <div class="sub">เมนู</div>
@@ -854,8 +856,8 @@
           <defs>
             <clipPath id="bucketClip"><path d="M17 34 L67 34 L59 90 Q42 96 25 90 Z"/></clipPath>
             <linearGradient id="fillGrad" x1="0" y1="1" x2="0" y2="0">
-              <stop offset="0%" stop-color="#8a6a3a"/>
-              <stop offset="100%" stop-color="#e9be6c"/>
+              <stop offset="0%" stop-color="#a8761f"/>
+              <stop offset="100%" stop-color="#f7cf7a"/>
             </linearGradient>
           </defs>
           <path d="M27 34 Q42 6 57 34" fill="none" stroke="rgba(237,234,226,0.28)" stroke-width="2.4" stroke-linecap="round"/>
