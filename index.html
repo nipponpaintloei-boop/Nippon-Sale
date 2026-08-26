@@ -1012,7 +1012,7 @@
       </div>
     </div>
 
-    <div class="pass-note">* ค่าคอมหลักจ่ายเมื่อทำยอดถึง 80% ของเป้า (เป้า 200,000–600,000 บาท/เดือน ใช้ตารางเดียวกัน) · ค่าคอมพิเศษใช้เฉพาะเป้า 200,000–400,000 บาท · ค่าคอมต่อคนคิดจากยอดขายรวมของร้าน ÷ จำนวนพนักงาน แล้วจ่ายเป็นค่าคอม "ต่อคน" (แสดงยอดเดียว ไม่คูณจำนวนคน) · ทุกรายการที่เข้าเงื่อนไขจะบวกรวมกันเป็นยอดคอมทั้งหมด</div>
+    <div class="pass-note">* ทุกส่วน (หลัก / พิเศษ / ต่อคน) จ่ายก็ต่อเมื่อยอดขายรวมของร้านถึง 80% ของเป้าเดือนนั้นก่อนเท่านั้น — ถ้าไม่ถึง 80% จะไม่ได้รับค่าคอมเลยแม้ยอดต่อคนจะถึงเกณฑ์ก็ตาม · ค่าคอมหลักใช้ตารางเดียวกันทั้งเป้า 200,000–600,000 บาท/เดือน · ค่าคอมพิเศษใช้เฉพาะเป้า 200,000–400,000 บาท · ค่าคอมต่อคนคิดจากยอดขายรวมของร้าน ÷ จำนวนพนักงาน แล้วจ่ายเป็นค่าคอม "ต่อคน" (แสดงยอดเดียว ไม่คูณจำนวนคน) · ทุกรายการที่เข้าเงื่อนไขจะบวกรวมกันเป็นยอดคอมทั้งหมด</div>
   </section>
 
 </main>
@@ -1259,7 +1259,8 @@ function calcSpecialCommission(pct, target){
   if(!commissionInSpecialBand(target)) return 0;
   return pct >= 80 ? lookupTiered(COMMISSION_SPECIAL_TABLE, pct) : 0;
 }
-function calcPerHeadCommission(sales, headcount){
+function calcPerHeadCommission(sales, headcount, pctReached){
+  if(!pctReached) return 0;
   const hc = headcount>0 ? headcount : 1;
   const perPerson = sales / hc;
   for(const t of COMMISSION_PERHEAD_TABLE){ if(perPerson >= t.min) return t.amt; }
@@ -1267,12 +1268,13 @@ function calcPerHeadCommission(sales, headcount){
 }
 function calcCommissionBreakdown(target, sales, headcount){
   const pct = target > 0 ? (sales/target*100) : 0;
+  const monthGoalReached = pct >= 80;
   const main = calcMainCommission(pct);
   const special = calcSpecialCommission(pct, target);
   const hc = headcount>0 ? headcount : 1;
   const perPersonSales = sales / hc;
-  const perHead = calcPerHeadCommission(sales, hc);
-  return { pct, main, special, perHead, perPersonSales, headcount: hc, total: main+special+perHead, inSpecialBand: commissionInSpecialBand(target) };
+  const perHead = calcPerHeadCommission(sales, hc, monthGoalReached);
+  return { pct, main, special, perHead, perPersonSales, headcount: hc, monthGoalReached, total: main+special+perHead, inSpecialBand: commissionInSpecialBand(target) };
 }
 const THAI_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 
@@ -2400,7 +2402,9 @@ function renderCommission(){
     },
     {
       label: 'ค่าคอมเพิ่ม sale ต่อคน',
-      note: `ยอดขายรวมร้าน ${fmt(sales)} ÷ ${r.headcount} คน = ${fmt(r.perPersonSales)} บาท/คน (จ่ายต่อคน)`,
+      note: r.monthGoalReached
+        ? `ยอดขายรวมร้าน ${fmt(sales)} ÷ ${r.headcount} คน = ${fmt(r.perPersonSales)} บาท/คน (จ่ายต่อคน)`
+        : `ยังไม่ถึง 80% ของเป้า (ได้ ${r.pct.toFixed(1)}%) — ยังไม่จ่ายค่าคอมส่วนนี้`,
       amt: r.perHead, reached: r.perHead>0
     }
   ];
