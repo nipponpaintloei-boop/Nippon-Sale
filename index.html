@@ -559,6 +559,17 @@
   .pace-highlight.urgent{background:rgba(201,122,97,0.14); border-color:rgba(201,122,97,0.34);}
   .pace-highlight.urgent .p-val{color:var(--clay);}
 
+  /* ================= EXTRA: recent-edits warning badge & daily trend bars ================= */
+  .warn-badge{
+    display:inline-block; font-family:var(--body); font-weight:600; font-size:9.5px; letter-spacing:0.3px;
+    color:var(--clay); background:rgba(201,122,97,0.16); border:1px solid rgba(201,122,97,0.34);
+    border-radius:999px; padding:2px 7px; margin-right:5px; vertical-align:middle;
+  }
+  .time-tag{font-family:var(--mono); font-size:10.5px; color:var(--paper-faint); white-space:nowrap;}
+  .bars.daily-bars{gap:2px;}
+  .bars.daily-bars .bar-col .bar{max-width:14px; border-radius:2px 2px 1px 1px;}
+  .bars.daily-bars .bar-col .mlabel{font-size:8px; margin-top:5px;}
+
   /* ================= EXTRA: MKS mini card ================= */
   .mks-mini-card{display:flex; align-items:center;}
   .mks-mini-row{display:flex; align-items:center; justify-content:space-between; width:100%;}
@@ -813,6 +824,19 @@
         <div class="val" id="dashPct">0%</div>
       </div>
     </div>
+
+    <div class="sec-title"><span class="t">แนวโน้มยอดขายรายวัน — <span id="dailyTrendMonthLbl"></span></span></div>
+    <div class="chart-card">
+      <div class="bars daily-bars" id="dailyTrendBars"></div>
+      <div class="legend-row">
+        <div class="lg"><span class="sw" style="background:var(--ochre);"></span>มียอดขาย</div>
+        <div class="lg"><span class="sw" style="background:var(--surface2); border:1px dashed var(--line);"></span>ยังไม่ถึงวันนี้</div>
+      </div>
+      <div class="pace-highlight" id="dailyTrendForecast" style="margin-top:14px;"></div>
+    </div>
+
+    <div class="sec-title"><span class="t">การแก้ไขล่าสุด</span><button class="link-btn" id="recentEditsMoreBtn">ดูทั้งหมด</button></div>
+    <div class="card" id="recentEditsCard" style="padding:6px 12px;"></div>
 
     <div class="sec-title"><span class="t">มาร์เก็ตแชร์วันนี้ (MKS)</span></div>
     <div class="card mks-mini-card" id="mksMiniCard" style="padding:14px 16px; cursor:pointer;">
@@ -1153,7 +1177,7 @@
 <!-- modal: stock audit -->
 <div class="modal-bg" id="auditModalBg">
   <div class="modal">
-    <h3>ประวัติการปรับสต็อก</h3>
+    <h3 id="auditModalTitle">ประวัติการปรับสต็อก</h3>
     <div id="auditList"></div>
     <button class="btn btn-ghost" id="closeAuditBtn">ปิด</button>
   </div>
@@ -1173,6 +1197,8 @@
     <button class="btn btn-ghost" id="exportBtn">ส่งออก Excel (.xlsx)</button>
     <button class="btn btn-ghost" id="importBtn">กู้คืน Backup (.xls)</button>
     <input type="file" id="importFile" accept=".xls,.html,.htm" style="display:none">
+    <button class="btn btn-ghost" id="autoBackupToggleBtn">สำรอง Excel อัตโนมัติทุกสิ้นเดือน: ปิด</button>
+    <p class="hint" style="margin-top:-10px;">เมื่อเปิดไว้ แอปจะดาวน์โหลดไฟล์ Excel สำรองให้อัตโนมัติช่วง 1–2 วันสุดท้ายของทุกเดือน กันข้อมูลหาย</p>
     <button class="btn btn-ghost" id="setPinBtn">ตั้ง / เปลี่ยน PIN</button>
     <button class="btn btn-danger-ghost" id="removePinBtn">ลบ PIN ออก (ปิดการล็อก)</button>
     <button class="btn btn-danger-ghost" id="confirmResetBtn">รีเซ็ตกลับเป็นค่าเริ่มต้นจากไฟล์ต้นฉบับ</button>
@@ -1598,6 +1624,8 @@ async function loadAll(){
   SETTINGS.mksDayDefaults = SETTINGS.mksDayDefaults || {};
   SETTINGS.mksWeekDefaults = SETTINGS.mksWeekDefaults || {};
   SETTINGS.commHeadcount = SETTINGS.commHeadcount || (MKS_BRANDS.find(b=>b.key==='NIPPON')||{}).pc || 2;
+  SETTINGS.autoBackupEnabled = SETTINGS.autoBackupEnabled || false;
+  SETTINGS.autoBackupLastMonth = SETTINGS.autoBackupLastMonth || '';
 
   try{
     const s = await storageGet(STORE_KEYS.mksDay);
@@ -1709,14 +1737,42 @@ async function ensurePin(){
   if(!pin || await hashText(pin)!==SETTINGS.pinhash){ toast('PIN ไม่ถูกต้อง'); return false; }
   return true;
 }
-async function addAudit(action,detail){
-  SETTINGS.auditLog=SETTINGS.auditLog||[]; SETTINGS.auditLog.unshift({time:new Date().toISOString(),action,detail});
+async function addAudit(action,detail,flagged){
+  SETTINGS.auditLog=SETTINGS.auditLog||[]; SETTINGS.auditLog.unshift({time:new Date().toISOString(),action,detail,flagged:!!flagged});
   SETTINGS.auditLog=SETTINGS.auditLog.slice(0,300); await saveSettings();
 }
 function renderAudit(){
   const box=document.getElementById('auditList'); const logs=(SETTINGS.auditLog||[]).filter(x=>!stockModalIdx||!x.detail || x.detail.indexOf((PRODUCTS[stockModalIdx]||{}).name||'')>=0).slice(0,100);
-  box.innerHTML=logs.length?logs.map(x=>`<div class="audit-row"><b>${x.action}</b> — ${x.detail}<div class="meta">${new Date(x.time).toLocaleString('th-TH')}</div></div>`).join(''):'<div class="empty">ยังไม่มีประวัติ</div>';
+  box.innerHTML=logs.length?logs.map(x=>`<div class="audit-row">${x.flagged?'<span class="warn-badge">ย้อนหลัง</span>':''}<b>${x.action}</b> — ${x.detail}<div class="meta">${new Date(x.time).toLocaleString('th-TH')}</div></div>`).join(''):'<div class="empty">ยังไม่มีประวัติ</div>';
 }
+function daysBetween(d1,d2){ return Math.round((new Date(d2)-new Date(d1))/86400000); }
+function fmtEditTime(iso){
+  const d=new Date(iso), now=new Date();
+  if(d.toDateString()===now.toDateString()) return d.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+  return d.toLocaleDateString('th-TH',{day:'2-digit',month:'2-digit'});
+}
+const RECENT_EDIT_ACTIONS = ['แก้ไขประวัติขาย','ลบประวัติขาย','แก้ไขเป้าหมาย'];
+function renderRecentEdits(){
+  const box = document.getElementById('recentEditsCard');
+  if(!box) return;
+  const logs = (SETTINGS.auditLog||[]).filter(x=>RECENT_EDIT_ACTIONS.includes(x.action)).slice(0,5);
+  if(!logs.length){ box.innerHTML = '<div class="empty">ยังไม่มีการแก้ไขล่าสุด</div>'; return; }
+  box.innerHTML = logs.map(x=>`
+    <div class="list-row">
+      <div class="info">
+        <div class="name">${x.flagged?'<span class="warn-badge">ย้อนหลัง</span>':''}${x.action}</div>
+        <div class="sub">${x.detail}</div>
+      </div>
+      <div class="time-tag">${fmtEditTime(x.time)}</div>
+    </div>
+  `).join('');
+}
+document.getElementById('recentEditsMoreBtn').addEventListener('click', ()=>{
+  stockModalIdx = -1;
+  document.getElementById('auditModalTitle').textContent = 'ประวัติการทำรายการทั้งหมด';
+  renderAudit();
+  document.getElementById('auditModalBg').classList.add('show');
+});
 function daysInMonth(y,m){ return new Date(y,m,0).getDate(); }
 async function checkGoalNotification(){
   const now=new Date(), mKey=monthKey(todayISO()), last=daysInMonth(now.getFullYear(),now.getMonth()+1), day=now.getDate();
@@ -1727,8 +1783,32 @@ async function checkGoalNotification(){
   if('Notification' in window){ try{ if(Notification.permission==='default') await Notification.requestPermission(); if(Notification.permission==='granted') new Notification('NIPPON SALE — แจ้งเตือนเป้ายอดขาย',{body:msg}); }catch(e){} }
   SETTINGS.notifiedMonth=mKey; await saveSettings();
 }
-async function exportExcelFile(){
-  if(typeof XLSX==='undefined'){ toast('ไม่สามารถโหลดระบบ Excel ได้ กรุณาเชื่อมต่ออินเทอร์เน็ตแล้วลองใหม่'); return; }
+async function checkAutoBackup(){
+  if(!SETTINGS.autoBackupEnabled) return;
+  const now=new Date(), mKey=monthKey(todayISO());
+  const dim=daysInMonth(now.getFullYear(), now.getMonth()+1);
+  if(now.getDate() < dim-1) return;
+  if(SETTINGS.autoBackupLastMonth===mKey) return;
+  try{ await exportExcelFile(true); }catch(e){ console.error('Auto backup failed:', e); return; }
+  SETTINGS.autoBackupLastMonth=mKey; await saveSettings();
+}
+function updateAutoBackupToggleUI(){
+  const btn=document.getElementById('autoBackupToggleBtn');
+  if(!btn) return;
+  const on=!!SETTINGS.autoBackupEnabled;
+  btn.textContent = 'สำรอง Excel อัตโนมัติทุกสิ้นเดือน: '+(on?'เปิด':'ปิด');
+  btn.classList.toggle('btn-teal', on);
+  btn.classList.toggle('btn-ghost', !on);
+}
+document.getElementById('autoBackupToggleBtn').addEventListener('click', async ()=>{
+  SETTINGS.autoBackupEnabled = !SETTINGS.autoBackupEnabled;
+  await saveSettings();
+  updateAutoBackupToggleUI();
+  await addAudit('ตั้งค่าสำรองข้อมูลอัตโนมัติ', SETTINGS.autoBackupEnabled?'เปิดใช้งานสำรอง Excel ทุกสิ้นเดือน':'ปิดใช้งานสำรอง Excel ทุกสิ้นเดือน');
+  toast(SETTINGS.autoBackupEnabled?'เปิดสำรองข้อมูลอัตโนมัติแล้ว':'ปิดสำรองข้อมูลอัตโนมัติแล้ว');
+});
+async function exportExcelFile(isAuto){
+  if(typeof XLSX==='undefined'){ if(!isAuto) toast('ไม่สามารถโหลดระบบ Excel ได้ กรุณาเชื่อมต่ออินเทอร์เน็ตแล้วลองใหม่'); return; }
   const wb=XLSX.utils.book_new();
   const salesRows=SALES.map((s,i)=>({
     'ลำดับ':i+1,'วันที่':s.date,'สินค้า':s.name,'ขนาด':s.size,'Base':s.base||'',
@@ -1754,8 +1834,8 @@ async function exportExcelFile(){
   ]); meta['!cols']=[{wch:24},{wch:40}]; XLSX.utils.book_append_sheet(wb,meta,'ข้อมูลไฟล์');
   const fileName=`NIPPON-SALE-${todayISO()}.xlsx`;
   XLSX.writeFile(wb,fileName,{compression:true});
-  await addAudit('ส่งออก Excel',`ไฟล์ ${fileName} · ${SALES.length} รายการ`);
-  toast('ส่งออก Excel แล้ว — ไฟล์อยู่ใน Downloads');
+  await addAudit(isAuto?'สำรอง Excel อัตโนมัติ':'ส่งออก Excel',`ไฟล์ ${fileName} · ${SALES.length} รายการ`);
+  toast(isAuto?'สำรองข้อมูล Excel ประจำสิ้นเดือนอัตโนมัติแล้ว — ไฟล์อยู่ใน Downloads':'ส่งออก Excel แล้ว — ไฟล์อยู่ใน Downloads');
 }
 
 function exportBackup(){
@@ -1864,6 +1944,7 @@ document.getElementById('menuReportBtn').addEventListener('click', ()=>{
 document.getElementById('mksMiniCard').addEventListener('click', ()=> switchToView('report'));
 document.getElementById('menuSettingsBtn').addEventListener('click', ()=>{
   document.getElementById('menuDrawerBg').classList.remove('show');
+  updateAutoBackupToggleUI();
   document.getElementById('resetModalBg').classList.add('show');
 });
 
@@ -2204,9 +2285,12 @@ document.getElementById('saveTargetBtn').addEventListener('click', async ()=>{
   const v = Number(document.getElementById('targetInput').value);
   if(v > 0){
     if(!SETTINGS.targets) SETTINGS.targets = {};
+    const oldTarget = getMonthTarget(mKey);
     SETTINGS.targets[mKey] = v;
     SETTINGS.defaultTarget = v;
     await saveSettings();
+    const targetBackdated = mKey !== monthKey(todayISO());
+    await addAudit('แก้ไขเป้าหมาย', `${formatMonthTH(mKey)}: ${fmt(oldTarget)} → ${fmt(v)} บาท`, targetBackdated);
     renderGauge(); renderDashboard(); renderHistMonth();
     toast('บันทึกเป้าหมายแล้ว');
   }
@@ -2347,6 +2431,46 @@ function renderDashboard(){
         <div class="status-tag status-over">ขาด ${Math.abs(r.remain)}</div>
       </div>
     `).join('');
+  }
+
+  renderDailyTrend();
+  renderRecentEdits();
+}
+function renderDailyTrend(){
+  const box = document.getElementById('dailyTrendBars');
+  if(!box) return;
+  const now = new Date();
+  const mKey = monthKey(todayISO());
+  const dim = daysInMonth(now.getFullYear(), now.getMonth()+1);
+  const todayNum = now.getDate();
+  const lblBox = document.getElementById('dailyTrendMonthLbl');
+  if(lblBox) lblBox.textContent = formatMonthTH(mKey);
+
+  const daily = [];
+  for(let d=1; d<=dim; d++){
+    const dateStr = mKey+'-'+String(d).padStart(2,'0');
+    const total = SALES.filter(s=>s.date===dateStr).reduce((a,s)=>a+s.total,0);
+    daily.push({d, total, isFuture: d>todayNum});
+  }
+  const maxVal = Math.max(1, ...daily.map(x=>x.total));
+  box.innerHTML = daily.map(x=>{
+    const h = x.total>0 ? Math.max(4, Math.round(x.total/maxVal*140)) : (x.isFuture?2:3);
+    const cls = x.isFuture ? 'future' : (x.total>0 ? 'has' : '');
+    const showLabel = (x.d===1 || x.d===dim || x.d%5===0);
+    return `<div class="bar-col daily">
+      <div class="bar ${cls}" style="height:${h}px;" title="วันที่ ${x.d}: ${fmt(x.total)} บาท"></div>
+      <div class="mlabel">${showLabel?x.d:'&nbsp;'}</div>
+    </div>`;
+  }).join('');
+
+  const soFar = daily.filter(x=>!x.isFuture);
+  const soFarTotal = soFar.reduce((a,x)=>a+x.total,0);
+  const daysPassed = Math.min(todayNum, dim);
+  const avgPerDay = daysPassed>0 ? soFarTotal/daysPassed : 0;
+  const forecastTotal = Math.round(avgPerDay*dim);
+  const fcBox = document.getElementById('dailyTrendForecast');
+  if(fcBox){
+    fcBox.innerHTML = `<span class="p-lbl">คาดการณ์ยอดขายสิ้นเดือน (ตามจังหวะเฉลี่ยที่ทำได้)</span><span class="p-val">${fmt(forecastTotal)}</span><span class="p-unit">บาท</span>`;
   }
 }
 
@@ -2557,7 +2681,8 @@ document.getElementById('saveEditSaleBtn').addEventListener('click', async ()=>{
   }
   s.date=date; s.price=price; s.qty=qty; s.tintPrice=tint; s.colorCode=color||''; s.total=(price+tint)*qty;
   await saveSalesIncremental({updated:[s]}); await saveProducts();
-  await addAudit('แก้ไขประวัติขาย',`${s.seed?'[Excel] ':''}${s.name} ${s.size} x${qty} วันที่ ${date}`);
+  const editBackdated = Math.abs(daysBetween(date, todayISO())) > 2;
+  await addAudit('แก้ไขประวัติขาย',`${s.seed?'[Excel] ':''}${s.name} ${s.size} x${qty} วันที่ ${date}`, editBackdated);
   renderHistDay(); renderHistMonth(); renderRecent(); renderGauge(); renderDashboard(); renderStock();
   document.getElementById('editSaleModalBg').classList.remove('show');
   toast('แก้ไขประวัติแล้ว');
@@ -2580,7 +2705,8 @@ async function deleteSaleEntry(id){
   }
   SALES.splice(idx,1);
   await saveSalesIncremental({deletedIds:[s.id]}); await saveProducts();
-  await addAudit('ลบประวัติขาย',`${s.seed?'[Excel] ':''}${s.name} ${s.size} x${s.qty} วันที่ ${s.date}`);
+  const delBackdated = Math.abs(daysBetween(s.date, todayISO())) > 2;
+  await addAudit('ลบประวัติขาย',`${s.seed?'[Excel] ':''}${s.name} ${s.size} x${s.qty} วันที่ ${s.date}`, delBackdated);
   renderHistDay(); renderHistMonthOptions(); renderHistMonth(); renderRecent(); renderGauge(); renderDashboard(); renderStock();
   toast('ลบประวัติแล้ว');
 }
@@ -2702,7 +2828,7 @@ document.getElementById('stockFixSaveBtn').addEventListener('click', async ()=>{
 });
 
 
-document.getElementById('stockAuditBtn').addEventListener('click',()=>{renderAudit();document.getElementById('auditModalBg').classList.add('show');});
+document.getElementById('stockAuditBtn').addEventListener('click',()=>{document.getElementById('auditModalTitle').textContent='ประวัติการปรับสต็อก';renderAudit();document.getElementById('auditModalBg').classList.add('show');});
 document.getElementById('closeAuditBtn').addEventListener('click',()=>document.getElementById('auditModalBg').classList.remove('show'));
 document.getElementById('auditModalBg').addEventListener('click',e=>{if(e.target.id==='auditModalBg')e.currentTarget.classList.remove('show');});
 /* ================= products / price management ================= */
@@ -3238,6 +3364,8 @@ async function bootstrapApp(){
   renderDashboard();
   renderStock();
   checkGoalNotification();
+  checkAutoBackup();
+  updateAutoBackupToggleUI();
   subscribeRealtimeSync();
 }
 window.addEventListener('nippon-auth-ready', bootstrapApp);
