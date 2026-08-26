@@ -1195,16 +1195,12 @@
       </label>
       <label class="field">
         <span class="lbl">เบส</span>
-        <div class="pc-select cselect">
-          <select id="ruleBaseSelect" class="cselect-native" disabled><option>—</option></select>
-          <button type="button" class="pc-select-trigger" disabled aria-haspopup="listbox" aria-expanded="false">
-            <span class="pc-select-value">—</span>
-            <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <div class="pc-select-menu" role="listbox"></div>
+        <div class="filter-chips" id="ruleBaseChips" style="flex-wrap:wrap; margin-bottom:0;">
+          <div class="pass-note" style="padding:0;">เลือกสินค้าและไซส์ก่อน</div>
         </div>
       </label>
     </div>
+    <p class="hint" id="ruleBaseHint" style="margin-top:-8px; display:none;">เลือกได้หลายเบส (แตะเพื่อเลือก/ยกเลิก) — ระบบจะรวมยอดขายของทุกเบสที่เลือกไว้ด้วยกันก่อนคำนวณ เช่น เลือกเบส B, C, D (ไม่เอา A) เพื่อจ่ายอินเซนทีฟเฉพาะ 3 เบสนี้รวมกัน</p>
     <label class="field">
       <span class="lbl">เงื่อนไขจ่าย</span>
       <div class="mode-toggle">
@@ -2803,7 +2799,7 @@ function enhanceCSelect(selectId){
   buildMenu();
   syncDisplay();
 }
-['sizeSelect','baseSelect','histMonth','histMonthSort','commMonthSelect','commModeSelect','targetMonthSelect','ruleNameSelect','ruleSizeSelect','ruleBaseSelect'].forEach(enhanceCSelect);
+['sizeSelect','baseSelect','histMonth','histMonthSort','commMonthSelect','commModeSelect','targetMonthSelect','ruleNameSelect','ruleSizeSelect'].forEach(enhanceCSelect);
 
 function renderCommissionMonthOptions(){
   const sel = document.getElementById('commMonthSelect');
@@ -2887,7 +2883,8 @@ function calcGallonIncentive(mKey, headcount){
   const rows = rules.map(rule=>{
     const qty = monthSales
       .filter(s=> s.name===rule.name && s.size===rule.size &&
-        (rule.base==='__ALL__' || (s.base||'')===(rule.base||'')))
+        (rule.base==='__ALL__' ||
+          (Array.isArray(rule.base) ? rule.base.includes(s.base||'') : (s.base||'')===(rule.base||''))))
       .reduce((a,s)=>a+(Number(s.qty)||0),0);
     const amount = (rule.mode==='perBundle' && rule.bundleSize>0)
       ? Math.floor(qty/rule.bundleSize) * rule.value
@@ -2917,7 +2914,9 @@ function renderGallonIncentive(mode, mKey, commResult){
     list.innerHTML = '<div class="empty">ยังไม่มีรายการอินเซนทีฟเดือนนี้ กด "+ เพิ่มรายการ" เพื่อเริ่มตั้งค่า</div>';
   } else {
     list.innerHTML = g.rows.map(x=>{
-      const baseLabel = x.rule.base==='__ALL__' ? 'ทุกเบส' : (x.rule.base ? `เบส ${x.rule.base}` : '');
+      const baseLabel = x.rule.base==='__ALL__' ? 'ทุกเบส'
+        : Array.isArray(x.rule.base) ? `เบส ${x.rule.base.join(', ')}`
+        : (x.rule.base ? `เบส ${x.rule.base}` : '');
       const condLabel = x.rule.mode==='perBundle'
         ? `ทุก ${x.rule.bundleSize} หน่วย รับ ${fmt(x.rule.value)} บาท`
         : `หน่วยละ ${fmt(x.rule.value)} บาท`;
@@ -2993,24 +2992,48 @@ function populateRuleSizeOptions(){
   sizeSel.innerHTML = sizes.map(s=>`<option value="${s}">${s}</option>`).join('');
   sizeSel.dispatchEvent(new Event('change'));
 }
+let ruleSelectedBases = new Set(); // holds specific base letters, or the single value '__ALL__'
+let ruleAvailableBases = [];
+function renderRuleBaseChips(){
+  const wrap = document.getElementById('ruleBaseChips');
+  const hint = document.getElementById('ruleBaseHint');
+  if(!ruleAvailableBases.length){
+    hint.style.display = 'none';
+    wrap.innerHTML = '<div class="pass-note" style="padding:0;">สินค้า/ไซส์นี้ไม่มีเบสแยก</div>';
+    return;
+  }
+  hint.style.display = '';
+  const allActive = ruleSelectedBases.has('__ALL__');
+  wrap.innerHTML = `<button type="button" class="chip ${allActive?'active':''}" data-base="__ALL__">ทุกเบส</button>` +
+    ruleAvailableBases.map(b=>`<button type="button" class="chip ${(!allActive && ruleSelectedBases.has(b))?'active':''}" data-base="${b}">เบส ${b}</button>`).join('');
+}
 function populateRuleBaseOptions(){
   const name = document.getElementById('ruleNameSelect').value;
   const size = document.getElementById('ruleSizeSelect').value;
-  const baseSel = document.getElementById('ruleBaseSelect');
+  ruleSelectedBases = new Set(['__ALL__']);
   if(!name || !size || !PRODUCT_INDEX[name] || !PRODUCT_INDEX[name][size]){
-    baseSel.disabled = true;
-    baseSel.innerHTML = '<option value="">—</option>';
+    ruleAvailableBases = [];
+    renderRuleBaseChips();
     return;
   }
   const bases = Object.keys(PRODUCT_INDEX[name][size]);
-  if(bases.length===1 && bases[0]==='—'){
-    baseSel.disabled = true;
-    baseSel.innerHTML = '<option value="">—</option>';
-  } else {
-    baseSel.disabled = false;
-    baseSel.innerHTML = '<option value="__ALL__">ทุกเบส (รวมทุก Base)</option>' + bases.map(b=>`<option value="${b}">${b}</option>`).join('');
-  }
+  ruleAvailableBases = (bases.length===1 && bases[0]==='—') ? [] : bases;
+  renderRuleBaseChips();
 }
+document.getElementById('ruleBaseChips').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.chip');
+  if(!btn) return;
+  const base = btn.dataset.base;
+  if(base==='__ALL__'){
+    ruleSelectedBases = new Set(['__ALL__']);
+  } else {
+    if(ruleSelectedBases.has('__ALL__')) ruleSelectedBases = new Set();
+    if(ruleSelectedBases.has(base)) ruleSelectedBases.delete(base);
+    else ruleSelectedBases.add(base);
+    if(ruleSelectedBases.size===0) ruleSelectedBases = new Set(['__ALL__']);
+  }
+  renderRuleBaseChips();
+});
 document.getElementById('ruleNameSelect').addEventListener('change', populateRuleSizeOptions);
 document.getElementById('ruleSizeSelect').addEventListener('change', populateRuleBaseOptions);
 
@@ -3031,8 +3054,15 @@ document.getElementById('closeGallonRuleModalBtn').addEventListener('click', ()=
 document.getElementById('saveGallonRuleBtn').addEventListener('click', async ()=>{
   const name = document.getElementById('ruleNameSelect').value;
   const size = document.getElementById('ruleSizeSelect').value;
-  const baseSel = document.getElementById('ruleBaseSelect');
-  const base = baseSel.disabled ? '' : baseSel.value;
+  let base = '';
+  if(ruleAvailableBases.length){
+    if(ruleSelectedBases.has('__ALL__')) base = '__ALL__';
+    else {
+      base = ruleAvailableBases.filter(b=>ruleSelectedBases.has(b));
+      if(!base.length){ toast('กรุณาเลือกเบสอย่างน้อย 1 รายการ'); return; }
+      if(base.length===ruleAvailableBases.length) base = '__ALL__'; // selecting every base = "ทุกเบส"
+    }
+  }
   if(!name || !size){ toast('กรุณาเลือกสินค้าและไซส์'); return; }
 
   let bundleSize = 0, value = 0;
