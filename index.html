@@ -1207,6 +1207,116 @@ async function storageSet(key,value){
   return saved;
 }
 
+/* ================= sales_entries: per-row storage (avoids whole-array overwrite races) =================
+ * SALES used to be saved as one JSON blob under app_data key 'tint:sales'. Two devices saving at
+ * nearly the same time would each overwrite the whole blob, silently dropping the other device's
+ * new/edited/deleted rows. Now each sale is its own row in the sales_entries table, so concurrent
+ * saves on different rows never collide. Requires running the migration SQL (see README/instructions
+ * provided alongside this file) to create the sales_entries table; until that table exists, every
+ * function below fails soft and the app automatically falls back to the old blob behavior.
+ */
+function toSalesRow(entry){
+  return {
+    id: String(entry.id), date: entry.date, name: entry.name, size: entry.size||'', base: entry.base||'',
+    price: Number(entry.price)||0, color_code: entry.colorCode||'', tint_price: Number(entry.tintPrice)||0,
+    qty: Number(entry.qty)||0, total: Number(entry.total)||0, sku: entry.sku||'', seed: !!entry.seed,
+    bill_id: entry.billId||null
+  };
+}
+function fromSalesRow(row){
+  return {
+    id: row.id, date: row.date, name: row.name, size: row.size||'', base: row.base||'',
+    price: Number(row.price)||0, colorCode: row.color_code||'', tintPrice: Number(row.tint_price)||0,
+    qty: Number(row.qty)||0, total: Number(row.total)||0, sku: row.sku||'', seed: !!row.seed,
+    billId: row.bill_id||null
+  };
+}
+async function fetchSalesTable(){
+  const client = supaClient();
+  if(!client) return null;
+  try{
+    const {data,error} = await client.from('sales_entries').select('*').order('date',{ascending:true});
+    if(error){ console.warn('fetchSalesTable failed (table may not exist yet — see migration SQL):', error.message); return null; }
+    return data.map(fromSalesRow);
+  }catch(e){ console.warn('fetchSalesTable failed:', e); return null; }
+}
+async function upsertSalesRows(entries){
+  const client = supaClient();
+  if(!client || !entries.length) return false;
+  try{
+    const rows = entries.map(toSalesRow);
+    const {error} = await client.from('sales_entries').upsert(rows, {onConflict:'id'});
+    if(error){ console.warn('upsertSalesRows failed:', error.message); return false; }
+    return true;
+  }catch(e){ console.warn('upsertSalesRows failed:', e); return false; }
+}
+async function deleteSalesRow(id){
+  const client = supaClient();
+  if(!client) return false;
+  try{
+    const {error} = await client.from('sales_entries').delete().eq('id', String(id));
+    if(error){ console.warn('deleteSalesRow failed:', error.message); return false; }
+    return true;
+  }catch(e){ console.warn('deleteSalesRow failed:', e); return false; }
+}
+/* Saves only the rows that actually changed. Falls back to the legacy whole-blob save
+ * (old behavior) if the sales_entries table isn't reachable yet, so the app keeps working
+ * even before the migration SQL has been run. */
+async function saveSalesIncremental({added=[], updated=[], deletedIds=[]}={}){
+  const client = supaClient();
+  let usedTable=false;
+  if(client){
+    try{
+      const toUpsert=[...added,...updated];
+      let ok=true;
+      if(toUpsert.length) ok = ok && await upsertSalesRows(toUpsert);
+      for(const id of deletedIds){ ok = (await deleteSalesRow(id)) && ok; }
+      usedTable = ok;
+    }catch(e){ console.warn('saveSalesIncremental table path failed, falling back to legacy save:', e); }
+  }
+  try{ localStorage.setItem(LOCAL_STORAGE_PREFIX + STORE_KEYS.sales, JSON.stringify(SALES)); }catch(e){}
+  if(!usedTable){
+    const ok = await storageSet(STORE_KEYS.sales, JSON.stringify(SALES));
+    if(!ok) toast('บันทึกยอดขายไม่สำเร็จ กรุณาอนุญาตการจัดเก็บข้อมูลของเบราว์เซอร์');
+    return ok;
+  }
+  return true;
+}
+/* Used only by explicit, rare, PIN-gated bulk operations (import backup / factory reset) where
+ * replacing the whole sales history really is the intent, so a full table resync is correct there. */
+async function resyncSalesTableFull(){
+  const client = supaClient();
+  if(!client) return false;
+  try{
+    const {data,error} = await client.from('sales_entries').select('id');
+    if(error){ console.warn('resyncSalesTableFull read failed:', error.message); return false; }
+    const currentIds = new Set(SALES.map(s=>String(s.id)));
+    const toDelete = (data||[]).map(r=>r.id).filter(id=>!currentIds.has(id));
+    if(toDelete.length){
+      const {error:delErr} = await client.from('sales_entries').delete().in('id', toDelete);
+      if(delErr) console.warn('resyncSalesTableFull delete failed:', delErr.message);
+    }
+    if(SALES.length) await upsertSalesRows(SALES);
+    return true;
+  }catch(e){ console.warn('resyncSalesTableFull failed:', e); return false; }
+}
+function applySalesRowChange(payload){
+  if(payload.eventType==='DELETE'){
+    const id = payload.old && payload.old.id;
+    if(!id) return;
+    const idx = SALES.findIndex(s=>String(s.id)===String(id));
+    if(idx>=0) SALES.splice(idx,1);
+  }else{
+    const entry = fromSalesRow(payload.new);
+    const idx = SALES.findIndex(s=>String(s.id)===String(entry.id));
+    if(idx>=0) SALES[idx]=entry; else SALES.push(entry);
+  }
+  try{ localStorage.setItem(LOCAL_STORAGE_PREFIX + STORE_KEYS.sales, JSON.stringify(SALES)); }catch(e){}
+  renderRecent(); renderGauge(); renderDashboard(); renderStock();
+  renderHistMonthOptions(); renderHistMonth(); renderHistDay();
+  if(document.getElementById('view-yearly').classList.contains('active')) renderYearly();
+}
+
 /* ================= realtime sync across devices ================= */
 let realtimeChannel = null;
 function subscribeRealtimeSync(){
@@ -1216,7 +1326,13 @@ function subscribeRealtimeSync(){
     .channel('app_data-sync')
     .on('postgres_changes', {event:'*', schema:'public', table:'app_data'}, payload=>{
       const key = (payload.new && payload.new.key) || (payload.old && payload.old.key);
-      if(key) reloadKeyAndRerender(key);
+      // 'tint:sales' is now a legacy/offline-cache snapshot only — live sales updates
+      // are delivered per-row via the sales_entries subscription below, so skip a
+      // full reload here to avoid clobbering rows this device already merged in.
+      if(key && key!==STORE_KEYS.sales) reloadKeyAndRerender(key);
+    })
+    .on('postgres_changes', {event:'*', schema:'public', table:'sales_entries'}, payload=>{
+      applySalesRowChange(payload);
     })
     .subscribe();
 }
@@ -1254,9 +1370,24 @@ async function loadAll(){
   }
 
   try{
-    const s = await storageGet(STORE_KEYS.sales);
-    if(s && s.value){ SALES = JSON.parse(s.value); salesLoaded=true; }
-  }catch(e){ console.error('Load sales failed:', e); }
+    const tableSales = await fetchSalesTable();
+    if(tableSales && tableSales.length){
+      SALES = tableSales; salesLoaded=true;
+    }else if(tableSales && tableSales.length===0){
+      // sales_entries table exists but is empty — one-time migration from the legacy blob, if any
+      const s = await storageGet(STORE_KEYS.sales);
+      if(s && s.value){
+        SALES = JSON.parse(s.value); salesLoaded=true;
+        if(SALES.length) await upsertSalesRows(SALES);
+      }
+    }
+  }catch(e){ console.error('Load sales from sales_entries table failed:', e); }
+  if(!salesLoaded){
+    try{
+      const s = await storageGet(STORE_KEYS.sales);
+      if(s && s.value){ SALES = JSON.parse(s.value); salesLoaded=true; }
+    }catch(e){ console.error('Load sales failed:', e); }
+  }
   if(!salesLoaded){
     SALES = seedSales();
     await storageSet(STORE_KEYS.sales, JSON.stringify(SALES));
@@ -1447,7 +1578,7 @@ async function importBackupFile(file){
   if(!node) throw new Error('ไม่พบข้อมูลสำรองของ NIPPON SALE');
   const data=JSON.parse(node.textContent||node.innerHTML); if(!data.products||!data.sales) throw new Error('ไฟล์สำรองไม่สมบูรณ์');
   PRODUCTS=data.products; SALES=data.sales; SETTINGS=data.settings||{targets:Object.assign({},TARGETS_SEED),defaultTarget:DEFAULT_TARGET,auditLog:[]};
-  SETTINGS.auditLog=SETTINGS.auditLog||[]; await saveProducts(); await saveSales(); await saveSettings(); buildProductIndex();
+  SETTINGS.auditLog=SETTINGS.auditLog||[]; await saveProducts(); await resyncSalesTableFull(); await saveSales(); await saveSettings(); buildProductIndex();
   renderRecent();renderGauge();renderDashboard();renderStock();renderProductsList();renderHistMonthOptions();renderHistMonth(); toast('นำเข้าข้อมูลสำเร็จ');
 }
 
@@ -1713,7 +1844,7 @@ document.getElementById('saveSaleBtn').addEventListener('click', async ()=>{
     const row = findProductRow(entry.sku, entry.name, entry.size, entry.base);
     if(row){ row.sold = (Number(row.sold)||0) + entry.qty; row.remain = (Number(row.remain)||0) - entry.qty; }
   });
-  await saveSales(); await saveProducts();
+  await saveSalesIncremental({added: items}); await saveProducts();
   if(navigator.vibrate) navigator.vibrate(35);
 
   toast(items.length>1 ? `บันทึกบิล ${items.length} รายการแล้ว` : 'บันทึกยอดขายแล้ว');
@@ -2116,7 +2247,7 @@ document.getElementById('saveEditSaleBtn').addEventListener('click', async ()=>{
     row.remain-=qty;
   }
   s.date=date; s.price=price; s.qty=qty; s.tintPrice=tint; s.colorCode=color||''; s.total=(price+tint)*qty;
-  await saveSales(); await saveProducts();
+  await saveSalesIncremental({updated:[s]}); await saveProducts();
   await addAudit('แก้ไขประวัติขาย',`${s.seed?'[Excel] ':''}${s.name} ${s.size} x${qty} วันที่ ${date}`);
   renderHistDay(); renderHistMonth(); renderRecent(); renderGauge(); renderDashboard(); renderStock();
   document.getElementById('editSaleModalBg').classList.remove('show');
@@ -2139,7 +2270,7 @@ async function deleteSaleEntry(id){
     row.remain=(Number(row.remain)||0)+Number(s.qty);
   }
   SALES.splice(idx,1);
-  await saveSales(); await saveProducts();
+  await saveSalesIncremental({deletedIds:[s.id]}); await saveProducts();
   await addAudit('ลบประวัติขาย',`${s.seed?'[Excel] ':''}${s.name} ${s.size} x${s.qty} วันที่ ${s.date}`);
   renderHistDay(); renderHistMonthOptions(); renderHistMonth(); renderRecent(); renderGauge(); renderDashboard(); renderStock();
   toast('ลบประวัติแล้ว');
@@ -2473,7 +2604,7 @@ document.getElementById('confirmResetBtn').addEventListener('click', async ()=>{
   PRODUCTS = seedProducts();
   SALES = seedSales();
   SETTINGS = { targets: Object.assign({}, TARGETS_SEED), defaultTarget: DEFAULT_TARGET, auditLog:[], pinhash:SETTINGS.pinhash||'', notifiedMonth:'' };
-  await saveProducts(); await saveSales(); await saveSettings();
+  await saveProducts(); await resyncSalesTableFull(); await saveSales(); await saveSettings();
   buildProductIndex();
   document.getElementById('resetModalBg').classList.remove('show');
   toast('รีเซ็ตข้อมูลเรียบร้อย');
