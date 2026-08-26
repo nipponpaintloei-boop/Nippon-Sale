@@ -89,8 +89,9 @@
 
   function getUser(){ return session?.user || null; }
   function getUsername(){ return session?.user?.email?.split('@')[0] || ''; }
+  function getClient(){ return client; }
 
-  window.NIPPON_AUTH={init,signIn,signOut,getUser,getUsername,usernameToEmail,validUsername};
+  window.NIPPON_AUTH={init,signIn,signOut,getUser,getUsername,usernameToEmail,validUsername,getClient};
   window.addEventListener('load',()=>{
     getEl('authSubmitBtn')?.addEventListener('click',signIn);
     getEl('authLogoutBtn')?.addEventListener('click',async()=>{ await signOut(); });

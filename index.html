@@ -1149,14 +1149,26 @@ function seedSales(){
 
 /* ================= storage helpers ================= */
 /*
- * IMPORTANT: The original app used window.storage, which is not provided by
- * normal Netlify/Chrome pages. That caused every save to silently fail and
- * refresh to fall back to SALES_SEED. Use localStorage as the real browser
- * persistence layer, while keeping a compatibility path for window.storage.
+ * Storage priority: Supabase (public.app_data table, shared across every device
+ * signed in to the store account) -> localStorage (offline cache / fallback when
+ * the network or Supabase call fails, so the app still works offline).
  */
 const LOCAL_STORAGE_PREFIX = 'nippon-sale:';
 
+function supaClient(){
+  try{ return window.NIPPON_AUTH && window.NIPPON_AUTH.getClient && window.NIPPON_AUTH.getClient(); }
+  catch(e){ return null; }
+}
+
 async function storageGet(key){
+  try{
+    const client = supaClient();
+    if(client){
+      const {data,error} = await client.from('app_data').select('value').eq('key',key).maybeSingle();
+      if(!error && data && typeof data.value === 'string') return {value:data.value};
+      if(error) console.warn('supabase get failed, falling back to localStorage:', error.message);
+    }
+  }catch(e){ console.warn('supabase get failed, falling back to localStorage:', e); }
   try{
     if(window.storage && typeof window.storage.get === 'function'){
       const s = await window.storage.get(key);
@@ -1175,6 +1187,14 @@ async function storageGet(key){
 async function storageSet(key,value){
   let saved = false;
   try{
+    const client = supaClient();
+    if(client){
+      const {error} = await client.from('app_data').upsert({key, value}, {onConflict:'key'});
+      if(!error) saved = true;
+      else console.warn('supabase set failed, will still cache locally:', error.message);
+    }
+  }catch(e){ console.warn('supabase set failed, will still cache locally:', e); }
+  try{
     if(window.storage && typeof window.storage.set === 'function'){
       await window.storage.set(key,value);
       saved = true;
@@ -1185,6 +1205,40 @@ async function storageSet(key,value){
     saved = true;
   }catch(e){ console.error('localStorage.set failed:', e); }
   return saved;
+}
+
+/* ================= realtime sync across devices ================= */
+let realtimeChannel = null;
+function subscribeRealtimeSync(){
+  const client = supaClient();
+  if(!client || realtimeChannel) return;
+  realtimeChannel = client
+    .channel('app_data-sync')
+    .on('postgres_changes', {event:'*', schema:'public', table:'app_data'}, payload=>{
+      const key = (payload.new && payload.new.key) || (payload.old && payload.old.key);
+      if(key) reloadKeyAndRerender(key);
+    })
+    .subscribe();
+}
+async function reloadKeyAndRerender(key){
+  const s = await storageGet(key);
+  if(!s || typeof s.value !== 'string') return;
+  try{
+    if(key===STORE_KEYS.products){ PRODUCTS = JSON.parse(s.value); buildProductIndex(); }
+    else if(key===STORE_KEYS.sales){ SALES = JSON.parse(s.value); }
+    else if(key===STORE_KEYS.settings){ SETTINGS = JSON.parse(s.value); }
+    else if(key===STORE_KEYS.mksDay){ MKS_DAY_HISTORY = JSON.parse(s.value); }
+    else if(key===STORE_KEYS.mksWeek){ MKS_WEEK_HISTORY = JSON.parse(s.value); }
+    else return;
+  }catch(e){ console.warn('reloadKeyAndRerender parse failed:', e); return; }
+
+  renderRecent(); renderGauge(); renderDashboard(); renderStock(); renderProductsList();
+  renderHistMonthOptions(); renderHistMonth(); renderHistDay();
+  if(document.getElementById('view-yearly').classList.contains('active')) renderYearly();
+  if(document.getElementById('view-report').classList.contains('active')){
+    const activeSub=document.querySelector('#view-report .subtab-row .stbtn.active');
+    if(!activeSub || activeSub.dataset.mks==='day') renderMksDay(); else renderMksWeek();
+  }
 }
 
 async function loadAll(){
@@ -2728,9 +2782,7 @@ function buildMksCaptureNode(type){
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 /* ================= init ================= */
-(async function init(){
-  const authenticated = await window.NIPPON_AUTH.init();
-  if(!authenticated) return;
+async function bootstrapApp(){
   await loadAll();
   document.getElementById('saleDate').value = todayISO();
   renderGauge();
@@ -2738,6 +2790,13 @@ function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<
   renderDashboard();
   renderStock();
   checkGoalNotification();
+  subscribeRealtimeSync();
+}
+window.addEventListener('nippon-auth-ready', bootstrapApp);
+(async function init(){
+  const authenticated = await window.NIPPON_AUTH.init();
+  if(!authenticated) return;
+  await bootstrapApp();
 })();
 </script>
 <script>
