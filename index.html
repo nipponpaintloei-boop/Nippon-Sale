@@ -1101,6 +1101,7 @@
     <button class="btn btn-ghost" id="importBtn">กู้คืน Backup (.xls)</button>
     <input type="file" id="importFile" accept=".xls,.html,.htm" style="display:none">
     <button class="btn btn-ghost" id="setPinBtn">ตั้ง / เปลี่ยน PIN</button>
+    <button class="btn btn-danger-ghost" id="removePinBtn">ลบ PIN ออก (ปิดการล็อก)</button>
     <button class="btn btn-danger-ghost" id="confirmResetBtn">รีเซ็ตกลับเป็นค่าเริ่มต้นจากไฟล์ต้นฉบับ</button>
     <button class="btn btn-danger-ghost" id="authLogoutBtn">ออกจากระบบ</button>
     <button class="btn btn-ghost" id="closeSettingsBtn">ปิด</button>
@@ -2710,6 +2711,14 @@ document.getElementById('importFile').addEventListener('change',async e=>{
   e.target.value='';
 });
 document.getElementById('setPinBtn').addEventListener('click',async()=>{const old=SETTINGS.pinhash;if(old && !(await ensurePin()))return;SETTINGS.pinhash='';await ensurePin();});
+document.getElementById('removePinBtn').addEventListener('click',async()=>{
+  if(!SETTINGS.pinhash){ toast('ยังไม่ได้ตั้ง PIN ไว้'); return; }
+  if(!(await ensurePin())) return; // ต้องใส่ PIN เดิมให้ถูกก่อนถึงจะลบได้
+  SETTINGS.pinhash='';
+  await saveSettings();
+  await addAudit('ลบ PIN ออก','ปิดการล็อกด้วย PIN สำหรับการแก้ไขข้อมูลสำคัญ');
+  toast('ลบ PIN เรียบร้อย — ไม่ต้องใส่ PIN สำหรับการแก้ไขสำคัญอีกต่อไป');
+});
 
 /* ================= MKS report: daily & weekly competitor share ================= */
 const THAI_MONTHS_SHORT=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
