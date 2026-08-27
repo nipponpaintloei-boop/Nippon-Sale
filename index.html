@@ -2420,12 +2420,11 @@ function selectProduct(name){
     sizeSelect.value = sizes[0];
     handleSizeChange();
   } else {
-    // real choice to make: reset anything downstream and let the user pick the size next
-    baseSelect.disabled = true;
-    baseSelect.innerHTML = '<option>—</option>';
-    priceChip.style.display = 'none';
-    document.getElementById('stockHint').style.display = 'none';
-    computeTotal();
+    // real choice to make: the browser auto-selects the first option without firing
+    // 'change', so populate base/price for that default size right away (handleSizeChange),
+    // then still open the menu so the user can pick a different size if needed.
+    sizeSelect.value = sizes[0];
+    handleSizeChange();
     sizeSelect.focus();
     openCSelect('sizeSelect');
   }
@@ -2441,11 +2440,12 @@ function handleSizeChange(){
     baseSelect.innerHTML = '<option>—</option>';
     handleBaseChange();
   } else {
+    // real choice to make: same auto-select-without-'change' issue as size — populate
+    // price for the default first base immediately, then still let the user pick another.
     baseSelect.disabled = false;
     baseSelect.innerHTML = bases.map(b=>`<option value="${b}">${b}</option>`).join('');
-    priceChip.style.display = 'none';
-    document.getElementById('stockHint').style.display = 'none';
-    computeTotal();
+    baseSelect.value = bases[0];
+    handleBaseChange();
     baseSelect.focus();
     openCSelect('baseSelect');
   }
