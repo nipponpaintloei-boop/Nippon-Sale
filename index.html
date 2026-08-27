@@ -137,6 +137,15 @@
     width:100%; background:var(--surface2); border:1px solid var(--line); color:var(--paper);
     border-radius:10px; padding:12px 12px; font-size:15px;
   }
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus{
+    -webkit-text-fill-color:var(--paper);
+    -webkit-box-shadow:0 0 0px 1000px var(--surface2) inset;
+    box-shadow:0 0 0px 1000px var(--surface2) inset;
+    transition:background-color 9999s ease-in-out 0s;
+    caret-color:var(--paper);
+  }
   select{appearance:none; -webkit-appearance:none;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%23edeae2' stroke-opacity='0.5' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");
     background-repeat:no-repeat; background-position:right 12px center;
@@ -822,19 +831,6 @@
         <span class="lbl">วันที่ขาย</span>
         <input type="date" id="saleDate">
       </label>
-      <div class="row2">
-        <label class="field">
-          <span class="lbl">ชื่อลูกค้า (ไม่บังคับ)</span>
-          <input type="text" id="customerName" placeholder="เช่น คุณสมชาย" list="customerNameList" autocomplete="off">
-        </label>
-        <label class="field">
-          <span class="lbl">เบอร์โทร (ไม่บังคับ)</span>
-          <input type="tel" id="customerPhone" placeholder="08x-xxx-xxxx" list="customerPhoneList" autocomplete="off">
-        </label>
-      </div>
-      <div class="pdpa-note">เก็บไว้เพื่อติดตามลูกค้าประจำและแจ้งโปรโมชั่นเท่านั้น กรุณาแจ้งลูกค้าก่อนบันทึกเบอร์โทร</div>
-      <datalist id="customerNameList"></datalist>
-      <datalist id="customerPhoneList"></datalist>
       <label class="field search-wrap">
         <span class="lbl">ค้นหาสินค้า</span>
         <input type="text" id="productSearch" placeholder="พิมพ์ชื่อสินค้า...">
@@ -884,6 +880,19 @@
           <button type="button" class="qty-btn" id="qtyPlusBtn" aria-label="เพิ่มจำนวน">+</button>
         </div>
       </label>
+      <div class="row2">
+        <label class="field">
+          <span class="lbl">ชื่อลูกค้า (ไม่บังคับ)</span>
+          <input type="text" id="customerName" placeholder="เช่น คุณสมชาย" list="customerNameList" autocomplete="off">
+        </label>
+        <label class="field">
+          <span class="lbl">เบอร์โทร (ไม่บังคับ)</span>
+          <input type="text" inputmode="tel" id="customerPhone" placeholder="08x-xxx-xxxx" list="customerPhoneList" autocomplete="off" name="cust-phone-field">
+        </label>
+      </div>
+      <div class="pdpa-note">เก็บไว้เพื่อติดตามลูกค้าประจำและแจ้งโปรโมชั่นเท่านั้น กรุณาแจ้งลูกค้าก่อนบันทึกเบอร์โทร</div>
+      <datalist id="customerNameList"></datalist>
+      <datalist id="customerPhoneList"></datalist>
       <div class="total-row">
         <div class="lbl">รวมทั้งหมด</div>
         <div class="val" id="totalVal">0 บาท</div>
