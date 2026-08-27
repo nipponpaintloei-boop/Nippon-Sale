@@ -85,9 +85,7 @@
     display:flex; align-items:center; gap:18px;
     margin-bottom:20px;
   }
-  .can-wrap{flex-shrink:0; width:84px;}
-  @keyframes waveMove{from{transform:translateX(0);} to{transform:translateX(28px);}}
-  .can-wave{animation:waveMove 2.2s linear infinite;}
+  .can-wrap{flex-shrink:0; width:92px;}
   .can-label{
     text-align:center; font-family:var(--disp); font-weight:600; font-size:12px;
     margin-top:6px; color:var(--paper-dim);
@@ -982,9 +980,9 @@
   <section class="view active" id="view-dash">
     <div class="gauge-card">
       <div class="can-wrap">
-        <svg viewBox="0 0 84 100" width="84" height="100">
+        <svg viewBox="0 0 92 110" width="92" height="110">
           <defs>
-            <clipPath id="bucketClip"><path d="M17 34 L67 34 L59 90 Q42 96 25 90 Z"/></clipPath>
+            <clipPath id="wallClip"><rect x="8" y="6" width="60" height="92" rx="4"/></clipPath>
             <linearGradient id="fillGrad" x1="0" y1="1" x2="0" y2="0">
               <stop offset="0%" stop-color="#d35b4e"/>
               <stop offset="22%" stop-color="#e8874a"/>
@@ -994,15 +992,15 @@
               <stop offset="100%" stop-color="#9a7fd8"/>
             </linearGradient>
           </defs>
-          <path d="M27 34 Q42 6 57 34" fill="none" stroke="rgba(237,234,226,0.28)" stroke-width="2.4" stroke-linecap="round"/>
-          <path d="M17 34 L67 34 L59 90 Q42 96 25 90 Z" fill="none" stroke="rgba(237,234,226,0.28)" stroke-width="2"/>
-          <g clip-path="url(#bucketClip)">
-            <rect id="canFill" x="14" y="90" width="56" height="0" fill="url(#fillGrad)"/>
-            <g id="canWaveWrap">
-              <path class="can-wave" d="M-28 90 q14 -6 28 0 t28 0 t28 0 t28 0" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="2"/>
-            </g>
+          <rect x="8" y="6" width="60" height="92" rx="4" fill="none" stroke="rgba(237,234,226,0.28)" stroke-width="2"/>
+          <g clip-path="url(#wallClip)">
+            <rect id="canFill" x="8" y="98" width="60" height="0" fill="url(#fillGrad)"/>
+            <g id="canWaveWrap"></g>
           </g>
-          <rect x="14" y="30" width="56" height="7" rx="3" fill="rgba(237,234,226,0.28)"/>
+          <g id="rollerHead" transform="translate(0,98)">
+            <line x1="38" y1="-38" x2="38" y2="-6" stroke="#c9c2b2" stroke-width="3" stroke-linecap="round"/>
+            <rect x="20" y="-8" width="36" height="12" rx="6" fill="#c9c2b2"/>
+          </g>
         </svg>
         <div class="can-label" id="canPct">0%</div>
         <div class="today-target-chip" id="todayTargetChip">เป้าวันนี้ —</div>
@@ -2828,13 +2826,24 @@ function renderGauge(){
   document.getElementById('monthTotal').textContent = fmt(monthTotal);
   document.getElementById('targetVal').textContent = fmt(target);
   document.getElementById('canPct').textContent = Math.round(pct*100)+'%';
-  const maxH = 56;
+  const wallTop = 6, wallBottom = 98;
+  const maxH = wallBottom - wallTop; // 92
   const h = maxH*pct;
+  const paintTop = wallBottom - h;
   const fillEl = document.getElementById('canFill');
   fillEl.setAttribute('height', h);
-  fillEl.setAttribute('y', 90-h);
+  fillEl.setAttribute('y', paintTop);
+  const rollerHead = document.getElementById('rollerHead');
+  if(rollerHead) rollerHead.setAttribute('transform', `translate(0,${paintTop})`);
   const waveWrap = document.getElementById('canWaveWrap');
-  if(waveWrap) waveWrap.style.transform = `translateY(${-h}px)`;
+  if(waveWrap){
+    const spacing = 12;
+    let lines = '';
+    for(let y = wallBottom - spacing; y > paintTop; y -= spacing){
+      lines += `<path d="M8 ${y} h60" stroke="rgba(0,0,0,0.10)" stroke-width="1.5"/>`;
+    }
+    waveWrap.innerHTML = lines;
+  }
 
   // days context
   const now = new Date();
