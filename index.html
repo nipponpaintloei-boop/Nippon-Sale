@@ -2421,10 +2421,10 @@ function selectProduct(name){
   // menu opening from inside handleSizeChange and undoing it, which is why nothing
   // seemed to update until the size field was tapped a second time).
   sizeSelect.value = sizes[0];
-  handleSizeChange();
+  handleSizeChange(true); // true: this is the initial pick, ok to auto-jump to qty
 }
 
-function handleSizeChange(){
+function handleSizeChange(autoFocusQty){
   if(!currentProduct) return;
   const size = sizeSelect.value;
   const bases = Object.keys(PRODUCT_INDEX[currentProduct][size]);
@@ -2432,7 +2432,7 @@ function handleSizeChange(){
     // no real base choice for this product/size: skip past this step
     baseSelect.disabled = true;
     baseSelect.innerHTML = '<option>—</option>';
-    handleBaseChange();
+    handleBaseChange(autoFocusQty);
   } else {
     // same auto-select-without-'change' issue as size — resolve the default first
     // base right away so price/total populate immediately. The user can still tap
@@ -2440,12 +2440,14 @@ function handleSizeChange(){
     baseSelect.disabled = false;
     baseSelect.innerHTML = bases.map(b=>`<option value="${b}">${b}</option>`).join('');
     baseSelect.value = bases[0];
-    handleBaseChange();
+    handleBaseChange(autoFocusQty);
   }
 }
-sizeSelect.addEventListener('change', handleSizeChange);
+// user manually reselecting size afterwards: resolve base/price as usual, but don't
+// yank focus to qty again — they're still mid-flow choosing size/base themselves
+sizeSelect.addEventListener('change', ()=>handleSizeChange(false));
 
-function handleBaseChange(){
+function handleBaseChange(autoFocusQty){
   if(!currentProduct) return;
   const size = sizeSelect.value;
   const base = baseSelect.value;
@@ -2454,13 +2456,18 @@ function handleBaseChange(){
     priceVal.textContent = fmt(currentRow.price);
     priceChip.style.display = 'inline-flex';
     updateStockHint();
-    // autofocus flow: once product -> size -> base fully resolve, jump to qty for fast entry
-    qtyInput.focus();
-    qtyInput.select();
+    // autofocus flow: once product -> size -> base fully resolve for the FIRST time,
+    // jump to qty for fast entry. Skip this when the user is manually re-picking
+    // size/base afterward — jumping focus away mid-adjustment is just annoying.
+    if(autoFocusQty){
+      qtyInput.focus();
+      qtyInput.select();
+    }
   }
   computeTotal();
 }
-baseSelect.addEventListener('change', handleBaseChange);
+// user manually reselecting base afterwards: don't auto-jump to qty either
+baseSelect.addEventListener('change', ()=>handleBaseChange(false));
 
 function updateStockHint(){
   const hint = document.getElementById('stockHint');
