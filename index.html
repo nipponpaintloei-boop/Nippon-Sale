@@ -259,6 +259,7 @@
     width:20px; height:20px; border-radius:50%; border:2px solid transparent; cursor:pointer; padding:0;
   }
   .cust-dot.active{border-color:var(--paper);}
+  .pdpa-note{font-size:11px; color:var(--paper-faint); margin:-6px 0 14px; line-height:1.5;}
 
   .filter-chips{display:flex; gap:7px; overflow-x:auto; padding-bottom:2px; margin-bottom:14px;}
   .chip{
@@ -831,6 +832,7 @@
           <input type="tel" id="customerPhone" placeholder="08x-xxx-xxxx" list="customerPhoneList" autocomplete="off">
         </label>
       </div>
+      <div class="pdpa-note">เก็บไว้เพื่อติดตามลูกค้าประจำและแจ้งโปรโมชั่นเท่านั้น กรุณาแจ้งลูกค้าก่อนบันทึกเบอร์โทร</div>
       <datalist id="customerNameList"></datalist>
       <datalist id="customerPhoneList"></datalist>
       <label class="field search-wrap">
@@ -1322,6 +1324,7 @@
       <span class="lbl">ค้นหาลูกค้า</span>
       <input type="text" id="custSearch" placeholder="ค้นหาชื่อหรือเบอร์โทร...">
     </label>
+    <button class="btn btn-ghost" id="exportCustomersBtn" style="margin-bottom:16px;">ส่งออกฐานลูกค้าเป็น Excel</button>
     <div class="sec-title"><span class="t">รายชื่อลูกค้า</span></div>
     <div class="card" id="custList" style="padding:6px 12px;"></div>
   </section>
@@ -2743,6 +2746,27 @@ async function setCustomerColor(key, color){
   renderCustomers();
 }
 document.getElementById('custSearch').addEventListener('input', renderCustomers);
+
+async function exportCustomersExcel(){
+  if(typeof XLSX==='undefined'){ toast('ไม่สามารถโหลดระบบ Excel ได้ กรุณาเชื่อมต่ออินเทอร์เน็ตแล้วลองใหม่'); return; }
+  const list = aggregateCustomers().sort((a,b)=>{ if(a.favorite!==b.favorite) return a.favorite?-1:1; return b.total-a.total; });
+  if(!list.length){ toast('ยังไม่มีข้อมูลลูกค้าให้ส่งออก'); return; }
+  const colorLabel = {ochre:'เหลือง', teal:'ฟ้า', clay:'แดง', moss:'เขียว'};
+  const rows = list.map((c,i)=>({
+    'ลำดับ':i+1, 'ชื่อลูกค้า':c.name||'', 'เบอร์โทร':c.phone||'',
+    'ลูกค้าประจำ':c.favorite?'ใช่':'', 'สี':c.color?(colorLabel[c.color]||c.color):'',
+    'จำนวนบิล':c.count, 'ยอดซื้อสะสม':c.total, 'ซื้อล่าสุด':c.lastDate
+  }));
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = [{wch:8},{wch:28},{wch:16},{wch:12},{wch:10},{wch:12},{wch:16},{wch:14}];
+  XLSX.utils.book_append_sheet(wb, ws, 'ฐานลูกค้า');
+  const fileName = `NIPPON-SALE-ฐานลูกค้า-${todayISO()}.xlsx`;
+  XLSX.writeFile(wb, fileName, {compression:true});
+  await addAudit('ส่งออกฐานลูกค้า', `ไฟล์ ${fileName} · ${rows.length} ราย`);
+  toast('ส่งออกฐานลูกค้าแล้ว — ไฟล์อยู่ใน Downloads');
+}
+document.getElementById('exportCustomersBtn').addEventListener('click', exportCustomersExcel);
 
 async function deleteSaleEntry(id){
   const idx = SALES.findIndex(s=>s.id===id);
