@@ -159,6 +159,33 @@
     border:1px solid var(--line); border-radius:999px; padding:6px 12px; font-family:var(--mono);
     font-size:13px; color:var(--ochre); margin-top:2px;
   }
+  .stock-hint{
+    margin-top:8px; font-size:12px; font-family:var(--mono); padding:7px 11px; border-radius:8px;
+    background:var(--surface2); border:1px solid var(--line); color:var(--paper-dim); display:inline-block;
+  }
+  .stock-hint.low{color:var(--ochre); border-color:rgba(240,178,60,0.35); background:rgba(240,178,60,0.1);}
+  .stock-hint.out{color:var(--clay); border-color:rgba(211,91,78,0.35); background:rgba(211,91,78,0.1);}
+  .qty-stepper{display:flex; align-items:stretch; gap:8px;}
+  .qty-stepper input{flex:1; text-align:center;}
+  .qty-btn{
+    width:44px; flex-shrink:0; border-radius:10px; border:1px solid var(--line); background:var(--surface2);
+    color:var(--paper); font-size:19px; font-family:var(--mono); cursor:pointer; line-height:1;
+  }
+  .qty-btn:active{background:var(--surface); color:var(--ochre); border-color:var(--ochre);}
+  .bulk-stock-row{
+    display:flex; align-items:center; gap:10px; padding:10px 4px; border-bottom:1px solid var(--line);
+  }
+  .bulk-stock-row:last-child{border-bottom:none;}
+  .bulk-stock-row .info{flex:1; min-width:0;}
+  .bulk-stock-row .name{font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .bulk-stock-row .meta{font-size:11px; color:var(--paper-faint); font-family:var(--mono); margin-top:2px;}
+  .bulk-stock-row input{
+    width:64px; flex-shrink:0; background:var(--surface2); border:1px solid var(--line); border-radius:8px;
+    padding:8px; color:var(--paper); font-family:var(--mono); text-align:center; font-size:13px;
+  }
+  .bulk-stock-row .del-btn{
+    background:none; border:none; color:var(--paper-faint); font-size:15px; cursor:pointer; flex-shrink:0; padding:4px 2px;
+  }
 
   .total-row{
     display:flex; justify-content:space-between; align-items:center;
@@ -196,6 +223,19 @@
     background:none; border:none; color:var(--paper-faint); font-size:15px; cursor:pointer; flex-shrink:0; padding:4px 2px;
   }
   .list-row .del-btn:active{color:var(--clay);}
+
+  /* swipe-to-delete */
+  .swipe-wrap{position:relative; overflow:hidden;}
+  .swipe-wrap .swipe-bg{
+    position:absolute; inset:0; background:var(--clay); border-radius:8px;
+    display:flex; align-items:center; justify-content:flex-end; padding-right:18px;
+    color:#fff; font-size:12.5px; font-weight:600; gap:6px;
+  }
+  .swipe-wrap .list-row{
+    position:relative; background:var(--surface); z-index:1; touch-action:pan-y;
+    transition:transform .22s cubic-bezier(.2,.8,.2,1);
+  }
+  .swipe-wrap .list-row.dragging{transition:none;}
 
   .swatch{width:10px;height:10px;border-radius:3px; flex-shrink:0;}
 
@@ -589,6 +629,18 @@
   .pace-highlight .p-days{display:block; margin-top:3px; font-size:10.5px; color:var(--paper-faint);}
   .pace-highlight.urgent{background:rgba(211,91,78,0.14); border-color:rgba(211,91,78,0.34);}
   .pace-highlight.urgent .p-val{color:var(--clay);}
+  .days-left-badge{
+    display:flex; align-items:baseline; gap:7px; margin-top:10px; padding:8px 12px;
+    border-radius:10px; background:var(--surface2); border:1px solid var(--line); width:fit-content;
+  }
+  .days-left-badge .dl-num{font-family:var(--mono); font-weight:700; font-size:20px; color:var(--teal);}
+  .days-left-badge .dl-lbl{font-size:11px; color:var(--paper-dim);}
+  .days-left-badge.warn{background:rgba(240,178,60,0.12); border-color:rgba(240,178,60,0.35);}
+  .days-left-badge.warn .dl-num{color:var(--ochre);}
+  .days-left-badge.urgent{background:rgba(211,91,78,0.14); border-color:rgba(211,91,78,0.34);}
+  .days-left-badge.urgent .dl-num{color:var(--clay);}
+  .days-left-badge.done{background:rgba(124,191,114,0.16); border-color:rgba(124,191,114,0.4);}
+  .days-left-badge.done .dl-num{color:var(--moss);}
 
   /* ================= EXTRA: recent-edits warning badge & daily trend bars ================= */
   .warn-badge{
@@ -771,6 +823,7 @@
         </label>
       </div>
       <div class="price-chip" id="priceChip" style="display:none;">฿<span id="priceVal">0</span> / หน่วย</div>
+      <div class="stock-hint" id="stockHint" style="display:none;"></div>
       <div class="row2" style="margin-top:14px;">
         <label class="field">
           <span class="lbl">รหัสสี (ถ้ามี)</span>
@@ -783,7 +836,11 @@
       </div>
       <label class="field">
         <span class="lbl">จำนวน</span>
-        <input type="number" id="qty" value="1" min="1">
+        <div class="qty-stepper">
+          <button type="button" class="qty-btn" id="qtyMinusBtn" aria-label="ลดจำนวน">−</button>
+          <input type="number" id="qty" value="1" min="1">
+          <button type="button" class="qty-btn" id="qtyPlusBtn" aria-label="เพิ่มจำนวน">+</button>
+        </div>
       </label>
       <div class="total-row">
         <div class="lbl">รวมทั้งหมด</div>
@@ -906,6 +963,10 @@
           <span>เป้า <span id="targetVal">0</span> บาท</span>
           <button id="editTargetBtn">แก้ไขเป้า</button>
         </div>
+        <div class="days-left-badge" id="daysLeftBadge">
+          <span class="dl-num" id="daysLeftNum">0</span>
+          <span class="dl-lbl">วันที่เหลือในเดือนนี้</span>
+        </div>
         <div class="gap-highlight" id="monthGapLine">ขาดอีก <b id="monthGapVal">0</b> บาท ถึงเป้า</div>
         <div class="pace-highlight" id="paceLine"><span class="p-lbl">ต้องทำเฉลี่ยต่อวัน เพื่อให้ถึงเป้า</span><span class="p-val">0</span><span class="p-unit">บาท/วัน</span></div>
       </div>
@@ -978,6 +1039,7 @@
       <label class="field">
         <input type="text" id="stockSearch" placeholder="ค้นหาสินค้าในสต็อก...">
       </label>
+      <button class="btn btn-teal" id="bulkStockInBtn" style="margin-bottom:12px;">+ รับเข้าสต็อกหลายรายการ</button>
       <div class="filter-chips" id="stockFilters">
         <div class="chip active" data-f="all">ทั้งหมด</div>
         <div class="chip" data-f="over">ขายเกินสต็อก</div>
@@ -1404,6 +1466,21 @@
       <button class="btn btn-primary" id="stockFixSaveBtn">ปรับยอดสต็อกให้ตรง</button>
       <button class="btn btn-ghost" id="stockAuditBtn">ประวัติการปรับสต็อก</button>
     </div>
+  </div>
+</div>
+
+<!-- modal: bulk stock-in (receive multiple products at once) -->
+<div class="modal-bg" id="bulkStockModalBg">
+  <div class="modal">
+    <h3>รับเข้าสต็อกหลายรายการ</h3>
+    <p class="hint">ค้นหาแล้วเพิ่มสินค้าทีละตัวลงในรายการ กรอกจำนวนที่รับเข้าแต่ละตัว แล้วบันทึกพร้อมกันทั้งหมด</p>
+    <label class="field search-wrap">
+      <input type="text" id="bulkStockSearch" placeholder="พิมพ์ชื่อสินค้าเพื่อเพิ่ม...">
+      <div class="suggest" id="bulkStockSuggest" style="display:none;"></div>
+    </label>
+    <div id="bulkStockCartList" style="margin:10px 0;"></div>
+    <button class="btn btn-primary" id="bulkStockSaveBtn">บันทึกรับเข้าทั้งหมด</button>
+    <button class="btn btn-ghost" id="bulkStockCancelBtn">ยกเลิก</button>
   </div>
 </div>
 
@@ -2182,6 +2259,15 @@ document.getElementById('menuSettingsBtn').addEventListener('click', ()=>{
 });
 
 /* ================= entry form logic ================= */
+function getLastUsedSaleDate(){
+  try{
+    const v = localStorage.getItem(LOCAL_STORAGE_PREFIX + 'lastSaleDate');
+    return v || todayISO();
+  }catch(e){ return todayISO(); }
+}
+function setLastUsedSaleDate(v){
+  try{ localStorage.setItem(LOCAL_STORAGE_PREFIX + 'lastSaleDate', v || todayISO()); }catch(e){}
+}
 const productSearch = document.getElementById('productSearch');
 const suggestBox = document.getElementById('suggestBox');
 const sizeSelect = document.getElementById('sizeSelect');
@@ -2191,14 +2277,30 @@ const priceVal = document.getElementById('priceVal');
 let currentProduct = null; // name
 let currentRow = null;     // selected product row object
 
-document.getElementById('saleDate').value = todayISO();
+document.getElementById('saleDate').value = getLastUsedSaleDate();
+document.getElementById('saleDate').addEventListener('change', ()=>{
+  setLastUsedSaleDate(document.getElementById('saleDate').value);
+});
+
+function hasMeaningfulEntryData(){
+  if(!currentRow) return false;
+  const tint = (tintPriceInput.value||'').trim();
+  const cc = (document.getElementById('colorCode').value||'').trim();
+  const qty = (qtyInput.value||'').trim();
+  return !!tint || !!cc || (qty && qty !== '1');
+}
 
 productSearch.addEventListener('input', ()=>{
-  const q = productSearch.value.trim().toLowerCase();
+  const q = productSearch.value.trim();
+  if(currentProduct && q.toLowerCase() !== currentProduct.toLowerCase() && hasMeaningfulEntryData()){
+    const ok = confirm('คุณกรอกรายละเอียด (รหัสสี/ราคาแม่สี/จำนวน) ของสินค้านี้ไว้ยังไม่ได้บันทึกหรือเพิ่มลงบิล ต้องการเปลี่ยนสินค้าและล้างข้อมูลนี้หรือไม่?');
+    if(!ok){ productSearch.value = currentProduct; return; }
+  }
+  const ql = q.toLowerCase();
   currentProduct = null; currentRow = null;
   resetSizeBase();
-  if(!q){ suggestBox.style.display='none'; return; }
-  const names = Object.keys(PRODUCT_INDEX).filter(n=>n.toLowerCase().includes(q)).slice(0,20);
+  if(!ql){ suggestBox.style.display='none'; return; }
+  const names = Object.keys(PRODUCT_INDEX).filter(n=>n.toLowerCase().includes(ql)).slice(0,20);
   if(!names.length){ suggestBox.innerHTML = '<div class="suggest-item">ไม่พบสินค้า</div>'; suggestBox.style.display='block'; return; }
   suggestBox.innerHTML = names.map(n=>{
     const sizes = Object.keys(PRODUCT_INDEX[n]);
@@ -2210,6 +2312,10 @@ productSearch.addEventListener('input', ()=>{
 suggestBox.addEventListener('click', (e)=>{
   const item = e.target.closest('.suggest-item');
   if(!item || !item.dataset.name) return;
+  if(currentProduct && item.dataset.name !== currentProduct && hasMeaningfulEntryData()){
+    const ok = confirm('คุณกรอกรายละเอียด (รหัสสี/ราคาแม่สี/จำนวน) ของสินค้านี้ไว้ยังไม่ได้บันทึกหรือเพิ่มลงบิล ต้องการเปลี่ยนสินค้าและล้างข้อมูลนี้หรือไม่?');
+    if(!ok) return;
+  }
   selectProduct(item.dataset.name);
 });
 
@@ -2245,14 +2351,36 @@ baseSelect.addEventListener('change', ()=>{
   if(currentRow){
     priceVal.textContent = fmt(currentRow.price);
     priceChip.style.display = 'inline-flex';
+    updateStockHint();
+    // autofocus flow: once size+base resolve to a product, jump to qty for fast entry
+    qtyInput.focus();
+    qtyInput.select();
   }
   computeTotal();
 });
+
+function updateStockHint(){
+  const hint = document.getElementById('stockHint');
+  if(!currentRow){ hint.style.display = 'none'; return; }
+  const remain = Number(currentRow.remain)||0;
+  hint.style.display = 'inline-block';
+  hint.classList.remove('low','out');
+  if(remain <= 0){
+    hint.textContent = `⚠ สินค้านี้หมดสต็อกแล้ว (คงเหลือ ${remain})`;
+    hint.classList.add('out');
+  } else if(remain <= 3){
+    hint.textContent = `⚠ คงเหลือ ${remain} ชิ้น — ใกล้หมด`;
+    hint.classList.add('low');
+  } else {
+    hint.textContent = `คงเหลือ ${remain} ชิ้น`;
+  }
+}
 
 function resetSizeBase(){
   sizeSelect.disabled = true; sizeSelect.innerHTML = '<option>เลือกสินค้าก่อน</option>';
   baseSelect.disabled = true; baseSelect.innerHTML = '<option>—</option>';
   priceChip.style.display = 'none';
+  document.getElementById('stockHint').style.display = 'none';
   computeTotal();
 }
 
@@ -2263,6 +2391,17 @@ document.addEventListener('click', (e)=>{
 const tintPriceInput = document.getElementById('tintPrice');
 const qtyInput = document.getElementById('qty');
 [tintPriceInput, qtyInput].forEach(el=>el.addEventListener('input', computeTotal));
+
+document.getElementById('qtyMinusBtn').addEventListener('click', ()=>{
+  const v = Math.max(1, (Number(qtyInput.value)||1) - 1);
+  qtyInput.value = v;
+  computeTotal();
+});
+document.getElementById('qtyPlusBtn').addEventListener('click', ()=>{
+  const v = (Number(qtyInput.value)||0) + 1;
+  qtyInput.value = v;
+  computeTotal();
+});
 
 function computeTotal(){
   const unit = currentRow ? Number(currentRow.price)||0 : 0;
@@ -2310,19 +2449,25 @@ function renderBillCart(){
   title.style.display='flex'; list.style.display='block';
   document.getElementById('billCartCount').textContent = billCart.length;
   list.innerHTML = billCart.map((s,i)=>`
-    <div class="list-row">
+    <div class="swipe-wrap"><div class="swipe-bg">ปัดเพื่อลบ ✕</div>
+    <div class="list-row" data-swipedel="${i}">
       <div class="info">
         <div class="name">${s.name} ${s.size} ${s.base}</div>
         <div class="sub">${s.colorCode ? 'รหัสสี '+s.colorCode+' · ' : ''}x${s.qty}</div>
       </div>
       <div class="amt">${fmt(s.total)}฿</div>
       <button class="del-btn" data-billrm="${i}">✕</button>
-    </div>`).join('');
+    </div></div>`).join('');
   list.querySelectorAll('[data-billrm]').forEach(b=>b.addEventListener('click', ()=>{
     billCart.splice(Number(b.dataset.billrm),1);
     if(!billCart.length) billId = null;
     renderBillCart();
   }));
+  enableSwipeToDelete(list, (idxStr)=>{
+    billCart.splice(Number(idxStr),1);
+    if(!billCart.length) billId = null;
+    renderBillCart();
+  });
 }
 document.getElementById('addToBillBtn').addEventListener('click', ()=>{
   if(!currentRow){ toast('กรุณาเลือกสินค้าก่อน'); return; }
@@ -2441,6 +2586,16 @@ function renderGauge(){
     else { gapEl.innerHTML = `ขาดอีก <b>${fmt(gap)}</b> บาท ถึงเป้า`; }
   }
 
+  // prominent days-left-in-month countdown badge
+  const dlBadge = document.getElementById('daysLeftBadge');
+  if(dlBadge){
+    document.getElementById('daysLeftNum').textContent = daysLeft;
+    dlBadge.classList.remove('warn','urgent','done');
+    if(reached){ dlBadge.classList.add('done'); }
+    else if(daysLeft <= 3){ dlBadge.classList.add('urgent'); }
+    else if(daysLeft <= 7){ dlBadge.classList.add('warn'); }
+  }
+
   // highlighted: ยอดที่ต้องทำเฉลี่ยต่อวัน (จากวันที่เหลือในเดือน) เพื่อให้ถึงเป้า
   const paceEl = document.getElementById('paceLine');
   if(paceEl){
@@ -2448,7 +2603,7 @@ function renderGauge(){
       paceEl.style.display = 'none';
     } else {
       paceEl.style.display = '';
-      paceEl.innerHTML = `<span class="p-lbl">ต้องทำเฉลี่ยต่อวัน เพื่อให้ถึงเป้า</span><span class="p-val">${fmt(Math.round(pace))}</span><span class="p-unit">บาท/วัน</span><span class="p-days">เหลืออีก ${daysLeft} วัน</span>`;
+      paceEl.innerHTML = `<span class="p-lbl">ต้องทำเฉลี่ยต่อวัน เพื่อให้ถึงเป้า</span><span class="p-val">${fmt(Math.round(pace))}</span><span class="p-unit">บาท/วัน</span>`;
       paceEl.classList.toggle('urgent', dailyTarget>0 && pace > dailyTarget*1.25);
     }
   }
@@ -2542,8 +2697,10 @@ function renderBillGroupedRows(rows, opts={}){
     if(s.billId && last && last.billId===s.billId){ last.items.push(s); }
     else groups.push({billId:s.billId||null, items:[s]});
   });
-  const rowHtml = s => `
-    <div class="list-row">
+  const rowHtml = s => {
+    const delAttr = s.seed ? '' : (mode==='full' ? `data-swipedel="${s.id}"` : `data-swipedel="${s.id}"`);
+    const inner = `
+    <div class="list-row" ${delAttr}>
       <div class="info">
         <div class="name">${s.name} ${s.size} ${s.base}</div>
         <div class="sub">${s.colorCode ? 'รหัสสี '+s.colorCode+' · ' : ''}x${s.qty}</div>
@@ -2553,6 +2710,8 @@ function renderBillGroupedRows(rows, opts={}){
         ? `<button class="del-btn" data-edit="${s.id}" title="แก้ไข">✎</button><button class="del-btn" data-delete="${s.id}" title="ลบ">×</button>`
         : `<button class="del-btn" data-del="${s.id}">✕</button>`)}
     </div>`;
+    return s.seed ? inner : `<div class="swipe-wrap"><div class="swipe-bg">ปัดเพื่อลบ ✕</div>${inner}</div>`;
+  };
   return groups.map(g=>{
     const rowsHtml = g.items.map(rowHtml).join('');
     if(g.items.length>1){
@@ -2563,6 +2722,49 @@ function renderBillGroupedRows(rows, opts={}){
   }).join('');
 }
 
+/* swipe-to-delete: attach to any container holding .swipe-wrap > .list-row rows.
+   onDelete(id) is called with the row's data-swipedel value when swiped past threshold. */
+function enableSwipeToDelete(container, onDelete){
+  if(!container || container._swipeBound) return;
+  container._swipeBound = true;
+  let active = null, startX = 0, startY = 0, dx = 0, locked = null;
+  const THRESHOLD = 64;
+  container.addEventListener('pointerdown', (e)=>{
+    const row = e.target.closest('.swipe-wrap > .list-row');
+    if(!row || e.target.closest('.del-btn')) return;
+    active = row; startX = e.clientX; startY = e.clientY; dx = 0; locked = null;
+    row.classList.add('dragging');
+  });
+  container.addEventListener('pointermove', (e)=>{
+    if(!active) return;
+    const mdx = e.clientX - startX, mdy = e.clientY - startY;
+    if(locked===null){
+      if(Math.abs(mdx) < 6 && Math.abs(mdy) < 6) return;
+      locked = Math.abs(mdx) > Math.abs(mdy) ? 'x' : 'y';
+      if(locked==='y'){ active.classList.remove('dragging'); active = null; return; }
+    }
+    if(locked !== 'x') return;
+    dx = Math.min(0, mdx);
+    active.style.transform = `translateX(${dx}px)`;
+  });
+  const finish = ()=>{
+    if(!active) return;
+    active.classList.remove('dragging');
+    if(dx < -THRESHOLD){
+      const id = active.dataset.swipedel;
+      active.style.transform = `translateX(-100%)`;
+      active.style.opacity = '0';
+      setTimeout(()=>{ if(onDelete) onDelete(id); }, 160);
+    } else {
+      active.style.transform = '';
+    }
+    active = null; dx = 0; locked = null;
+  };
+  container.addEventListener('pointerup', finish);
+  container.addEventListener('pointercancel', finish);
+  container.addEventListener('pointerleave', (e)=>{ if(active && e.target===active) finish(); });
+}
+
 /* ================= recent list (today, entry tab) ================= */
 function renderRecent(){
   const today = todayISO();
@@ -2571,6 +2773,7 @@ function renderRecent(){
   if(!todays.length){ box.innerHTML = '<div class="empty">ยังไม่มีรายการขายวันนี้</div>'; return; }
   box.innerHTML = renderBillGroupedRows(todays, {mode:'simple'});
   box.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', ()=>deleteSaleEntry(b.dataset.del)));
+  enableSwipeToDelete(box, (id)=>deleteSaleEntry(id));
 }
 
 /* ================= dashboard ================= */
@@ -3207,6 +3410,7 @@ function renderHistDay(){
   box.innerHTML = renderBillGroupedRows(rows, {mode:'full'});
   box.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>editSaleEntry(b.dataset.edit)));
   box.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',()=>deleteSaleEntry(b.dataset.delete)));
+  enableSwipeToDelete(box, (id)=>deleteSaleEntry(id));
 }
 
 function renderHistMonthOptions(){
@@ -3243,6 +3447,7 @@ function renderHistMonth(){
   box.innerHTML=dates.map(d=>{const items=byDate[d],dTotal=items.reduce((a,s)=>a+s.total,0);return `<div class="day-group"><div class="dhead"><span>${formatDateTH(d)}</span><span class="dsum">${items.length} รายการ · ${fmt(dTotal)}฿</span></div><div class="card" style="padding:6px 12px;">${renderBillGroupedRows(items,{mode:'full'})}</div></div>`}).join('');
   box.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>editSaleEntry(b.dataset.edit)));
   box.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',()=>deleteSaleEntry(b.dataset.delete)));
+  enableSwipeToDelete(box, (id)=>deleteSaleEntry(id));
 }
 document.getElementById('histMonthSearch').addEventListener('input',renderHistMonth);
 document.getElementById('histMonthSort').addEventListener('change',renderHistMonth);
@@ -3453,6 +3658,102 @@ document.getElementById('stockFixSaveBtn').addEventListener('click', async ()=>{
 document.getElementById('stockAuditBtn').addEventListener('click',()=>{document.getElementById('auditModalTitle').textContent='ประวัติการปรับสต็อก';renderAudit();document.getElementById('auditModalBg').classList.add('show');});
 document.getElementById('closeAuditBtn').addEventListener('click',()=>document.getElementById('auditModalBg').classList.remove('show'));
 document.getElementById('auditModalBg').addEventListener('click',e=>{if(e.target.id==='auditModalBg')e.currentTarget.classList.remove('show');});
+
+/* ================= bulk stock-in (receive multiple products at once) ================= */
+let bulkStockCart = []; // [{idx, qty}]
+const bulkStockSearch = document.getElementById('bulkStockSearch');
+const bulkStockSuggest = document.getElementById('bulkStockSuggest');
+
+document.getElementById('bulkStockInBtn').addEventListener('click', ()=>{
+  bulkStockCart = [];
+  bulkStockSearch.value = '';
+  bulkStockSuggest.style.display = 'none';
+  renderBulkStockCart();
+  document.getElementById('bulkStockModalBg').classList.add('show');
+});
+document.getElementById('bulkStockCancelBtn').addEventListener('click', ()=>{
+  document.getElementById('bulkStockModalBg').classList.remove('show');
+});
+document.getElementById('bulkStockModalBg').addEventListener('click', (e)=>{
+  if(e.target.id==='bulkStockModalBg') e.currentTarget.classList.remove('show');
+});
+
+bulkStockSearch.addEventListener('input', ()=>{
+  const q = bulkStockSearch.value.trim().toLowerCase();
+  if(!q){ bulkStockSuggest.style.display='none'; return; }
+  const matches = PRODUCTS
+    .map((r,idx)=>({r,idx}))
+    .filter(x=>x.r.name && x.r.name.toLowerCase().includes(q) && !bulkStockCart.some(c=>c.idx===x.idx))
+    .slice(0,20);
+  if(!matches.length){ bulkStockSuggest.innerHTML = '<div class="suggest-item">ไม่พบสินค้า</div>'; bulkStockSuggest.style.display='block'; return; }
+  bulkStockSuggest.innerHTML = matches.map(x=>`
+    <div class="suggest-item" data-idx="${x.idx}">${x.r.name} ${x.r.size} ${x.r.base}<div class="meta">คงเหลือ ${x.r.remain}</div></div>
+  `).join('');
+  bulkStockSuggest.style.display='block';
+});
+bulkStockSuggest.addEventListener('click', (e)=>{
+  const item = e.target.closest('.suggest-item');
+  if(!item || item.dataset.idx===undefined) return;
+  const idx = Number(item.dataset.idx);
+  if(!bulkStockCart.some(c=>c.idx===idx)) bulkStockCart.push({idx, qty:''});
+  bulkStockSearch.value = '';
+  bulkStockSuggest.style.display = 'none';
+  renderBulkStockCart();
+});
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('#bulkStockModalBg .search-wrap')) bulkStockSuggest.style.display = 'none';
+});
+
+function renderBulkStockCart(){
+  const box = document.getElementById('bulkStockCartList');
+  if(!bulkStockCart.length){ box.innerHTML = '<div class="empty">ยังไม่ได้เพิ่มสินค้า — ค้นหาด้านบนเพื่อเพิ่มรายการ</div>'; return; }
+  box.innerHTML = bulkStockCart.map((c,i)=>{
+    const r = PRODUCTS[c.idx];
+    if(!r) return '';
+    return `
+    <div class="bulk-stock-row">
+      <div class="info">
+        <div class="name">${r.name} ${r.size} ${r.base}</div>
+        <div class="meta">คงเหลือปัจจุบัน ${r.remain}</div>
+      </div>
+      <input type="number" placeholder="0" data-bulkqty="${i}" value="${c.qty}">
+      <button class="del-btn" data-bulkrm="${i}">✕</button>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('[data-bulkqty]').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      bulkStockCart[Number(inp.dataset.bulkqty)].qty = inp.value;
+    });
+  });
+  box.querySelectorAll('[data-bulkrm]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      bulkStockCart.splice(Number(b.dataset.bulkrm),1);
+      renderBulkStockCart();
+    });
+  });
+}
+
+document.getElementById('bulkStockSaveBtn').addEventListener('click', async ()=>{
+  if(!(await ensurePin())) return;
+  const valid = bulkStockCart.filter(c=>Number(c.qty)>0);
+  if(!valid.length){ toast('กรุณาระบุจำนวนที่รับเข้าอย่างน้อย 1 รายการ'); return; }
+  const auditLines = [];
+  valid.forEach(c=>{
+    const r = PRODUCTS[c.idx];
+    if(!r) return;
+    const qty = Number(c.qty)||0;
+    r.inflow = (Number(r.inflow)||0) + qty;
+    r.remain = (Number(r.remain)||0) + qty;
+    auditLines.push(`${r.name} ${r.size} ${r.base} +${qty} ชิ้น`);
+  });
+  await saveProducts();
+  await addAudit('รับสินค้าเข้า (หลายรายการ)', auditLines.join(' · '));
+  toast(`บันทึกรับเข้าสต็อก ${valid.length} รายการแล้ว`);
+  bulkStockCart = [];
+  document.getElementById('bulkStockModalBg').classList.remove('show');
+  renderStock(); renderDashboard();
+});
+
 /* ================= products / price management ================= */
 document.getElementById('productSearch2').addEventListener('input', renderProductsList);
 
