@@ -239,6 +239,27 @@
 
   .swatch{width:10px;height:10px;border-radius:3px; flex-shrink:0;}
 
+  /* customer base */
+  .cust-row{padding:13px 4px; border-bottom:1px solid var(--line); display:flex; flex-direction:column; gap:8px;}
+  .cust-row:last-child{border-bottom:none;}
+  .cust-top{display:flex; align-items:center; gap:10px;}
+  .cust-star{
+    background:none; border:none; cursor:pointer; font-size:19px; line-height:1; flex-shrink:0; padding:2px;
+    color:var(--paper-faint);
+  }
+  .cust-star.on{color:var(--ochre);}
+  .cust-info{flex:1; min-width:0;}
+  .cust-info .name{font-size:14px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .cust-info .sub{font-size:11.5px; color:var(--paper-dim); margin-top:2px; font-family:var(--mono);}
+  .cust-stats{text-align:right; flex-shrink:0;}
+  .cust-stats .amt{font-family:var(--mono); font-weight:600; font-size:13.5px; color:var(--paper);}
+  .cust-stats .cnt{font-size:10.5px; color:var(--paper-faint); margin-top:1px;}
+  .cust-colors{display:flex; gap:8px; padding-left:34px;}
+  .cust-dot{
+    width:20px; height:20px; border-radius:50%; border:2px solid transparent; cursor:pointer; padding:0;
+  }
+  .cust-dot.active{border-color:var(--paper);}
+
   .filter-chips{display:flex; gap:7px; overflow-x:auto; padding-bottom:2px; margin-bottom:14px;}
   .chip{
     flex-shrink:0; padding:7px 13px; border-radius:999px; border:1px solid var(--line);
@@ -773,6 +794,13 @@
         <span class="di-sub">ค่าคอมหลัก + พิเศษ + ต่อคน</span>
       </span>
     </button>
+    <button class="drawer-item" id="menuCustomersBtn">
+      <span class="di-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17.5 21v-2a4 4 0 00-4-4h-5a4 4 0 00-4 4v2"/><circle cx="11" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></span>
+      <span class="di-txt">
+        <span class="di-title">ฐานลูกค้า</span>
+        <span class="di-sub">ลูกค้าประจำ ติดดาว บันทึกเบอร์ติดตาม</span>
+      </span>
+    </button>
     <button class="drawer-item" id="menuSettingsBtn">
       <span class="di-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
       <span class="di-txt">
@@ -793,6 +821,18 @@
         <span class="lbl">วันที่ขาย</span>
         <input type="date" id="saleDate">
       </label>
+      <div class="row2">
+        <label class="field">
+          <span class="lbl">ชื่อลูกค้า (ไม่บังคับ)</span>
+          <input type="text" id="customerName" placeholder="เช่น คุณสมชาย" list="customerNameList" autocomplete="off">
+        </label>
+        <label class="field">
+          <span class="lbl">เบอร์โทร (ไม่บังคับ)</span>
+          <input type="tel" id="customerPhone" placeholder="08x-xxx-xxxx" list="customerPhoneList" autocomplete="off">
+        </label>
+      </div>
+      <datalist id="customerNameList"></datalist>
+      <datalist id="customerPhoneList"></datalist>
       <label class="field search-wrap">
         <span class="lbl">ค้นหาสินค้า</span>
         <input type="text" id="productSearch" placeholder="พิมพ์ชื่อสินค้า...">
@@ -1265,6 +1305,27 @@
     </div>
   </section>
 
+  <!-- ============ VIEW: CUSTOMER BASE ============ -->
+  <section class="view" id="view-customers">
+    <div class="sec-title"><span class="t">ฐานลูกค้า</span></div>
+    <div class="stat-grid" style="margin-bottom:14px;">
+      <div class="stat-card">
+        <div class="lbl">ลูกค้าที่บันทึกไว้</div>
+        <div class="val" id="custTotalCount">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="lbl">ลูกค้าประจำ (ติดดาว)</div>
+        <div class="val warn" id="custFavCount">0</div>
+      </div>
+    </div>
+    <label class="field">
+      <span class="lbl">ค้นหาลูกค้า</span>
+      <input type="text" id="custSearch" placeholder="ค้นหาชื่อหรือเบอร์โทร...">
+    </label>
+    <div class="sec-title"><span class="t">รายชื่อลูกค้า</span></div>
+    <div class="card" id="custList" style="padding:6px 12px;"></div>
+  </section>
+
 <!-- modal: add gallon incentive rule -->
 <div class="modal-bg" id="gallonRuleModalBg">
   <div class="modal">
@@ -1614,7 +1675,7 @@ function calcCommissionBreakdown(target, sales, headcount){
 }
 const THAI_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 
-const STORE_KEYS = { products:'tint:products', sales:'tint:sales', settings:'tint:settings', mksDay:'tint:mksDay', mksWeek:'tint:mksWeek' };
+const STORE_KEYS = { products:'tint:products', sales:'tint:sales', settings:'tint:settings', mksDay:'tint:mksDay', mksWeek:'tint:mksWeek', customers:'tint:customers' };
 const APP_VERSION = 'NIPPON-SALE-SECURE-2.1-PERSISTENT';
 
 let PRODUCTS = [];      // live, mutable — {sku,name,size,base,price,init,inflow,sold,remain}
@@ -1633,6 +1694,7 @@ const MKS_BRANDS = [
 let MKS_DAY_HISTORY = {};   // { 'YYYY-MM-DD': { date, rows:{BRAND:{pc,sales,note}} } }
 let MKS_WEEK_HISTORY = {};  // { 'from_to': { from, to, rows:{BRAND:{pcReg,pcPro,target,sales,note}} } }
 let PRODUCT_INDEX = {}; // name -> {size -> {base -> row}}
+let CUSTOMERS = {}; // key (phone or name) -> {name, phone, favorite:bool, color:string|null}
 
 function seedProducts(){
   return PRODUCTS_SEED.map(r => ({sku:r[0],name:r[1],size:r[2],base:r[3],price:r[4],init:r[5],inflow:r[6],sold:r[7],remain:r[8]}));
@@ -1717,7 +1779,7 @@ function toSalesRow(entry){
     id: String(entry.id), date: entry.date, name: entry.name, size: entry.size||'', base: entry.base||'',
     price: Number(entry.price)||0, color_code: entry.colorCode||'', tint_price: Number(entry.tintPrice)||0,
     qty: Number(entry.qty)||0, total: Number(entry.total)||0, sku: entry.sku||'', seed: !!entry.seed,
-    bill_id: entry.billId||null
+    bill_id: entry.billId||null, customer_name: entry.customerName||'', customer_phone: entry.customerPhone||''
   };
 }
 function fromSalesRow(row){
@@ -1725,7 +1787,7 @@ function fromSalesRow(row){
     id: row.id, date: row.date, name: row.name, size: row.size||'', base: row.base||'',
     price: Number(row.price)||0, colorCode: row.color_code||'', tintPrice: Number(row.tint_price)||0,
     qty: Number(row.qty)||0, total: Number(row.total)||0, sku: row.sku||'', seed: !!row.seed,
-    billId: row.bill_id||null
+    billId: row.bill_id||null, customerName: row.customer_name||'', customerPhone: row.customer_phone||''
   };
 }
 async function fetchSalesTable(){
@@ -1871,6 +1933,7 @@ async function reloadKeyAndRerender(key){
     else if(key===STORE_KEYS.settings){ SETTINGS = JSON.parse(s.value); }
     else if(key===STORE_KEYS.mksDay){ MKS_DAY_HISTORY = JSON.parse(s.value); }
     else if(key===STORE_KEYS.mksWeek){ MKS_WEEK_HISTORY = JSON.parse(s.value); }
+    else if(key===STORE_KEYS.customers){ CUSTOMERS = JSON.parse(s.value); }
     else return;
   }catch(e){ console.warn('reloadKeyAndRerender parse failed:', e); return; }
 
@@ -1881,6 +1944,7 @@ async function reloadKeyAndRerender(key){
     const activeSub=document.querySelector('#view-report .subtab-row .stbtn.active');
     if(!activeSub || activeSub.dataset.mks==='day') renderMksDay(); else renderMksWeek();
   }
+  if(document.getElementById('view-customers').classList.contains('active')) renderCustomers();
 }
 
 async function loadAll(){
@@ -1946,7 +2010,17 @@ async function loadAll(){
     if(s && s.value) MKS_WEEK_HISTORY = JSON.parse(s.value);
   }catch(e){ console.error('Load mksWeek failed:', e); }
 
+  try{
+    const s = await storageGet(STORE_KEYS.customers);
+    if(s && s.value) CUSTOMERS = JSON.parse(s.value);
+  }catch(e){ console.error('Load customers failed:', e); }
+
   buildProductIndex();
+}
+async function saveCustomers(){
+  const ok=await storageSet(STORE_KEYS.customers, JSON.stringify(CUSTOMERS));
+  if(!ok) toast('บันทึกฐานลูกค้าไม่สำเร็จ');
+  return ok;
 }
 
 async function saveMksDayHistory(){
@@ -2232,6 +2306,7 @@ function switchToView(viewName){
     if(!activeSub || activeSub.dataset.mks==='day') renderMksDay(); else renderMksWeek();
   }
   if(viewName === 'commission'){ renderCommissionMonthOptions(); renderCommission(); }
+  if(viewName === 'customers') renderCustomers();
 }
 document.querySelectorAll('nav.tabs button').forEach(btn=>{
   btn.addEventListener('click', ()=> switchToView(btn.dataset.view));
@@ -2250,6 +2325,10 @@ document.getElementById('menuDrawerBg').addEventListener('click', (e)=>{
 document.getElementById('menuReportBtn').addEventListener('click', ()=>{
   document.getElementById('menuDrawerBg').classList.remove('show');
   switchToView('report');
+});
+document.getElementById('menuCustomersBtn').addEventListener('click', ()=>{
+  document.getElementById('menuDrawerBg').classList.remove('show');
+  switchToView('customers');
 });
 document.getElementById('mksMiniCard').addEventListener('click', ()=> switchToView('report'));
 document.getElementById('menuSettingsBtn').addEventListener('click', ()=>{
@@ -2326,24 +2405,44 @@ function selectProduct(name){
   const sizes = Object.keys(PRODUCT_INDEX[name]);
   sizeSelect.disabled = false;
   sizeSelect.innerHTML = sizes.map(s=>`<option value="${s}">${s}</option>`).join('');
-  sizeSelect.dispatchEvent(new Event('change'));
+  if(sizes.length === 1){
+    // only one size possible: skip straight past this step, no need to bother the user
+    sizeSelect.value = sizes[0];
+    handleSizeChange();
+  } else {
+    // real choice to make: reset anything downstream and let the user pick the size next
+    baseSelect.disabled = true;
+    baseSelect.innerHTML = '<option>—</option>';
+    priceChip.style.display = 'none';
+    document.getElementById('stockHint').style.display = 'none';
+    computeTotal();
+    sizeSelect.focus();
+    openCSelect('sizeSelect');
+  }
 }
 
-sizeSelect.addEventListener('change', ()=>{
+function handleSizeChange(){
   if(!currentProduct) return;
   const size = sizeSelect.value;
   const bases = Object.keys(PRODUCT_INDEX[currentProduct][size]);
   if(bases.length === 1 && bases[0] === '—'){
+    // no real base choice for this product/size: skip past this step
     baseSelect.disabled = true;
     baseSelect.innerHTML = '<option>—</option>';
+    handleBaseChange();
   } else {
     baseSelect.disabled = false;
     baseSelect.innerHTML = bases.map(b=>`<option value="${b}">${b}</option>`).join('');
+    priceChip.style.display = 'none';
+    document.getElementById('stockHint').style.display = 'none';
+    computeTotal();
+    baseSelect.focus();
+    openCSelect('baseSelect');
   }
-  baseSelect.dispatchEvent(new Event('change'));
-});
+}
+sizeSelect.addEventListener('change', handleSizeChange);
 
-baseSelect.addEventListener('change', ()=>{
+function handleBaseChange(){
   if(!currentProduct) return;
   const size = sizeSelect.value;
   const base = baseSelect.value;
@@ -2352,12 +2451,13 @@ baseSelect.addEventListener('change', ()=>{
     priceVal.textContent = fmt(currentRow.price);
     priceChip.style.display = 'inline-flex';
     updateStockHint();
-    // autofocus flow: once size+base resolve to a product, jump to qty for fast entry
+    // autofocus flow: once product -> size -> base fully resolve, jump to qty for fast entry
     qtyInput.focus();
     qtyInput.select();
   }
   computeTotal();
-});
+}
+baseSelect.addEventListener('change', handleBaseChange);
 
 function updateStockHint(){
   const hint = document.getElementById('stockHint');
@@ -2428,7 +2528,9 @@ function buildEntryFromForm(){
     id: Date.now()+'-'+Math.random().toString(36).slice(2,7),
     date, name: currentProduct, size: sizeSelect.value, base: baseSelect.value === '—' ? '' : baseSelect.value,
     price: currentRow.price, colorCode: document.getElementById('colorCode').value.trim(),
-    tintPrice: tintVal, qty, total, sku: currentRow.sku, seed:false
+    tintPrice: tintVal, qty, total, sku: currentRow.sku, seed:false,
+    customerName: document.getElementById('customerName').value.trim(),
+    customerPhone: document.getElementById('customerPhone').value.trim()
   };
 }
 function clearEntryFormFields(){
@@ -2437,6 +2539,12 @@ function clearEntryFormFields(){
   document.getElementById('colorCode').value='';
   tintPriceInput.value=''; qtyInput.value='1';
   computeTotal();
+  // customer name/phone intentionally NOT cleared here so it carries over
+  // between "+ เพิ่มลงบิล" additions within the same bill
+}
+function clearCustomerFields(){
+  document.getElementById('customerName').value='';
+  document.getElementById('customerPhone').value='';
 }
 function ensureBillId(){
   if(!billId) billId = 'bill-'+Date.now()+'-'+Math.random().toString(36).slice(2,6);
@@ -2496,17 +2604,145 @@ document.getElementById('saveSaleBtn').addEventListener('click', async ()=>{
     if(row){ row.sold = (Number(row.sold)||0) + entry.qty; row.remain = (Number(row.remain)||0) - entry.qty; }
   });
   await saveSalesIncremental({added: items}); await saveProducts();
+  await touchCustomersFromEntries(items);
   if(navigator.vibrate) navigator.vibrate(35);
 
   toast(items.length>1 ? `บันทึกบิล ${items.length} รายการแล้ว` : 'บันทึกยอดขายแล้ว');
   billCart = []; billId = null;
   clearEntryFormFields();
+  clearCustomerFields();
   renderBillCart();
   renderRecent();
   renderGauge();
   renderDashboard();
   maybeCelebrateTarget();
 });
+
+/* ================= customer base ================= */
+function customerKey(name, phone){
+  const p = (phone||'').trim();
+  const n = (name||'').trim();
+  if(p) return 'p:'+p;
+  if(n) return 'n:'+n.toLowerCase();
+  return null;
+}
+async function touchCustomersFromEntries(entries){
+  let changed = false;
+  entries.forEach(e=>{
+    const key = customerKey(e.customerName, e.customerPhone);
+    if(!key) return;
+    const existing = CUSTOMERS[key];
+    if(!existing){
+      CUSTOMERS[key] = {name:e.customerName||'', phone:e.customerPhone||'', favorite:false, color:null};
+      changed = true;
+    }else{
+      if(e.customerName && existing.name !== e.customerName){ existing.name = e.customerName; changed = true; }
+      if(e.customerPhone && existing.phone !== e.customerPhone){ existing.phone = e.customerPhone; changed = true; }
+    }
+  });
+  if(changed) await saveCustomers();
+  updateCustomerAutocomplete();
+}
+function updateCustomerAutocomplete(){
+  const nameList = document.getElementById('customerNameList');
+  const phoneList = document.getElementById('customerPhoneList');
+  if(!nameList || !phoneList) return;
+  const names = new Set(), phones = new Set();
+  Object.values(CUSTOMERS).forEach(c=>{
+    if(c.name) names.add(c.name);
+    if(c.phone) phones.add(c.phone);
+  });
+  nameList.innerHTML = Array.from(names).map(n=>`<option value="${escapeHtml(n)}">`).join('');
+  phoneList.innerHTML = Array.from(phones).map(p=>`<option value="${escapeHtml(p)}">`).join('');
+}
+document.getElementById('customerName').addEventListener('change', ()=>{
+  const val = document.getElementById('customerName').value.trim();
+  const phoneInput = document.getElementById('customerPhone');
+  if(phoneInput.value.trim() || !val) return;
+  const match = Object.values(CUSTOMERS).find(c=>c.name && c.name===val && c.phone);
+  if(match) phoneInput.value = match.phone;
+});
+document.getElementById('customerPhone').addEventListener('change', ()=>{
+  const val = document.getElementById('customerPhone').value.trim();
+  const nameInput = document.getElementById('customerName');
+  if(nameInput.value.trim() || !val) return;
+  const match = Object.values(CUSTOMERS).find(c=>c.phone && c.phone===val && c.name);
+  if(match) nameInput.value = match.name;
+});
+
+const CUST_COLOR_PALETTE = [
+  {key:'ochre', val:'#f0b23c'}, {key:'teal', val:'#5f8fd8'},
+  {key:'clay', val:'#d35b4e'}, {key:'moss', val:'#7cbf72'}
+];
+function aggregateCustomers(){
+  const map = {};
+  SALES.forEach(s=>{
+    const key = customerKey(s.customerName, s.customerPhone);
+    if(!key) return;
+    if(!map[key]) map[key] = {key, name:s.customerName||'', phone:s.customerPhone||'', total:0, count:0, lastDate:s.date};
+    const rec = map[key];
+    rec.total += Number(s.total)||0;
+    rec.count += 1;
+    if(s.date > rec.lastDate) rec.lastDate = s.date;
+    if(s.customerName) rec.name = s.customerName;
+    if(s.customerPhone) rec.phone = s.customerPhone;
+  });
+  Object.keys(map).forEach(key=>{
+    const meta = CUSTOMERS[key] || {};
+    map[key].favorite = !!meta.favorite;
+    map[key].color = meta.color || null;
+  });
+  return Object.values(map);
+}
+function renderCustomers(){
+  const list = aggregateCustomers();
+  document.getElementById('custTotalCount').textContent = list.length;
+  document.getElementById('custFavCount').textContent = list.filter(c=>c.favorite).length;
+  const q = (document.getElementById('custSearch').value||'').trim().toLowerCase();
+  const filtered = (q ? list.filter(c=>(c.name||'').toLowerCase().includes(q) || (c.phone||'').includes(q)) : list)
+    .sort((a,b)=>{ if(a.favorite!==b.favorite) return a.favorite?-1:1; return b.total-a.total; });
+  const container = document.getElementById('custList');
+  if(!filtered.length){ container.innerHTML = '<div class="empty">ยังไม่มีข้อมูลลูกค้า — กรอกชื่อ/เบอร์ตอนบันทึกยอดขายเพื่อเริ่มเก็บฐานลูกค้า</div>'; return; }
+  container.innerHTML = filtered.map(c=>{
+    const colorsHtml = c.favorite ? `<div class="cust-colors">${CUST_COLOR_PALETTE.map(p=>
+      `<button type="button" class="cust-dot ${c.color===p.key?'active':''}" data-custkey="${escapeHtml(c.key)}" data-color="${p.key}" style="background:${p.val};"></button>`
+    ).join('')}</div>` : '';
+    const dotIndicator = c.favorite && c.color ? `<span class="swatch" style="background:${(CUST_COLOR_PALETTE.find(p=>p.key===c.color)||{}).val||'transparent'}; display:inline-block; margin-right:5px;"></span>` : '';
+    return `<div class="cust-row">
+      <div class="cust-top">
+        <button type="button" class="cust-star ${c.favorite?'on':''}" data-favkey="${escapeHtml(c.key)}" title="ลูกค้าประจำ">${c.favorite?'★':'☆'}</button>
+        <div class="cust-info">
+          <div class="name">${dotIndicator}${escapeHtml(c.name||'(ไม่ระบุชื่อ)')}</div>
+          <div class="sub">${c.phone?escapeHtml(c.phone):'ไม่มีเบอร์โทร'} · ซื้อล่าสุด ${formatDateTH(c.lastDate)}</div>
+        </div>
+        <div class="cust-stats">
+          <div class="amt">${fmt(c.total)}฿</div>
+          <div class="cnt">${c.count} รายการ</div>
+        </div>
+      </div>
+      ${colorsHtml}
+    </div>`;
+  }).join('');
+  container.querySelectorAll('[data-favkey]').forEach(btn=>btn.addEventListener('click', ()=>toggleCustomerFavorite(btn.dataset.favkey)));
+  container.querySelectorAll('[data-custkey]').forEach(btn=>btn.addEventListener('click', ()=>setCustomerColor(btn.dataset.custkey, btn.dataset.color)));
+}
+async function toggleCustomerFavorite(key){
+  if(!CUSTOMERS[key]){
+    const rec = aggregateCustomers().find(c=>c.key===key);
+    CUSTOMERS[key] = {name:(rec&&rec.name)||'', phone:(rec&&rec.phone)||'', favorite:false, color:null};
+  }
+  CUSTOMERS[key].favorite = !CUSTOMERS[key].favorite;
+  if(!CUSTOMERS[key].favorite) CUSTOMERS[key].color = null;
+  await saveCustomers();
+  renderCustomers();
+}
+async function setCustomerColor(key, color){
+  if(!CUSTOMERS[key]) return;
+  CUSTOMERS[key].color = CUSTOMERS[key].color===color ? null : color;
+  await saveCustomers();
+  renderCustomers();
+}
+document.getElementById('custSearch').addEventListener('input', renderCustomers);
 
 async function deleteSaleEntry(id){
   const idx = SALES.findIndex(s=>s.id===id);
@@ -2968,6 +3204,7 @@ buildPcSelectMenu();
    keeping the original <select> element (same id) alive and hidden so all
    existing code that reads/sets .value, .disabled, .innerHTML or listens
    for 'change' keeps working exactly as before. */
+window.CSELECT_API = window.CSELECT_API || {};
 function enhanceCSelect(selectId){
   const select = document.getElementById(selectId);
   if(!select) return;
@@ -3038,8 +3275,13 @@ function enhanceCSelect(selectId){
 
   buildMenu();
   syncDisplay();
+  window.CSELECT_API[selectId] = {open:openMenu, close:closeMenu};
 }
 ['sizeSelect','baseSelect','histMonth','histMonthSort','commMonthSelect','commModeSelect','targetMonthSelect','ruleNameSelect','ruleSizeSelect'].forEach(enhanceCSelect);
+function openCSelect(selectId){
+  const api = window.CSELECT_API[selectId];
+  if(api) api.open();
+}
 
 function renderCommissionMonthOptions(){
   const sel = document.getElementById('commMonthSelect');
@@ -4286,6 +4528,7 @@ async function bootstrapApp(){
   renderRecent();
   renderDashboard();
   renderStock();
+  updateCustomerAutocomplete();
   checkGoalNotification();
   checkAutoBackup();
   updateAutoBackupToggleUI();
