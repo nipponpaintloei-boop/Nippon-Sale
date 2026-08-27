@@ -2415,19 +2415,13 @@ function selectProduct(name){
   const sizes = Object.keys(PRODUCT_INDEX[name]);
   sizeSelect.disabled = false;
   sizeSelect.innerHTML = sizes.map(s=>`<option value="${s}">${s}</option>`).join('');
-  if(sizes.length === 1){
-    // only one size possible: skip straight past this step, no need to bother the user
-    sizeSelect.value = sizes[0];
-    handleSizeChange();
-  } else {
-    // real choice to make: the browser auto-selects the first option without firing
-    // 'change', so populate base/price for that default size right away (handleSizeChange),
-    // then still open the menu so the user can pick a different size if needed.
-    sizeSelect.value = sizes[0];
-    handleSizeChange();
-    sizeSelect.focus();
-    openCSelect('sizeSelect');
-  }
+  // The browser auto-selects the first <option> without firing 'change', so always
+  // resolve the default size ourselves and let it cascade into base/price/total —
+  // no need to reopen the size menu afterwards (that was fighting with the base
+  // menu opening from inside handleSizeChange and undoing it, which is why nothing
+  // seemed to update until the size field was tapped a second time).
+  sizeSelect.value = sizes[0];
+  handleSizeChange();
 }
 
 function handleSizeChange(){
@@ -2440,14 +2434,13 @@ function handleSizeChange(){
     baseSelect.innerHTML = '<option>—</option>';
     handleBaseChange();
   } else {
-    // real choice to make: same auto-select-without-'change' issue as size — populate
-    // price for the default first base immediately, then still let the user pick another.
+    // same auto-select-without-'change' issue as size — resolve the default first
+    // base right away so price/total populate immediately. The user can still tap
+    // the base field to pick a different base; that fires a real 'change' event.
     baseSelect.disabled = false;
     baseSelect.innerHTML = bases.map(b=>`<option value="${b}">${b}</option>`).join('');
     baseSelect.value = bases[0];
     handleBaseChange();
-    baseSelect.focus();
-    openCSelect('baseSelect');
   }
 }
 sizeSelect.addEventListener('change', handleSizeChange);
