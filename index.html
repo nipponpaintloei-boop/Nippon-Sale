@@ -1606,6 +1606,7 @@
     </button>
     <p class="hint" style="margin-top:8px;">ใช้เมื่ออัปโหลดโค้ดเวอร์ชันใหม่ขึ้น repo แล้วแอปยังแสดงเวอร์ชันเก่าอยู่ (ไม่ลบข้อมูลยอดขาย/สต็อก)</p>
     <button class="btn btn-ghost" id="exportBtn">ส่งออก Excel (.xlsx)</button>
+    <button class="btn btn-ghost" id="exportProductsBtn">สำรองรายการสินค้า/สต็อก (.xlsx)</button>
     <button class="btn btn-ghost" id="importBtn">กู้คืน Backup (.xls)</button>
     <input type="file" id="importFile" accept=".xls,.html,.htm" style="display:none">
     <button class="btn btn-ghost" id="autoBackupToggleBtn">สำรอง Excel อัตโนมัติทุกสิ้นเดือน: ปิด</button>
@@ -2268,6 +2269,28 @@ function exportBackup(){
   const esc=JSON.stringify(payload).replace(/&/g,'&amp;').replace(/</g,'&lt;');
   const html=`<html><head><meta charset="utf-8"></head><body><h1>NIPPON SALE Backup</h1><p>Exported ${new Date().toLocaleString('th-TH')}</p><div id="tintBackupJson">${esc}</div></body></html>`;
   const blob=new Blob([html],{type:'application/vnd.ms-excel;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`NIPPON-SALE-backup-${todayISO()}.xls`; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); toast('ส่งออกข้อมูลแล้ว');
+}
+// Standalone products+stock backup — same "สินค้าและสต็อก" data that lives inside the
+// full Excel export, but on its own so it stays small/fast and can be shared just to
+// review the live product catalog (e.g. to check what's actually saved on Supabase)
+// without also pulling the entire sales history.
+async function exportProductsExcel(){
+  if(typeof XLSX==='undefined'){ toast('ไม่สามารถโหลดระบบ Excel ได้ กรุณาเชื่อมต่ออินเทอร์เน็ตแล้วลองใหม่'); return; }
+  const wb=XLSX.utils.book_new();
+  const productRows=PRODUCTS.map((p,i)=>({
+    'ลำดับ':i+1,'SKU':p.sku||'','สินค้า':p.name,'ขนาด':p.size,'Base':p.base||'',
+    'ราคา':Number(p.price)||0,'สต็อกเริ่มต้น':Number(p.init)||0,'รับเข้า':Number(p.inflow)||0,
+    'ขายสะสม':Number(p.sold)||0,'คงเหลือ':Number(p.remain)||0
+  }));
+  const add=(data,name,widths)=>{const ws=XLSX.utils.json_to_sheet(data.length?data:[{}]); if(widths) ws['!cols']=widths.map(w=>({wch:w})); XLSX.utils.book_append_sheet(wb,ws,name);};
+  add(productRows,'สินค้าและสต็อก',[8,18,32,12,8,14,16,12,12,12]);
+  const meta=XLSX.utils.aoa_to_sheet([
+    ['NIPPON SALE — สำรองรายการสินค้า/สต็อก'],['Exported At',new Date().toLocaleString('th-TH')],['Version',APP_VERSION],['จำนวนรายการสินค้า',PRODUCTS.length]
+  ]); meta['!cols']=[{wch:24},{wch:40}]; XLSX.utils.book_append_sheet(wb,meta,'ข้อมูลไฟล์');
+  const fileName=`NIPPON-SALE-สินค้า-สต็อก-${todayISO()}.xlsx`;
+  XLSX.writeFile(wb,fileName,{compression:true});
+  await addAudit('สำรองรายการสินค้า/สต็อก',`ไฟล์ ${fileName} · ${PRODUCTS.length} รายการ`);
+  toast('สำรองรายการสินค้า/สต็อกแล้ว — ไฟล์อยู่ใน Downloads');
 }
 async function importBackupFile(file){
   const text=await file.text(); const doc=new DOMParser().parseFromString(text,'text/html'); const node=doc.getElementById('tintBackupJson');
@@ -4397,6 +4420,7 @@ document.getElementById('confirmResetBtn').addEventListener('click', async ()=>{
 });
 
 document.getElementById('exportBtn').addEventListener('click',async()=>{if(await ensurePin())await exportExcelFile();});
+document.getElementById('exportProductsBtn').addEventListener('click',async()=>{if(await ensurePin())await exportProductsExcel();});
 document.getElementById('importBtn').addEventListener('click',async()=>{if(await ensurePin())document.getElementById('importFile').click();});
 document.getElementById('importFile').addEventListener('change',async e=>{
   const f=e.target.files[0];if(!f)return;
