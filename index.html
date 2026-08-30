@@ -1114,68 +1114,74 @@
     <div class="sec-title"><span class="t">วันนี้ควรทำอะไร?</span></div>
     <div class="card" id="actionTodayCard" style="padding:6px 12px;"></div>
 
-    <div class="stat-grid">
-      <div class="stat-card">
-        <div class="lbl">ยอดขายวันนี้</div>
-        <div class="val" id="dashToday">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="lbl">จำนวนที่ขายวันนี้ (ชิ้น)</div>
-        <div class="val" id="dashTodayQty">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="lbl">ยอดขายเดือนนี้</div>
-        <div class="val small" id="dashMonth">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="lbl">Ach% เดือนนี้</div>
-        <div class="val" id="dashPct">0%</div>
-      </div>
+    <div class="subtab-row">
+      <div class="stbtn active" data-dashtab="overview">ภาพรวม</div>
+      <div class="stbtn" data-dashtab="details">รายละเอียดเพิ่มเติม</div>
     </div>
 
-    <div class="sec-title"><span class="t">แนวโน้มยอดขายรายวัน — <span id="dailyTrendMonthLbl"></span></span></div>
-    <div class="chart-card">
-      <div class="bars daily-bars" id="dailyTrendBars"></div>
-      <div class="legend-row">
-        <div class="lg"><span class="sw" style="background:var(--accent);"></span>มียอดขาย</div>
-        <div class="lg"><span class="sw" style="background:var(--surface2); border:1px dashed var(--line);"></span>ยังไม่ถึงวันนี้</div>
-      </div>
-      <div class="pace-highlight" id="dailyTrendForecast" style="margin-top:14px;"></div>
-    </div>
-
-    <div class="sec-title"><span class="t">การแก้ไขล่าสุด</span><button class="link-btn" id="recentEditsMoreBtn">ดูทั้งหมด</button></div>
-    <div class="card" id="recentEditsCard" style="padding:6px 12px;"></div>
-
-    <div class="sec-title"><span class="t">มาร์เก็ตแชร์วันนี้ (MKS)</span></div>
-    <div class="card mks-mini-card" id="mksMiniCard" style="padding:14px 16px; cursor:pointer;">
-      <div class="mks-mini-row">
-        <div>
-          <div class="mks-mini-lbl">ส่วนแบ่งของเรา (NIPPON) เทียบคู่แข่งวันนี้</div>
-          <div class="mks-mini-val" id="mksMiniPct">—</div>
+    <div id="dashPanelOverview">
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="lbl">ยอดขายวันนี้</div>
+          <div class="val" id="dashToday">0</div>
         </div>
-        <div class="mks-mini-arrow">›</div>
+        <div class="stat-card">
+          <div class="lbl">จำนวนที่ขายวันนี้ (ชิ้น)</div>
+          <div class="val" id="dashTodayQty">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="lbl">ยอดขายเดือนนี้</div>
+          <div class="val small" id="dashMonth">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="lbl">Ach% เดือนนี้</div>
+          <div class="val" id="dashPct">0%</div>
+        </div>
+      </div>
+
+      <div class="sec-title"><span class="t">แนวโน้มยอดขายรายวัน — <span id="dailyTrendMonthLbl"></span></span></div>
+      <div class="chart-card">
+        <div class="bars daily-bars" id="dailyTrendBars"></div>
+        <div class="legend-row">
+          <div class="lg"><span class="sw" style="background:var(--accent);"></span>มียอดขาย</div>
+          <div class="lg"><span class="sw" style="background:var(--surface2); border:1px dashed var(--line);"></span>ยังไม่ถึงวันนี้</div>
+        </div>
+        <div class="pace-highlight" id="dailyTrendForecast" style="margin-top:14px;"></div>
+      </div>
+
+      <div class="sec-title"><span class="t">มาร์เก็ตแชร์วันนี้ (MKS)</span></div>
+      <div class="card mks-mini-card" id="mksMiniCard" style="padding:14px 16px; cursor:pointer;">
+        <div class="mks-mini-row">
+          <div>
+            <div class="mks-mini-lbl">ส่วนแบ่งของเรา (NIPPON) เทียบคู่แข่งวันนี้</div>
+            <div class="mks-mini-val" id="mksMiniPct">—</div>
+          </div>
+          <div class="mks-mini-arrow">›</div>
+        </div>
       </div>
     </div>
 
-    <div class="sec-title"><span class="t">เป้าหมาย 5 ระดับ — <span id="dashMonthLbl"></span></span></div>
-    <div class="tier-table" id="tierTable"></div>
-    <div class="pass-note">* ผ่านเกณฑ์เมื่อทำยอดถึงระดับ 80% ของเป้าหมายสูงสุด</div>
+    <div id="dashPanelDetails" style="display:none;">
+      <div class="sec-title" style="margin-top:14px;"><span class="t">เป้าหมาย 5 ระดับ — <span id="dashMonthLbl"></span></span></div>
+      <div class="tier-table" id="tierTable"></div>
+      <div class="pass-note">* ผ่านเกณฑ์เมื่อทำยอดถึงระดับ 80% ของเป้าหมายสูงสุด</div>
 
-    <div class="sec-title"><span class="t">สินค้าที่น่าจับตา (เทียบเดือนก่อน)</span></div>
-    <div class="card" id="productIntel" style="padding:6px 12px;">
-      <div class="empty">ยังไม่มีข้อมูลพอเปรียบเทียบ</div>
+      <div class="sec-title"><span class="t">สินค้าที่น่าจับตา (เทียบเดือนก่อน)</span></div>
+      <div class="card" id="productIntel" style="padding:6px 12px;">
+        <div class="empty">ยังไม่มีข้อมูลพอเปรียบเทียบ</div>
+      </div>
+
+      <div class="sec-title"><span class="t">ขายดีที่สุด (เดือนนี้)</span></div>
+      <div class="card" id="topSellers" style="padding:6px 12px;">
+        <div class="empty">ยังไม่มีข้อมูลยอดขายเดือนนี้</div>
+      </div>
+
+      <div class="sec-title"><span class="t">สินค้าควรเติมสต็อกด่วน</span></div>
+      <div class="card" id="restockAlert" style="padding:6px 12px;"></div>
+
+      <div class="sec-title"><span class="t">การแก้ไขล่าสุด</span><button class="link-btn" id="recentEditsMoreBtn">ดูทั้งหมด</button></div>
+      <div class="card" id="recentEditsCard" style="padding:6px 12px;"></div>
     </div>
-
-    <div class="sec-title"><span class="t">ขายดีที่สุด (เดือนนี้)</span></div>
-    <div class="card" id="topSellers" style="padding:6px 12px;">
-      <div class="empty">ยังไม่มีข้อมูลยอดขายเดือนนี้</div>
-    </div>
-
-    <div class="sec-title"><span class="t">สินค้าควรเติมสต็อกด่วน</span></div>
-    <div class="card" id="restockAlert" style="padding:6px 12px;"></div>
-
-    <div class="sec-title"><span class="t">ศูนย์แจ้งเตือน — ทุกเรื่องที่ต้องจัดการ</span></div>
-    <div class="card" id="smartAlertCenter" style="padding:6px 12px;"></div>
   </section>
 
   <!-- ============ VIEW: STOCK / PRODUCTS ============ -->
@@ -3799,14 +3805,8 @@ function renderActionCenter(){
   const items = computeActionItems();
   const todayBox = document.getElementById('actionTodayCard');
   if(todayBox){
-    const top = items.slice(0,4);
-    todayBox.innerHTML = top.length ? top.map(actionItemHtml).join('') : '<div class="empty">วันนี้ไม่มีอะไรต้องเร่งจัดการ 🎉</div>';
+    todayBox.innerHTML = items.length ? items.map(actionItemHtml).join('') : '<div class="empty">วันนี้ไม่มีอะไรต้องเร่งจัดการ 🎉</div>';
     todayBox.querySelectorAll('[data-gotoview]').forEach(el=>el.addEventListener('click', ()=>switchToView(el.dataset.gotoview)));
-  }
-  const alertBox = document.getElementById('smartAlertCenter');
-  if(alertBox){
-    alertBox.innerHTML = items.length ? items.map(actionItemHtml).join('') : '<div class="empty">ไม่มีการแจ้งเตือนขณะนี้</div>';
-    alertBox.querySelectorAll('[data-gotoview]').forEach(el=>el.addEventListener('click', ()=>switchToView(el.dataset.gotoview)));
   }
 }
 
@@ -5260,6 +5260,17 @@ document.getElementById('mksWeekSaveBtn').addEventListener('click', async ()=>{
   toast('บันทึกรายงานแล้ว');
 });
 document.getElementById('mksWeekShareBtn').addEventListener('click', ()=>shareMksImage('week'));
+
+/* ---- dashboard subtab toggle (ภาพรวม / รายละเอียดเพิ่มเติม) ---- */
+document.querySelectorAll('#view-dash > .subtab-row .stbtn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#view-dash > .subtab-row .stbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const isOverview = btn.dataset.dashtab==='overview';
+    document.getElementById('dashPanelOverview').style.display = isOverview?'':'none';
+    document.getElementById('dashPanelDetails').style.display = isOverview?'none':'';
+  });
+});
 
 /* ---- report subtab toggle ---- */
 document.querySelectorAll('#view-report .subtab-row .stbtn').forEach(btn=>{
