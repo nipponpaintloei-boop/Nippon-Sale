@@ -864,6 +864,10 @@
         <span class="lbl">วันที่ขาย</span>
         <input type="date" id="saleDate">
       </label>
+      <label class="field">
+        <span class="lbl">พนักงานผู้บันทึก</span>
+        <select id="employeeSelect"></select>
+      </label>
       <label class="field search-wrap">
         <span class="lbl">ค้นหาสินค้า</span>
         <input type="text" id="productSearch" placeholder="พิมพ์ชื่อสินค้า...">
@@ -1086,6 +1090,9 @@
       </div>
     </div>
 
+    <div class="sec-title"><span class="t">ยอดขายทีม — <span id="dashMonthLbl2"></span></span></div>
+    <div class="card" id="employeeBreakdown" style="padding:6px 12px;"></div>
+
     <div class="sec-title"><span class="t">แนวโน้มยอดขายรายวัน — <span id="dailyTrendMonthLbl"></span></span></div>
     <div class="chart-card">
       <div class="bars daily-bars" id="dailyTrendBars"></div>
@@ -1113,6 +1120,11 @@
     <div class="sec-title"><span class="t">เป้าหมาย 5 ระดับ — <span id="dashMonthLbl"></span></span></div>
     <div class="tier-table" id="tierTable"></div>
     <div class="pass-note">* ผ่านเกณฑ์เมื่อทำยอดถึงระดับ 80% ของเป้าหมายสูงสุด</div>
+
+    <div class="sec-title"><span class="t">สินค้าที่น่าจับตา (เทียบเดือนก่อน)</span></div>
+    <div class="card" id="productIntel" style="padding:6px 12px;">
+      <div class="empty">ยังไม่มีข้อมูลพอเปรียบเทียบ</div>
+    </div>
 
     <div class="sec-title"><span class="t">ขายดีที่สุด (เดือนนี้)</span></div>
     <div class="card" id="topSellers" style="padding:6px 12px;">
@@ -1621,6 +1633,16 @@
       ล้างแคช / รีเฟรชแอป
     </button>
     <p class="hint" style="margin-top:8px;">ใช้เมื่ออัปโหลดโค้ดเวอร์ชันใหม่ขึ้น repo แล้วแอปยังแสดงเวอร์ชันเก่าอยู่ (ไม่ลบข้อมูลยอดขาย/สต็อก)</p>
+    <div class="sec-title" style="margin-top:16px;"><span class="t">ชื่อพนักงาน</span></div>
+    <label class="field">
+      <span class="lbl">พนักงานคนที่ 1</span>
+      <input type="text" id="employeeName1" placeholder="พนักงาน A">
+    </label>
+    <label class="field">
+      <span class="lbl">พนักงานคนที่ 2</span>
+      <input type="text" id="employeeName2" placeholder="พนักงาน B">
+    </label>
+    <button class="btn btn-ghost" id="saveEmployeeNamesBtn">บันทึกชื่อพนักงาน</button>
     <button class="btn btn-ghost" id="exportBtn">ส่งออก Excel (.xlsx)</button>
     <button class="btn btn-ghost" id="exportProductsBtn">สำรองรายการสินค้า/สต็อก (.xlsx)</button>
     <button class="btn btn-ghost" id="importBtn">กู้คืน Backup (.xls)</button>
@@ -1989,7 +2011,12 @@ async function reloadKeyAndRerender(key){
   try{
     if(key===STORE_KEYS.products){ PRODUCTS = JSON.parse(s.value); buildProductIndex(); }
     else if(key===STORE_KEYS.sales){ SALES = JSON.parse(s.value); }
-    else if(key===STORE_KEYS.settings){ SETTINGS = JSON.parse(s.value); }
+    else if(key===STORE_KEYS.settings){
+      SETTINGS = JSON.parse(s.value);
+      SETTINGS.employees = (SETTINGS.employees && SETTINGS.employees.length===2) ? SETTINGS.employees : ['พนักงาน A','พนักงาน B'];
+      SETTINGS.lastEmployee = SETTINGS.lastEmployee || SETTINGS.employees[0];
+      renderEmployeeSelect();
+    }
     else if(key===STORE_KEYS.mksDay){ MKS_DAY_HISTORY = JSON.parse(s.value); }
     else if(key===STORE_KEYS.mksWeek){ MKS_WEEK_HISTORY = JSON.parse(s.value); }
     else if(key===STORE_KEYS.customers){ CUSTOMERS = JSON.parse(s.value); }
@@ -2047,7 +2074,7 @@ async function loadAll(){
     if(s && s.value){ SETTINGS = JSON.parse(s.value); settingsLoaded=true; }
   }catch(e){ console.error('Load settings failed:', e); }
   if(!settingsLoaded){
-    SETTINGS = { targets: Object.assign({}, TARGETS_SEED), defaultTarget: DEFAULT_TARGET, auditLog:[], notifiedMonth:'' };
+    SETTINGS = { targets: Object.assign({}, TARGETS_SEED), defaultTarget: DEFAULT_TARGET, auditLog:[], notifiedMonth:'', employees:['พนักงาน A','พนักงาน B'], lastEmployee:'พนักงาน A' };
     await storageSet(STORE_KEYS.settings, JSON.stringify(SETTINGS));
   }
 
@@ -2059,6 +2086,8 @@ async function loadAll(){
   SETTINGS.commHeadcount = SETTINGS.commHeadcount || (MKS_BRANDS.find(b=>b.key==='NIPPON')||{}).pc || 2;
   SETTINGS.autoBackupEnabled = SETTINGS.autoBackupEnabled || false;
   SETTINGS.autoBackupLastMonth = SETTINGS.autoBackupLastMonth || '';
+  SETTINGS.employees = (SETTINGS.employees && SETTINGS.employees.length===2) ? SETTINGS.employees : ['พนักงาน A','พนักงาน B'];
+  SETTINGS.lastEmployee = SETTINGS.lastEmployee || SETTINGS.employees[0];
 
   try{
     const s = await storageGet(STORE_KEYS.mksDay);
@@ -2464,7 +2493,22 @@ document.getElementById('mksMiniCard').addEventListener('click', ()=> switchToVi
 document.getElementById('menuSettingsBtn').addEventListener('click', ()=>{
   document.getElementById('menuDrawerBg').classList.remove('show');
   updateAutoBackupToggleUI();
+  const emps = SETTINGS.employees || ['พนักงาน A','พนักงาน B'];
+  document.getElementById('employeeName1').value = emps[0] || '';
+  document.getElementById('employeeName2').value = emps[1] || '';
   document.getElementById('resetModalBg').classList.add('show');
+});
+document.getElementById('saveEmployeeNamesBtn').addEventListener('click', async ()=>{
+  const n1 = document.getElementById('employeeName1').value.trim() || 'พนักงาน A';
+  const n2 = document.getElementById('employeeName2').value.trim() || 'พนักงาน B';
+  const oldEmps = SETTINGS.employees || ['พนักงาน A','พนักงาน B'];
+  const wasLast = SETTINGS.lastEmployee;
+  SETTINGS.employees = [n1, n2];
+  // keep pointing at "the same person" if they just renamed themselves, otherwise fall back to slot 1
+  SETTINGS.lastEmployee = (wasLast===oldEmps[0]) ? n1 : (wasLast===oldEmps[1]) ? n2 : n1;
+  await storageSet(STORE_KEYS.settings, JSON.stringify(SETTINGS));
+  renderEmployeeSelect();
+  toast('บันทึกชื่อพนักงานแล้ว');
 });
 
 /* ================= entry form logic ================= */
@@ -2492,6 +2536,19 @@ let currentRow = null;     // selected product row object
 document.getElementById('saleDate').value = getLastUsedSaleDate();
 document.getElementById('saleDate').addEventListener('change', ()=>{
   setLastUsedSaleDate(document.getElementById('saleDate').value);
+});
+
+/* employee selector — remembers last picked employee so whoever is using the
+   phone at that moment doesn't have to reselect every single entry */
+function renderEmployeeSelect(){
+  const sel = document.getElementById('employeeSelect');
+  const emps = SETTINGS.employees || ['พนักงาน A','พนักงาน B'];
+  sel.innerHTML = emps.map(e=>`<option value="${e.replace(/"/g,'&quot;')}">${e}</option>`).join('');
+  sel.value = emps.includes(SETTINGS.lastEmployee) ? SETTINGS.lastEmployee : emps[0];
+}
+document.getElementById('employeeSelect').addEventListener('change', async ()=>{
+  SETTINGS.lastEmployee = document.getElementById('employeeSelect').value;
+  await storageSet(STORE_KEYS.settings, JSON.stringify(SETTINGS));
 });
 
 function hasMeaningfulEntryData(){
@@ -2723,7 +2780,8 @@ function buildEntryFromForm(){
   const total = computeTotal();
   return {
     id: Date.now()+'-'+Math.random().toString(36).slice(2,7),
-    date, name: currentProduct, size: sizeSelect.value, base: baseSelect.value === '—' ? '' : baseSelect.value,
+    date, employee: document.getElementById('employeeSelect').value || (SETTINGS.employees||['พนักงาน A'])[0],
+    name: currentProduct, size: sizeSelect.value, base: baseSelect.value === '—' ? '' : baseSelect.value,
     price: currentRow.price, colorCode: document.getElementById('colorCode').value.trim(),
     tintPrice: tintVal, qty, total, sku: currentRow.sku, seed:false,
     customerName: document.getElementById('customerName').value.trim(),
@@ -2758,7 +2816,7 @@ function renderBillCart(){
     <div class="list-row" data-swipedel="${i}">
       <div class="info">
         <div class="name">${s.name} ${s.size} ${s.base}</div>
-        <div class="sub">${s.colorCode ? 'รหัสสี '+s.colorCode+' · ' : ''}x${s.qty}</div>
+        <div class="sub">${s.employee ? '👤 '+s.employee+' · ' : ''}${s.colorCode ? 'รหัสสี '+s.colorCode+' · ' : ''}x${s.qty}</div>
       </div>
       <div class="amt">${fmt(s.total)}฿</div>
       <button class="del-btn" data-billrm="${i}">✕</button>
@@ -3168,7 +3226,7 @@ function renderBillGroupedRows(rows, opts={}){
     <div class="list-row" ${delAttr}>
       <div class="info">
         <div class="name">${s.name} ${s.size} ${s.base}</div>
-        <div class="sub">${s.colorCode ? 'รหัสสี '+s.colorCode+' · ' : ''}x${s.qty}</div>
+        <div class="sub">${s.employee ? '👤 '+s.employee+' · ' : ''}${s.colorCode ? 'รหัสสี '+s.colorCode+' · ' : ''}x${s.qty}</div>
       </div>
       <div class="amt">${fmt(s.total)}฿</div>
       ${s.seed ? '' : (mode==='full'
@@ -3259,6 +3317,8 @@ function renderDashboard(){
   dashPctEl.classList.toggle('good', pct>=100);
   dashPctEl.classList.toggle('warn', pct<100 && pct<80);
   document.getElementById('dashMonthLbl').textContent = formatMonthTH(mKey);
+  const dashMonthLbl2 = document.getElementById('dashMonthLbl2');
+  if(dashMonthLbl2) dashMonthLbl2.textContent = formatMonthTH(mKey);
 
   // MKS mini card (today's market share)
   const mmEntry = MKS_DAY_HISTORY[today];
@@ -3317,21 +3377,96 @@ function renderDashboard(){
     `).join('');
   }
 
-  // restock alerts: most negative remain, top 6
-  const alerts = PRODUCTS.filter(r=>r.name && Number(r.remain) < 0)
-    .sort((a,b)=>Number(a.remain)-Number(b.remain)).slice(0,6);
-  const abox = document.getElementById('restockAlert');
-  if(!alerts.length){ abox.innerHTML = '<div class="empty">ไม่มีสินค้าติดลบสต็อก</div>'; }
-  else{
-    abox.innerHTML = alerts.map(r=>`
+  // employee breakdown (Phase 1: who recorded what) — today + this month per employee
+  const empBox = document.getElementById('employeeBreakdown');
+  if(empBox){
+    const emps = SETTINGS.employees || ['พนักงาน A','พนักงาน B'];
+    const rowsHtml = emps.map(name=>{
+      const todayTot = todaySales.filter(s=>(s.employee||emps[0])===name).reduce((a,s)=>a+s.total,0);
+      const monthTot = monthSales.filter(s=>(s.employee||emps[0])===name).reduce((a,s)=>a+s.total,0);
+      const monthBills = new Set(monthSales.filter(s=>(s.employee||emps[0])===name).map(s=>s.billId||s.id)).size;
+      return `
       <div class="list-row">
         <div class="info">
-          <div class="name">${r.name} ${r.size} ${r.base}</div>
-          <div class="sub">คงเหลือ ${r.remain}</div>
+          <div class="name">👤 ${name}</div>
+          <div class="sub">วันนี้ ฿${fmt(todayTot)} · ${monthBills} บิลเดือนนี้</div>
         </div>
+        <div class="amt">${fmt(monthTot)}฿</div>
+      </div>`;
+    }).join('');
+    empBox.innerHTML = rowsHtml || '<div class="empty">ยังไม่มีข้อมูล</div>';
+  }
+
+  // product intelligence: this month vs last month qty per product line
+  const now = new Date();
+  const lastMonthDate = new Date(now.getFullYear(), now.getMonth()-1, 1);
+  const lastMKey = lastMonthDate.getFullYear()+'-'+String(lastMonthDate.getMonth()+1).padStart(2,'0');
+  const lastMonthSales = SALES.filter(s=>monthKey(s.date)===lastMKey);
+  const lastAgg = {};
+  lastMonthSales.forEach(s=>{
+    const key = s.name+'|'+s.size+'|'+s.base;
+    lastAgg[key] = (lastAgg[key]||0) + s.qty;
+  });
+  const piBox = document.getElementById('productIntel');
+  if(piBox){
+    const changes = Object.keys(agg).map(key=>{
+      const cur = agg[key]; const prevQty = lastAgg[key]||0;
+      return {...cur, prevQty, diff: cur.qty - prevQty};
+    });
+    const rising = changes.filter(c=>c.prevQty>0 ? c.qty > c.prevQty*1.2 : c.qty>=3).sort((a,b)=>b.diff-a.diff).slice(0,3);
+    const falling = changes.filter(c=>c.prevQty>0 && c.qty < c.prevQty*0.7).sort((a,b)=>a.diff-b.diff).slice(0,3);
+    if(!rising.length && !falling.length){
+      piBox.innerHTML = '<div class="empty">ยังไม่มีข้อมูลพอเปรียบเทียบ (ต้องมียอดเดือนก่อนหน้า)</div>';
+    } else {
+      let html = '';
+      if(rising.length){
+        html += `<div class="hint" style="margin:6px 0 2px;">📈 ยอดกำลังเพิ่มขึ้น</div>` + rising.map(c=>`
+          <div class="list-row"><div class="info"><div class="name">${c.name} ${c.size} ${c.base}</div><div class="sub">เดือนก่อน ${c.prevQty} → เดือนนี้ ${c.qty}</div></div></div>`).join('');
+      }
+      if(falling.length){
+        html += `<div class="hint" style="margin:10px 0 2px;">📉 ยอดกำลังลดลง</div>` + falling.map(c=>`
+          <div class="list-row"><div class="info"><div class="name">${c.name} ${c.size} ${c.base}</div><div class="sub">เดือนก่อน ${c.prevQty} → เดือนนี้ ${c.qty}</div></div></div>`).join('');
+      }
+      piBox.innerHTML = html;
+    }
+  }
+
+  // stock intelligence: oversold (remain<0) + low-stock-about-to-run-out (avg sold/day over last 14 days)
+  const recentCutoff = new Date(); recentCutoff.setDate(recentCutoff.getDate()-14);
+  const recentCutoffStr = recentCutoff.getFullYear()+'-'+String(recentCutoff.getMonth()+1).padStart(2,'0')+'-'+String(recentCutoff.getDate()).padStart(2,'0');
+  const recentSold = {}; // sku|name|size|base -> qty sold in last 14 days
+  SALES.filter(s=>s.date >= recentCutoffStr).forEach(s=>{
+    const key = s.sku||(s.name+'|'+s.size+'|'+s.base);
+    recentSold[key] = (recentSold[key]||0) + s.qty;
+  });
+  const oversold = PRODUCTS.filter(r=>r.name && Number(r.remain) < 0);
+  const lowStock = PRODUCTS.filter(r=>{
+    if(!r.name || Number(r.remain) < 0) return false;
+    const key = r.sku||(r.name+'|'+r.size+'|'+r.base);
+    const avgPerDay = (recentSold[key]||0) / 14;
+    if(avgPerDay <= 0) return false;
+    const daysLeft = Number(r.remain) / avgPerDay;
+    return daysLeft <= 3;
+  }).map(r=>{
+    const key = r.sku||(r.name+'|'+r.size+'|'+r.base);
+    const avgPerDay = (recentSold[key]||0) / 14;
+    const daysLeft = avgPerDay>0 ? Number(r.remain)/avgPerDay : 999;
+    return {r, avgPerDay, daysLeft, reorderQty: Math.max(1, Math.ceil(avgPerDay*14))};
+  }).sort((a,b)=>a.daysLeft-b.daysLeft);
+  const abox = document.getElementById('restockAlert');
+  if(!oversold.length && !lowStock.length){ abox.innerHTML = '<div class="empty">สต็อกยังอยู่ในเกณฑ์ปกติ</div>'; }
+  else{
+    let html = oversold.slice(0,6).map(r=>`
+      <div class="list-row">
+        <div class="info"><div class="name">${r.name} ${r.size} ${r.base}</div><div class="sub">คงเหลือ ${r.remain}</div></div>
         <div class="status-tag status-over">ขาด ${Math.abs(r.remain)}</div>
-      </div>
-    `).join('');
+      </div>`).join('');
+    html += lowStock.slice(0,6).map(x=>`
+      <div class="list-row">
+        <div class="info"><div class="name">${x.r.name} ${x.r.size} ${x.r.base}</div><div class="sub">เหลือ ${x.r.remain} · ขายเฉลี่ย ${x.avgPerDay.toFixed(1)}/วัน · คาดหมดใน ${Math.max(0,Math.round(x.daysLeft))} วัน</div></div>
+        <div class="status-tag status-low">แนะนำเติม ${x.reorderQty}</div>
+      </div>`).join('');
+    abox.innerHTML = html;
   }
 
   renderDailyTrend();
@@ -3369,9 +3504,26 @@ function renderDailyTrend(){
   const daysPassed = Math.min(todayNum, dim);
   const avgPerDay = daysPassed>0 ? soFarTotal/daysPassed : 0;
   const forecastTotal = Math.round(avgPerDay*dim);
+  const target = getMonthTarget(mKey);
+  const expectedToDate = Math.round(target*daysPassed/dim);
+  const paceGap = soFarTotal - expectedToDate;
+  let status, statusCls, statusReason;
+  if(forecastTotal >= target){
+    status='🟢 มีโอกาสถึงเป้า'; statusCls='status-ok';
+    statusReason = paceGap>=0 ? `ตอนนี้เร็วกว่าจังหวะที่ควรทำ ${fmt(Math.abs(paceGap))} บาท` : `แม้จะช้ากว่าจังหวะอยู่ ${fmt(Math.abs(paceGap))} บาท แต่แนวโน้มยังพอไปถึงเป้าได้`;
+  } else if(forecastTotal >= target*0.9){
+    status='🟡 ต้องเร่งยอด'; statusCls='status-low';
+    statusReason = `ช้ากว่าจังหวะที่ควรทำอยู่ ${fmt(Math.abs(paceGap))} บาท ต้องเพิ่มยอดเฉลี่ย/วันอีกเล็กน้อยถึงจะถึงเป้า`;
+  } else {
+    status='🔴 มีความเสี่ยงไม่ถึงเป้า'; statusCls='status-over';
+    statusReason = `ช้ากว่าจังหวะที่ควรทำอยู่ ${fmt(Math.abs(paceGap))} บาท ตามจังหวะนี้คาดจะได้แค่ ${fmt(forecastTotal)} บาท (${target>0?(forecastTotal/target*100).toFixed(0):0}% ของเป้า)`;
+  }
   const fcBox = document.getElementById('dailyTrendForecast');
   if(fcBox){
-    fcBox.innerHTML = `<span class="p-lbl">คาดการณ์ยอดขายสิ้นเดือน (ตามจังหวะเฉลี่ยที่ทำได้)</span><span class="p-val">${fmt(forecastTotal)}</span><span class="p-unit">บาท</span>`;
+    fcBox.innerHTML = `
+      <span class="p-lbl">คาดการณ์ยอดขายสิ้นเดือน (ตามจังหวะเฉลี่ยที่ทำได้)</span><span class="p-val">${fmt(forecastTotal)}</span><span class="p-unit">บาท</span>
+      <div class="status-tag ${statusCls}" style="display:inline-block; margin-top:8px;">${status}</div>
+      <div class="hint" style="margin-top:6px;">ควรทำได้ ณ วันนี้ ฿${fmt(expectedToDate)} · ทำจริง ฿${fmt(soFarTotal)}<br>${statusReason}</div>`;
   }
 }
 
@@ -4834,6 +4986,7 @@ function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<
 async function bootstrapApp(){
   await loadAll();
   document.getElementById('saleDate').value = todayISO();
+  renderEmployeeSelect();
   renderGauge();
   renderRecent();
   renderDashboard();
