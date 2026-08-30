@@ -279,6 +279,13 @@
   .cust-stats{text-align:right; flex-shrink:0;}
   .cust-stats .amt{font-family:var(--mono); font-weight:600; font-size:13.5px; color:var(--paper);}
   .cust-stats .cnt{font-size:10.5px; color:var(--paper-faint); margin-top:1px;}
+  .cust-info{cursor:pointer;}
+  .cust-stats{cursor:pointer;}
+  .follow-badge{display:inline-block; font-size:10.5px; margin-top:4px; padding:2px 7px; border-radius:20px; font-family:var(--body);}
+  .follow-badge.follow-overdue{background:rgba(224,104,92,0.18); color:var(--clay);}
+  .follow-badge.follow-due{background:rgba(240,178,60,0.18); color:#f0b23c;}
+  .hint.follow-overdue{color:var(--clay);}
+  .hint.follow-due{color:#f0b23c;}
   .cust-colors{display:flex; gap:8px; padding-left:34px;}
   .cust-dot{
     width:20px; height:20px; border-radius:50%; border:2px solid transparent; cursor:pointer; padding:0;
@@ -837,6 +844,13 @@
         <span class="di-sub">ค่าคอมหลัก + พิเศษ + ต่อคน</span>
       </span>
     </button>
+    <button class="drawer-item" id="menuWeeklyReviewBtn">
+      <span class="di-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/><path d="M3.5 9.5h17M8 3v3M16 3v3M8 14l2.5 2.5L16 11"/></svg></span>
+      <span class="di-txt">
+        <span class="di-title">สรุปรายสัปดาห์</span>
+        <span class="di-sub">เทียบสัปดาห์นี้กับสัปดาห์ก่อน</span>
+      </span>
+    </button>
     <button class="drawer-item" id="menuCustomersBtn">
       <span class="di-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17.5 21v-2a4 4 0 00-4-4h-5a4 4 0 00-4 4v2"/><circle cx="11" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></span>
       <span class="di-txt">
@@ -863,10 +877,6 @@
       <label class="field">
         <span class="lbl">วันที่ขาย</span>
         <input type="date" id="saleDate">
-      </label>
-      <label class="field">
-        <span class="lbl">พนักงานผู้บันทึก</span>
-        <select id="employeeSelect"></select>
       </label>
       <label class="field search-wrap">
         <span class="lbl">ค้นหาสินค้า</span>
@@ -1071,6 +1081,9 @@
       </div>
     </div>
 
+    <div class="sec-title"><span class="t">วันนี้ควรทำอะไร?</span></div>
+    <div class="card" id="actionTodayCard" style="padding:6px 12px;"></div>
+
     <div class="stat-grid">
       <div class="stat-card">
         <div class="lbl">ยอดขายวันนี้</div>
@@ -1089,9 +1102,6 @@
         <div class="val" id="dashPct">0%</div>
       </div>
     </div>
-
-    <div class="sec-title"><span class="t">ยอดขายทีม — <span id="dashMonthLbl2"></span></span></div>
-    <div class="card" id="employeeBreakdown" style="padding:6px 12px;"></div>
 
     <div class="sec-title"><span class="t">แนวโน้มยอดขายรายวัน — <span id="dailyTrendMonthLbl"></span></span></div>
     <div class="chart-card">
@@ -1133,6 +1143,9 @@
 
     <div class="sec-title"><span class="t">สินค้าควรเติมสต็อกด่วน</span></div>
     <div class="card" id="restockAlert" style="padding:6px 12px;"></div>
+
+    <div class="sec-title"><span class="t">ศูนย์แจ้งเตือน — ทุกเรื่องที่ต้องจัดการ</span></div>
+    <div class="card" id="smartAlertCenter" style="padding:6px 12px;"></div>
   </section>
 
   <!-- ============ VIEW: STOCK / PRODUCTS ============ -->
@@ -1384,7 +1397,13 @@
         <div class="lbl">ลูกค้าประจำ (ติดดาว)</div>
         <div class="val warn" id="custFavCount">0</div>
       </div>
+      <div class="stat-card">
+        <div class="lbl">ควรติดตามวันนี้</div>
+        <div class="val warn" id="custFollowCount">0</div>
+      </div>
     </div>
+    <div class="sec-title"><span class="t">ควรติดตามวันนี้</span></div>
+    <div class="card" id="custFollowList" style="padding:6px 12px;"></div>
     <label class="field">
       <span class="lbl">ค้นหาลูกค้า</span>
       <input type="text" id="custSearch" placeholder="ค้นหาชื่อหรือเบอร์โทร...">
@@ -1633,16 +1652,6 @@
       ล้างแคช / รีเฟรชแอป
     </button>
     <p class="hint" style="margin-top:8px;">ใช้เมื่ออัปโหลดโค้ดเวอร์ชันใหม่ขึ้น repo แล้วแอปยังแสดงเวอร์ชันเก่าอยู่ (ไม่ลบข้อมูลยอดขาย/สต็อก)</p>
-    <div class="sec-title" style="margin-top:16px;"><span class="t">ชื่อพนักงาน</span></div>
-    <label class="field">
-      <span class="lbl">พนักงานคนที่ 1</span>
-      <input type="text" id="employeeName1" placeholder="พนักงาน A">
-    </label>
-    <label class="field">
-      <span class="lbl">พนักงานคนที่ 2</span>
-      <input type="text" id="employeeName2" placeholder="พนักงาน B">
-    </label>
-    <button class="btn btn-ghost" id="saveEmployeeNamesBtn">บันทึกชื่อพนักงาน</button>
     <button class="btn btn-ghost" id="exportBtn">ส่งออก Excel (.xlsx)</button>
     <button class="btn btn-ghost" id="exportProductsBtn">สำรองรายการสินค้า/สต็อก (.xlsx)</button>
     <button class="btn btn-ghost" id="importBtn">กู้คืน Backup (.xls)</button>
@@ -1654,6 +1663,93 @@
     <button class="btn btn-danger-ghost" id="confirmResetBtn">รีเซ็ตกลับเป็นค่าเริ่มต้นจากไฟล์ต้นฉบับ</button>
     <button class="btn btn-danger-ghost" id="authLogoutBtn">ออกจากระบบ</button>
     <button class="btn btn-ghost" id="closeSettingsBtn">ปิด</button>
+  </div>
+</div>
+
+<!-- modal: daily brief (Phase 4) -->
+<div class="modal-bg" id="dailyBriefModalBg">
+  <div class="modal">
+    <h3>สรุปประจำวัน — <span id="briefDate">-</span></h3>
+    <div class="stat-grid" style="margin-bottom:14px;">
+      <div class="stat-card">
+        <div class="lbl">ยอดขายเมื่อวาน</div>
+        <div class="val" id="briefYesterday">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="lbl">Ach% เดือนนี้</div>
+        <div class="val" id="briefMonthPct">0%</div>
+      </div>
+    </div>
+    <div class="sec-title" style="margin-top:4px;"><span class="t">วันนี้ควรทำอะไร?</span></div>
+    <div class="card" id="briefActionList" style="padding:6px 12px;"></div>
+    <button class="btn btn-primary" id="closeDailyBriefBtn" style="margin-top:14px;">เริ่มวันทำงาน</button>
+  </div>
+</div>
+
+<!-- modal: weekly review (Phase 4) -->
+<div class="modal-bg" id="weeklyReviewModalBg">
+  <div class="modal">
+    <h3>สรุปรายสัปดาห์ — <span id="weeklyRangeLbl">-</span></h3>
+    <div class="stat-grid" style="margin-bottom:14px;">
+      <div class="stat-card">
+        <div class="lbl">ยอดขายสัปดาห์นี้</div>
+        <div class="val" id="weeklyThisTotal">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="lbl">สัปดาห์ก่อน</div>
+        <div class="val small" id="weeklyLastTotal">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="lbl">เทียบสัปดาห์ก่อน</div>
+        <div class="val" id="weeklyChangePct">0%</div>
+      </div>
+      <div class="stat-card">
+        <div class="lbl">ลูกค้าติดตามค้าง</div>
+        <div class="val warn" id="weeklyFollowBacklog">0 คน</div>
+      </div>
+    </div>
+    <p class="hint">วันที่ขายดีที่สุด: <span id="weeklyBestDay">-</span></p>
+    <p class="hint">สินค้าขายดีที่สุดสัปดาห์นี้: <span id="weeklyTopProduct">-</span></p>
+    <p class="hint">ลูกค้าใหม่สัปดาห์นี้: <span id="weeklyNewCust">-</span></p>
+    <button class="btn btn-ghost" id="closeWeeklyReviewBtn" style="margin-top:14px;">ปิด</button>
+  </div>
+</div>
+
+<!-- modal: customer profile detail -->
+<div class="modal-bg" id="custDetailModalBg">
+  <div class="modal">
+    <h3 id="custDetailName">ลูกค้า</h3>
+    <p class="hint" id="custDetailPhone" style="margin-top:-10px;">ไม่มีเบอร์โทร</p>
+    <div class="stat-grid" style="margin-bottom:14px;">
+      <div class="stat-card">
+        <div class="lbl">ยอดสะสม</div>
+        <div class="val" id="custDetailTotal">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="lbl">จำนวนบิล</div>
+        <div class="val" id="custDetailBills">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="lbl">ซื้อล่าสุด</div>
+        <div class="val small" id="custDetailLast">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="lbl">รอบซื้อเฉลี่ย</div>
+        <div class="val small" id="custDetailCycle">-</div>
+      </div>
+    </div>
+    <p class="hint" id="custDetailStatus">-</p>
+
+    <div class="sec-title" style="margin-top:14px;"><span class="t">สินค้าที่ซื้อบ่อย</span></div>
+    <div class="card" id="custDetailTopProducts" style="padding:6px 12px;"></div>
+
+    <div class="sec-title" style="margin-top:14px;"><span class="t">สินค้าแนะนำ (ยังไม่เคยซื้อ)</span></div>
+    <div class="card" id="custDetailOpportunities" style="padding:6px 12px;"></div>
+
+    <div class="sec-title" style="margin-top:14px;"><span class="t">ประวัติการซื้อล่าสุด</span></div>
+    <div class="card" id="custDetailBillsList" style="padding:6px 12px;"></div>
+
+    <button class="btn btn-ghost" id="closeCustDetailBtn" style="margin-top:14px;">ปิด</button>
   </div>
 </div>
 
@@ -2013,9 +2109,6 @@ async function reloadKeyAndRerender(key){
     else if(key===STORE_KEYS.sales){ SALES = JSON.parse(s.value); }
     else if(key===STORE_KEYS.settings){
       SETTINGS = JSON.parse(s.value);
-      SETTINGS.employees = (SETTINGS.employees && SETTINGS.employees.length===2) ? SETTINGS.employees : ['พนักงาน A','พนักงาน B'];
-      SETTINGS.lastEmployee = SETTINGS.lastEmployee || SETTINGS.employees[0];
-      renderEmployeeSelect();
     }
     else if(key===STORE_KEYS.mksDay){ MKS_DAY_HISTORY = JSON.parse(s.value); }
     else if(key===STORE_KEYS.mksWeek){ MKS_WEEK_HISTORY = JSON.parse(s.value); }
@@ -2074,7 +2167,7 @@ async function loadAll(){
     if(s && s.value){ SETTINGS = JSON.parse(s.value); settingsLoaded=true; }
   }catch(e){ console.error('Load settings failed:', e); }
   if(!settingsLoaded){
-    SETTINGS = { targets: Object.assign({}, TARGETS_SEED), defaultTarget: DEFAULT_TARGET, auditLog:[], notifiedMonth:'', employees:['พนักงาน A','พนักงาน B'], lastEmployee:'พนักงาน A' };
+    SETTINGS = { targets: Object.assign({}, TARGETS_SEED), defaultTarget: DEFAULT_TARGET, auditLog:[], notifiedMonth:'' };
     await storageSet(STORE_KEYS.settings, JSON.stringify(SETTINGS));
   }
 
@@ -2086,8 +2179,6 @@ async function loadAll(){
   SETTINGS.commHeadcount = SETTINGS.commHeadcount || (MKS_BRANDS.find(b=>b.key==='NIPPON')||{}).pc || 2;
   SETTINGS.autoBackupEnabled = SETTINGS.autoBackupEnabled || false;
   SETTINGS.autoBackupLastMonth = SETTINGS.autoBackupLastMonth || '';
-  SETTINGS.employees = (SETTINGS.employees && SETTINGS.employees.length===2) ? SETTINGS.employees : ['พนักงาน A','พนักงาน B'];
-  SETTINGS.lastEmployee = SETTINGS.lastEmployee || SETTINGS.employees[0];
 
   try{
     const s = await storageGet(STORE_KEYS.mksDay);
@@ -2493,22 +2584,7 @@ document.getElementById('mksMiniCard').addEventListener('click', ()=> switchToVi
 document.getElementById('menuSettingsBtn').addEventListener('click', ()=>{
   document.getElementById('menuDrawerBg').classList.remove('show');
   updateAutoBackupToggleUI();
-  const emps = SETTINGS.employees || ['พนักงาน A','พนักงาน B'];
-  document.getElementById('employeeName1').value = emps[0] || '';
-  document.getElementById('employeeName2').value = emps[1] || '';
   document.getElementById('resetModalBg').classList.add('show');
-});
-document.getElementById('saveEmployeeNamesBtn').addEventListener('click', async ()=>{
-  const n1 = document.getElementById('employeeName1').value.trim() || 'พนักงาน A';
-  const n2 = document.getElementById('employeeName2').value.trim() || 'พนักงาน B';
-  const oldEmps = SETTINGS.employees || ['พนักงาน A','พนักงาน B'];
-  const wasLast = SETTINGS.lastEmployee;
-  SETTINGS.employees = [n1, n2];
-  // keep pointing at "the same person" if they just renamed themselves, otherwise fall back to slot 1
-  SETTINGS.lastEmployee = (wasLast===oldEmps[0]) ? n1 : (wasLast===oldEmps[1]) ? n2 : n1;
-  await storageSet(STORE_KEYS.settings, JSON.stringify(SETTINGS));
-  renderEmployeeSelect();
-  toast('บันทึกชื่อพนักงานแล้ว');
 });
 
 /* ================= entry form logic ================= */
@@ -2536,19 +2612,6 @@ let currentRow = null;     // selected product row object
 document.getElementById('saleDate').value = getLastUsedSaleDate();
 document.getElementById('saleDate').addEventListener('change', ()=>{
   setLastUsedSaleDate(document.getElementById('saleDate').value);
-});
-
-/* employee selector — remembers last picked employee so whoever is using the
-   phone at that moment doesn't have to reselect every single entry */
-function renderEmployeeSelect(){
-  const sel = document.getElementById('employeeSelect');
-  const emps = SETTINGS.employees || ['พนักงาน A','พนักงาน B'];
-  sel.innerHTML = emps.map(e=>`<option value="${e.replace(/"/g,'&quot;')}">${e}</option>`).join('');
-  sel.value = emps.includes(SETTINGS.lastEmployee) ? SETTINGS.lastEmployee : emps[0];
-}
-document.getElementById('employeeSelect').addEventListener('change', async ()=>{
-  SETTINGS.lastEmployee = document.getElementById('employeeSelect').value;
-  await storageSet(STORE_KEYS.settings, JSON.stringify(SETTINGS));
 });
 
 function hasMeaningfulEntryData(){
@@ -2780,7 +2843,7 @@ function buildEntryFromForm(){
   const total = computeTotal();
   return {
     id: Date.now()+'-'+Math.random().toString(36).slice(2,7),
-    date, employee: document.getElementById('employeeSelect').value || (SETTINGS.employees||['พนักงาน A'])[0],
+    date,
     name: currentProduct, size: sizeSelect.value, base: baseSelect.value === '—' ? '' : baseSelect.value,
     price: currentRow.price, colorCode: document.getElementById('colorCode').value.trim(),
     tintPrice: tintVal, qty, total, sku: currentRow.sku, seed:false,
@@ -2934,53 +2997,160 @@ function aggregateCustomers(){
   SALES.forEach(s=>{
     const key = customerKey(s.customerName, s.customerPhone);
     if(!key) return;
-    if(!map[key]) map[key] = {key, name:s.customerName||'', phone:s.customerPhone||'', total:0, count:0, lastDate:s.date};
+    if(!map[key]) map[key] = {key, name:s.customerName||'', phone:s.customerPhone||'', total:0, count:0, lastDate:s.date, bills:{}, products:{}};
     const rec = map[key];
     rec.total += Number(s.total)||0;
     rec.count += 1;
     if(s.date > rec.lastDate) rec.lastDate = s.date;
     if(s.customerName) rec.name = s.customerName;
     if(s.customerPhone) rec.phone = s.customerPhone;
+    const bKey = s.billId || s.id;
+    if(!rec.bills[bKey]) rec.bills[bKey] = {billKey:bKey, date:s.date, total:0, items:[]};
+    rec.bills[bKey].total += Number(s.total)||0;
+    rec.bills[bKey].items.push({name:s.name, size:s.size, base:s.base, qty:s.qty, total:s.total});
+    if(s.date > rec.bills[bKey].date) rec.bills[bKey].date = s.date;
+    rec.products[s.name] = (rec.products[s.name]||0) + (Number(s.qty)||0);
   });
   Object.keys(map).forEach(key=>{
+    const rec = map[key];
     const meta = CUSTOMERS[key] || {};
-    map[key].favorite = !!meta.favorite;
-    map[key].color = meta.color || null;
+    rec.favorite = !!meta.favorite;
+    rec.color = meta.color || null;
+
+    const billsList = Object.values(rec.bills).sort((a,b)=> a.date<b.date?-1:(a.date>b.date?1:0));
+    rec.billsList = billsList;
+    rec.billCount = billsList.length;
+    rec.topProducts = Object.entries(rec.products).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([name,qty])=>({name,qty}));
+    rec.boughtNames = Object.keys(rec.products);
+    delete rec.bills; delete rec.products;
+
+    // follow-up: average days between distinct purchase dates → expected purchase cycle
+    const uniqDates = Array.from(new Set(billsList.map(b=>b.date))).sort();
+    let avgCycleDays = null;
+    if(uniqDates.length >= 2){
+      let gapSum = 0;
+      for(let i=1;i<uniqDates.length;i++){ gapSum += daysBetween(uniqDates[i-1], uniqDates[i]); }
+      avgCycleDays = Math.round(gapSum/(uniqDates.length-1));
+    }
+    rec.avgCycleDays = avgCycleDays;
+    rec.daysSinceLast = daysBetween(rec.lastDate, todayISO());
+    if(avgCycleDays===null || avgCycleDays<=0) rec.followStatus = 'new';
+    else if(rec.daysSinceLast >= avgCycleDays*1.4) rec.followStatus = 'overdue';
+    else if(rec.daysSinceLast >= avgCycleDays*0.9) rec.followStatus = 'due';
+    else rec.followStatus = 'ok';
   });
   return Object.values(map);
+}
+function computeOverallProductPopularity(){
+  const agg = {};
+  SALES.forEach(s=>{ agg[s.name] = (agg[s.name]||0) + (Number(s.qty)||0); });
+  return Object.entries(agg).sort((a,b)=>b[1]-a[1]).map(([name,qty])=>({name,qty}));
+}
+function computeOpportunities(rec, limit=5){
+  const bought = new Set(rec.boughtNames||[]);
+  return computeOverallProductPopularity().filter(p=>!bought.has(p.name)).slice(0, limit);
+}
+const FOLLOW_BADGE = {
+  overdue: {label:'หายไปนาน', cls:'follow-overdue', icon:'🔴'},
+  due:     {label:'ใกล้ถึงรอบซื้อ', cls:'follow-due', icon:'🟡'},
+  ok:      {label:'', cls:'', icon:''},
+  new:     {label:'', cls:'', icon:''}
+};
+function custRowHtml(c){
+  const colorsHtml = c.favorite ? `<div class="cust-colors">${CUST_COLOR_PALETTE.map(p=>
+    `<button type="button" class="cust-dot ${c.color===p.key?'active':''}" data-custkey="${escapeHtml(c.key)}" data-color="${p.key}" style="background:${p.val};"></button>`
+  ).join('')}</div>` : '';
+  const dotIndicator = c.favorite && c.color ? `<span class="swatch" style="background:${(CUST_COLOR_PALETTE.find(p=>p.key===c.color)||{}).val||'transparent'}; display:inline-block; margin-right:5px;"></span>` : '';
+  const badge = FOLLOW_BADGE[c.followStatus] || FOLLOW_BADGE.ok;
+  const badgeHtml = badge.label ? `<span class="follow-badge ${badge.cls}">${badge.icon} ${badge.label}</span>` : '';
+  return `<div class="cust-row">
+    <div class="cust-top">
+      <button type="button" class="cust-star ${c.favorite?'on':''}" data-favkey="${escapeHtml(c.key)}" title="ลูกค้าประจำ">${c.favorite?'★':'☆'}</button>
+      <div class="cust-info" data-detailkey="${escapeHtml(c.key)}">
+        <div class="name">${dotIndicator}${escapeHtml(c.name||'(ไม่ระบุชื่อ)')}</div>
+        <div class="sub">${c.phone?escapeHtml(c.phone):'ไม่มีเบอร์โทร'} · ซื้อล่าสุด ${formatDateTH(c.lastDate)}</div>
+        ${badgeHtml}
+      </div>
+      <div class="cust-stats" data-detailkey="${escapeHtml(c.key)}">
+        <div class="amt">${fmt(c.total)}฿</div>
+        <div class="cnt">${c.count} รายการ</div>
+      </div>
+    </div>
+    ${colorsHtml}
+  </div>`;
 }
 function renderCustomers(){
   const list = aggregateCustomers();
   document.getElementById('custTotalCount').textContent = list.length;
   document.getElementById('custFavCount').textContent = list.filter(c=>c.favorite).length;
+  const dueList = list.filter(c=>c.followStatus==='due'||c.followStatus==='overdue')
+    .sort((a,b)=>{
+      if(a.followStatus!==b.followStatus) return a.followStatus==='overdue'?-1:1;
+      return b.daysSinceLast-a.daysSinceLast;
+    });
+  document.getElementById('custFollowCount').textContent = dueList.length;
+  const followBox = document.getElementById('custFollowList');
+  followBox.innerHTML = dueList.length
+    ? dueList.slice(0,10).map(custRowHtml).join('')
+    : '<div class="empty">ยังไม่มีลูกค้าที่ถึงรอบหรือหายไปนาน</div>';
+  followBox.querySelectorAll('[data-detailkey]').forEach(el=>el.addEventListener('click', ()=>openCustomerDetail(el.dataset.detailkey)));
+  followBox.querySelectorAll('[data-favkey]').forEach(btn=>btn.addEventListener('click', (e)=>{ e.stopPropagation(); toggleCustomerFavorite(btn.dataset.favkey); }));
+
   const q = (document.getElementById('custSearch').value||'').trim().toLowerCase();
   const filtered = (q ? list.filter(c=>(c.name||'').toLowerCase().includes(q) || (c.phone||'').includes(q)) : list)
     .sort((a,b)=>{ if(a.favorite!==b.favorite) return a.favorite?-1:1; return b.total-a.total; });
   const container = document.getElementById('custList');
   if(!filtered.length){ container.innerHTML = '<div class="empty">ยังไม่มีข้อมูลลูกค้า — กรอกชื่อ/เบอร์ตอนบันทึกยอดขายเพื่อเริ่มเก็บฐานลูกค้า</div>'; return; }
-  container.innerHTML = filtered.map(c=>{
-    const colorsHtml = c.favorite ? `<div class="cust-colors">${CUST_COLOR_PALETTE.map(p=>
-      `<button type="button" class="cust-dot ${c.color===p.key?'active':''}" data-custkey="${escapeHtml(c.key)}" data-color="${p.key}" style="background:${p.val};"></button>`
-    ).join('')}</div>` : '';
-    const dotIndicator = c.favorite && c.color ? `<span class="swatch" style="background:${(CUST_COLOR_PALETTE.find(p=>p.key===c.color)||{}).val||'transparent'}; display:inline-block; margin-right:5px;"></span>` : '';
-    return `<div class="cust-row">
-      <div class="cust-top">
-        <button type="button" class="cust-star ${c.favorite?'on':''}" data-favkey="${escapeHtml(c.key)}" title="ลูกค้าประจำ">${c.favorite?'★':'☆'}</button>
-        <div class="cust-info">
-          <div class="name">${dotIndicator}${escapeHtml(c.name||'(ไม่ระบุชื่อ)')}</div>
-          <div class="sub">${c.phone?escapeHtml(c.phone):'ไม่มีเบอร์โทร'} · ซื้อล่าสุด ${formatDateTH(c.lastDate)}</div>
-        </div>
-        <div class="cust-stats">
-          <div class="amt">${fmt(c.total)}฿</div>
-          <div class="cnt">${c.count} รายการ</div>
-        </div>
-      </div>
-      ${colorsHtml}
-    </div>`;
-  }).join('');
-  container.querySelectorAll('[data-favkey]').forEach(btn=>btn.addEventListener('click', ()=>toggleCustomerFavorite(btn.dataset.favkey)));
-  container.querySelectorAll('[data-custkey]').forEach(btn=>btn.addEventListener('click', ()=>setCustomerColor(btn.dataset.custkey, btn.dataset.color)));
+  container.innerHTML = filtered.map(custRowHtml).join('');
+  container.querySelectorAll('[data-favkey]').forEach(btn=>btn.addEventListener('click', (e)=>{ e.stopPropagation(); toggleCustomerFavorite(btn.dataset.favkey); }));
+  container.querySelectorAll('[data-custkey]').forEach(btn=>btn.addEventListener('click', (e)=>{ e.stopPropagation(); setCustomerColor(btn.dataset.custkey, btn.dataset.color); }));
+  container.querySelectorAll('[data-detailkey]').forEach(el=>el.addEventListener('click', ()=>openCustomerDetail(el.dataset.detailkey)));
 }
+function openCustomerDetail(key){
+  const rec = aggregateCustomers().find(c=>c.key===key);
+  if(!rec) return;
+  const oppos = computeOpportunities(rec, 5);
+  document.getElementById('custDetailName').textContent = rec.name || '(ไม่ระบุชื่อ)';
+  document.getElementById('custDetailPhone').textContent = rec.phone ? rec.phone : 'ไม่มีเบอร์โทร';
+  document.getElementById('custDetailTotal').textContent = fmt(rec.total)+'฿';
+  document.getElementById('custDetailBills').textContent = rec.billCount+' บิล';
+  document.getElementById('custDetailLast').textContent = formatDateTH(rec.lastDate);
+  document.getElementById('custDetailCycle').textContent = rec.avgCycleDays ? ('ทุก ~'+rec.avgCycleDays+' วัน') : 'ข้อมูลยังไม่พอ';
+  const badge = FOLLOW_BADGE[rec.followStatus] || FOLLOW_BADGE.ok;
+  const statusEl = document.getElementById('custDetailStatus');
+  statusEl.textContent = badge.label ? (badge.icon+' '+badge.label+' · ห่างจากซื้อล่าสุด '+rec.daysSinceLast+' วัน') : ('ยังอยู่ในรอบปกติ · ห่างจากซื้อล่าสุด '+rec.daysSinceLast+' วัน');
+  statusEl.className = 'hint '+(badge.cls||'');
+
+  const topBox = document.getElementById('custDetailTopProducts');
+  topBox.innerHTML = rec.topProducts.length
+    ? rec.topProducts.map(p=>`<div class="list-row"><div class="info"><div class="name">${escapeHtml(p.name)}</div></div><div class="amt">${p.qty} ชิ้น</div></div>`).join('')
+    : '<div class="empty">ยังไม่มีข้อมูล</div>';
+
+  const oppoBox = document.getElementById('custDetailOpportunities');
+  oppoBox.innerHTML = oppos.length
+    ? oppos.map(p=>`<div class="list-row"><div class="info"><div class="name">${escapeHtml(p.name)}</div><div class="sub">ยังไม่เคยซื้อ · ร้านขายได้ ${p.qty} ชิ้น</div></div></div>`).join('')
+    : '<div class="empty">ลูกค้าซื้อครบเกือบทุกสินค้ายอดนิยมแล้ว</div>';
+
+  const billsBox = document.getElementById('custDetailBillsList');
+  const recentBills = rec.billsList.slice(-10).reverse();
+  billsBox.innerHTML = recentBills.length
+    ? recentBills.map(b=>`<div class="list-row">
+        <div class="info">
+          <div class="name">${formatDateTH(b.date)}</div>
+          <div class="sub">${b.items.map(it=>escapeHtml(it.name)+' x'+it.qty).join(', ')}</div>
+        </div>
+        <div class="amt">${fmt(b.total)}฿</div>
+      </div>`).join('')
+    : '<div class="empty">ยังไม่มีประวัติการซื้อ</div>';
+
+  document.getElementById('custDetailModalBg').classList.add('show');
+}
+document.getElementById('closeCustDetailBtn').addEventListener('click', ()=>{
+  document.getElementById('custDetailModalBg').classList.remove('show');
+});
+document.getElementById('custDetailModalBg').addEventListener('click', (e)=>{
+  if(e.target.id==='custDetailModalBg') e.currentTarget.classList.remove('show');
+});
 async function toggleCustomerFavorite(key){
   if(!CUSTOMERS[key]){
     const rec = aggregateCustomers().find(c=>c.key===key);
@@ -3377,26 +3547,6 @@ function renderDashboard(){
     `).join('');
   }
 
-  // employee breakdown (Phase 1: who recorded what) — today + this month per employee
-  const empBox = document.getElementById('employeeBreakdown');
-  if(empBox){
-    const emps = SETTINGS.employees || ['พนักงาน A','พนักงาน B'];
-    const rowsHtml = emps.map(name=>{
-      const todayTot = todaySales.filter(s=>(s.employee||emps[0])===name).reduce((a,s)=>a+s.total,0);
-      const monthTot = monthSales.filter(s=>(s.employee||emps[0])===name).reduce((a,s)=>a+s.total,0);
-      const monthBills = new Set(monthSales.filter(s=>(s.employee||emps[0])===name).map(s=>s.billId||s.id)).size;
-      return `
-      <div class="list-row">
-        <div class="info">
-          <div class="name">👤 ${name}</div>
-          <div class="sub">วันนี้ ฿${fmt(todayTot)} · ${monthBills} บิลเดือนนี้</div>
-        </div>
-        <div class="amt">${fmt(monthTot)}฿</div>
-      </div>`;
-    }).join('');
-    empBox.innerHTML = rowsHtml || '<div class="empty">ยังไม่มีข้อมูล</div>';
-  }
-
   // product intelligence: this month vs last month qty per product line
   const now = new Date();
   const lastMonthDate = new Date(now.getFullYear(), now.getMonth()-1, 1);
@@ -3471,34 +3621,19 @@ function renderDashboard(){
 
   renderDailyTrend();
   renderRecentEdits();
+  renderActionCenter();
 }
-function renderDailyTrend(){
-  const box = document.getElementById('dailyTrendBars');
-  if(!box) return;
+function computeSalesPaceStatus(){
   const now = new Date();
   const mKey = monthKey(todayISO());
   const dim = daysInMonth(now.getFullYear(), now.getMonth()+1);
   const todayNum = now.getDate();
-  const lblBox = document.getElementById('dailyTrendMonthLbl');
-  if(lblBox) lblBox.textContent = formatMonthTH(mKey);
-
   const daily = [];
   for(let d=1; d<=dim; d++){
     const dateStr = mKey+'-'+String(d).padStart(2,'0');
     const total = SALES.filter(s=>s.date===dateStr).reduce((a,s)=>a+s.total,0);
     daily.push({d, total, isFuture: d>todayNum});
   }
-  const maxVal = Math.max(1, ...daily.map(x=>x.total));
-  box.innerHTML = daily.map(x=>{
-    const h = x.total>0 ? Math.max(4, Math.round(x.total/maxVal*140)) : (x.isFuture?2:3);
-    const cls = x.isFuture ? 'future' : (x.total>0 ? 'has' : '');
-    const showLabel = (x.d===1 || x.d===dim || x.d%5===0);
-    return `<div class="bar-col daily">
-      <div class="bar ${cls}" style="height:${h}px;" title="วันที่ ${x.d}: ${fmt(x.total)} บาท"></div>
-      <div class="mlabel">${showLabel?x.d:'&nbsp;'}</div>
-    </div>`;
-  }).join('');
-
   const soFar = daily.filter(x=>!x.isFuture);
   const soFarTotal = soFar.reduce((a,x)=>a+x.total,0);
   const daysPassed = Math.min(todayNum, dim);
@@ -3518,14 +3653,210 @@ function renderDailyTrend(){
     status='🔴 มีความเสี่ยงไม่ถึงเป้า'; statusCls='status-over';
     statusReason = `ช้ากว่าจังหวะที่ควรทำอยู่ ${fmt(Math.abs(paceGap))} บาท ตามจังหวะนี้คาดจะได้แค่ ${fmt(forecastTotal)} บาท (${target>0?(forecastTotal/target*100).toFixed(0):0}% ของเป้า)`;
   }
+  return {daily, mKey, dim, todayNum, soFarTotal, daysPassed, avgPerDay, forecastTotal, target, expectedToDate, paceGap, status, statusCls, statusReason};
+}
+function renderDailyTrend(){
+  const box = document.getElementById('dailyTrendBars');
+  if(!box) return;
+  const pace = computeSalesPaceStatus();
+  const lblBox = document.getElementById('dailyTrendMonthLbl');
+  if(lblBox) lblBox.textContent = formatMonthTH(pace.mKey);
+
+  const maxVal = Math.max(1, ...pace.daily.map(x=>x.total));
+  box.innerHTML = pace.daily.map(x=>{
+    const h = x.total>0 ? Math.max(4, Math.round(x.total/maxVal*140)) : (x.isFuture?2:3);
+    const cls = x.isFuture ? 'future' : (x.total>0 ? 'has' : '');
+    const showLabel = (x.d===1 || x.d===pace.dim || x.d%5===0);
+    return `<div class="bar-col daily">
+      <div class="bar ${cls}" style="height:${h}px;" title="วันที่ ${x.d}: ${fmt(x.total)} บาท"></div>
+      <div class="mlabel">${showLabel?x.d:'&nbsp;'}</div>
+    </div>`;
+  }).join('');
+
   const fcBox = document.getElementById('dailyTrendForecast');
   if(fcBox){
     fcBox.innerHTML = `
-      <span class="p-lbl">คาดการณ์ยอดขายสิ้นเดือน (ตามจังหวะเฉลี่ยที่ทำได้)</span><span class="p-val">${fmt(forecastTotal)}</span><span class="p-unit">บาท</span>
-      <div class="status-tag ${statusCls}" style="display:inline-block; margin-top:8px;">${status}</div>
-      <div class="hint" style="margin-top:6px;">ควรทำได้ ณ วันนี้ ฿${fmt(expectedToDate)} · ทำจริง ฿${fmt(soFarTotal)}<br>${statusReason}</div>`;
+      <span class="p-lbl">คาดการณ์ยอดขายสิ้นเดือน (ตามจังหวะเฉลี่ยที่ทำได้)</span><span class="p-val">${fmt(pace.forecastTotal)}</span><span class="p-unit">บาท</span>
+      <div class="status-tag ${pace.statusCls}" style="display:inline-block; margin-top:8px;">${pace.status}</div>
+      <div class="hint" style="margin-top:6px;">ควรทำได้ ณ วันนี้ ฿${fmt(pace.expectedToDate)} · ทำจริง ฿${fmt(pace.soFarTotal)}<br>${pace.statusReason}</div>`;
   }
 }
+
+/* ================= action center (Phase 4) ================= */
+function computeActionItems(){
+  const items = [];
+  const today = todayISO();
+  const mKey = monthKey(today);
+
+  // sales pace
+  const pace = computeSalesPaceStatus();
+  if(pace.statusCls === 'status-over'){
+    items.push({priority:1, icon:'📉', view:'dash', title:'ยอดขายเสี่ยงไม่ถึงเป้าเดือนนี้', detail:pace.statusReason});
+  } else if(pace.statusCls === 'status-low'){
+    items.push({priority:2, icon:'⏱️', view:'dash', title:'ต้องเร่งยอดขายให้ทันเป้า', detail:pace.statusReason});
+  }
+
+  // stock intelligence
+  const recentCutoff = new Date(); recentCutoff.setDate(recentCutoff.getDate()-14);
+  const recentCutoffStr = recentCutoff.getFullYear()+'-'+String(recentCutoff.getMonth()+1).padStart(2,'0')+'-'+String(recentCutoff.getDate()).padStart(2,'0');
+  const recentSold = {};
+  SALES.filter(s=>s.date >= recentCutoffStr).forEach(s=>{
+    const key = s.sku||(s.name+'|'+s.size+'|'+s.base);
+    recentSold[key] = (recentSold[key]||0) + s.qty;
+  });
+  const oversold = PRODUCTS.filter(r=>r.name && Number(r.remain) < 0);
+  const lowStock = PRODUCTS.filter(r=>{
+    if(!r.name || Number(r.remain) < 0) return false;
+    const key = r.sku||(r.name+'|'+r.size+'|'+r.base);
+    const avgPerDay = (recentSold[key]||0) / 14;
+    if(avgPerDay <= 0) return false;
+    return (Number(r.remain) / avgPerDay) <= 3;
+  });
+  if(oversold.length) items.push({priority:1, icon:'📦', view:'stock', title:`สินค้าติดลบสต็อก ${oversold.length} รายการ`, detail:oversold.slice(0,3).map(r=>r.name+' '+r.size+' '+r.base).join(', ')});
+  if(lowStock.length) items.push({priority:2, icon:'📦', view:'stock', title:`สต็อกใกล้หมด ${lowStock.length} รายการ`, detail:'คาดหมดภายใน 3 วัน ควรเติมด่วน'});
+
+  // customer follow-up
+  const custList = aggregateCustomers();
+  const overdueCust = custList.filter(c=>c.followStatus==='overdue');
+  const dueCust = custList.filter(c=>c.followStatus==='due');
+  if(overdueCust.length) items.push({priority:1, icon:'👤', view:'customers', title:`ลูกค้าหายไปนาน ${overdueCust.length} คน`, detail:overdueCust.slice(0,3).map(c=>c.name||'(ไม่ระบุชื่อ)').join(', ')});
+  if(dueCust.length) items.push({priority:2, icon:'👤', view:'customers', title:`ลูกค้าใกล้ถึงรอบซื้อ ${dueCust.length} คน`, detail:dueCust.slice(0,3).map(c=>c.name||'(ไม่ระบุชื่อ)').join(', ')});
+
+  // commission pass-threshold proximity
+  const monthSales = SALES.filter(s=>monthKey(s.date)===mKey);
+  const monthTotal = monthSales.reduce((a,s)=>a+s.total,0);
+  const target = getMonthTarget(mKey);
+  const passTarget = Math.round(target*0.8);
+  if(target>0 && monthTotal < passTarget){
+    const gap = passTarget - monthTotal;
+    items.push({priority: gap <= passTarget*0.1 ? 1 : 3, icon:'💰', view:'dash', title:'ยังไม่ถึงเกณฑ์ 80% รับค่าคอม', detail:`ขาดอีก ฿${fmt(gap)} ถึงจะเริ่มได้ค่าคอมมิชชั่นเดือนนี้`});
+  }
+
+  items.sort((a,b)=>a.priority-b.priority);
+  return items;
+}
+const ACTION_PRIORITY_LABEL = {1:'เร่งด่วน', 2:'ควรดู', 3:'แจ้งเตือน'};
+const ACTION_PRIORITY_CLS = {1:'status-over', 2:'status-low', 3:'status-ok'};
+function actionItemHtml(it){
+  return `<div class="list-row" data-gotoview="${it.view}" style="cursor:pointer;">
+    <div class="info">
+      <div class="name">${it.icon} ${escapeHtml(it.title)}</div>
+      <div class="sub">${escapeHtml(it.detail||'')}</div>
+    </div>
+    <div class="status-tag ${ACTION_PRIORITY_CLS[it.priority]}">${ACTION_PRIORITY_LABEL[it.priority]}</div>
+  </div>`;
+}
+function renderActionCenter(){
+  const items = computeActionItems();
+  const todayBox = document.getElementById('actionTodayCard');
+  if(todayBox){
+    const top = items.slice(0,4);
+    todayBox.innerHTML = top.length ? top.map(actionItemHtml).join('') : '<div class="empty">วันนี้ไม่มีอะไรต้องเร่งจัดการ 🎉</div>';
+    todayBox.querySelectorAll('[data-gotoview]').forEach(el=>el.addEventListener('click', ()=>switchToView(el.dataset.gotoview)));
+  }
+  const alertBox = document.getElementById('smartAlertCenter');
+  if(alertBox){
+    alertBox.innerHTML = items.length ? items.map(actionItemHtml).join('') : '<div class="empty">ไม่มีการแจ้งเตือนขณะนี้</div>';
+    alertBox.querySelectorAll('[data-gotoview]').forEach(el=>el.addEventListener('click', ()=>switchToView(el.dataset.gotoview)));
+  }
+}
+
+/* ---- Daily Brief: shown once per day on open, summarizing today's picture ---- */
+async function maybeShowDailyBrief(){
+  const today = todayISO();
+  if(SETTINGS.lastDailyBriefDate === today) return;
+  const items = computeActionItems();
+  const mKey = monthKey(today);
+  const monthSales = SALES.filter(s=>monthKey(s.date)===mKey);
+  const monthTotal = monthSales.reduce((a,s)=>a+s.total,0);
+  const target = getMonthTarget(mKey);
+  const pct = target>0 ? (monthTotal/target*100) : 0;
+  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+  const yStr = yesterday.getFullYear()+'-'+String(yesterday.getMonth()+1).padStart(2,'0')+'-'+String(yesterday.getDate()).padStart(2,'0');
+  const yTotal = SALES.filter(s=>s.date===yStr).reduce((a,s)=>a+s.total,0);
+
+  document.getElementById('briefDate').textContent = formatDateTH(today);
+  document.getElementById('briefYesterday').textContent = fmt(yTotal)+'฿';
+  document.getElementById('briefMonthPct').textContent = pct.toFixed(1)+'%';
+  const listBox = document.getElementById('briefActionList');
+  const top = items.slice(0,4);
+  listBox.innerHTML = top.length ? top.map(actionItemHtml).join('') : '<div class="empty">วันนี้ไม่มีอะไรต้องเร่งจัดการ 🎉</div>';
+  listBox.querySelectorAll('[data-gotoview]').forEach(el=>el.addEventListener('click', ()=>{
+    document.getElementById('dailyBriefModalBg').classList.remove('show');
+    switchToView(el.dataset.gotoview);
+  }));
+  document.getElementById('dailyBriefModalBg').classList.add('show');
+  SETTINGS.lastDailyBriefDate = today;
+  await storageSet(STORE_KEYS.settings, JSON.stringify(SETTINGS));
+}
+document.getElementById('closeDailyBriefBtn').addEventListener('click', ()=>{
+  document.getElementById('dailyBriefModalBg').classList.remove('show');
+});
+document.getElementById('dailyBriefModalBg').addEventListener('click', (e)=>{
+  if(e.target.id==='dailyBriefModalBg') e.currentTarget.classList.remove('show');
+});
+
+/* ---- Weekly Review: on-demand summary comparing this week vs last week ---- */
+function isoWeekRange(dateStr){
+  // Monday-start week containing dateStr; returns {from, to} ISO date strings
+  const d = new Date(dateStr+'T00:00:00');
+  const dow = (d.getDay()+6)%7; // 0=Mon..6=Sun
+  const monday = new Date(d); monday.setDate(d.getDate()-dow);
+  const sunday = new Date(monday); sunday.setDate(monday.getDate()+6);
+  const toISO = dt => dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+  return {from:toISO(monday), to:toISO(sunday)};
+}
+function renderWeeklyReview(){
+  const today = todayISO();
+  const thisWeek = isoWeekRange(today);
+  const lastWeekAnchor = new Date(today+'T00:00:00'); lastWeekAnchor.setDate(lastWeekAnchor.getDate()-7);
+  const lastWeek = isoWeekRange(lastWeekAnchor.getFullYear()+'-'+String(lastWeekAnchor.getMonth()+1).padStart(2,'0')+'-'+String(lastWeekAnchor.getDate()).padStart(2,'0'));
+
+  const thisWeekSales = SALES.filter(s=>s.date>=thisWeek.from && s.date<=thisWeek.to);
+  const lastWeekSales = SALES.filter(s=>s.date>=lastWeek.from && s.date<=lastWeek.to);
+  const thisTotal = thisWeekSales.reduce((a,s)=>a+s.total,0);
+  const lastTotal = lastWeekSales.reduce((a,s)=>a+s.total,0);
+  const changePct = lastTotal>0 ? ((thisTotal-lastTotal)/lastTotal*100) : (thisTotal>0?100:0);
+
+  document.getElementById('weeklyRangeLbl').textContent = fmtThaiRange(thisWeek.from, thisWeek.to);
+  document.getElementById('weeklyThisTotal').textContent = fmt(thisTotal)+'฿';
+  document.getElementById('weeklyLastTotal').textContent = fmt(lastTotal)+'฿';
+  const chEl = document.getElementById('weeklyChangePct');
+  chEl.textContent = (changePct>=0?'+':'')+changePct.toFixed(1)+'%';
+  chEl.className = 'val '+(changePct>=0?'good':'warn');
+
+  const byDay = {};
+  thisWeekSales.forEach(s=>{ byDay[s.date] = (byDay[s.date]||0)+s.total; });
+  const bestDay = Object.entries(byDay).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('weeklyBestDay').textContent = bestDay ? (formatDateTH(bestDay[0])+' · ฿'+fmt(bestDay[1])) : 'ยังไม่มียอดขายสัปดาห์นี้';
+
+  const agg = {};
+  thisWeekSales.forEach(s=>{
+    const key = s.name+'|'+s.size+'|'+s.base;
+    if(!agg[key]) agg[key] = {name:s.name, size:s.size, base:s.base, qty:0};
+    agg[key].qty += s.qty;
+  });
+  const topProduct = Object.values(agg).sort((a,b)=>b.qty-a.qty)[0];
+  document.getElementById('weeklyTopProduct').textContent = topProduct ? `${topProduct.name} ${topProduct.size} ${topProduct.base} · ${topProduct.qty} ชิ้น` : 'ยังไม่มีข้อมูล';
+
+  const custList = aggregateCustomers();
+  const newCustThisWeek = custList.filter(c=>c.billsList.length && c.billsList[0].date>=thisWeek.from).length;
+  const followBacklog = custList.filter(c=>c.followStatus==='due'||c.followStatus==='overdue').length;
+  document.getElementById('weeklyNewCust').textContent = newCustThisWeek+' คน';
+  document.getElementById('weeklyFollowBacklog').textContent = followBacklog+' คน';
+
+  document.getElementById('weeklyReviewModalBg').classList.add('show');
+}
+document.getElementById('menuWeeklyReviewBtn').addEventListener('click', ()=>{
+  document.getElementById('menuDrawerBg').classList.remove('show');
+  renderWeeklyReview();
+});
+document.getElementById('closeWeeklyReviewBtn').addEventListener('click', ()=>{
+  document.getElementById('weeklyReviewModalBg').classList.remove('show');
+});
+document.getElementById('weeklyReviewModalBg').addEventListener('click', (e)=>{
+  if(e.target.id==='weeklyReviewModalBg') e.currentTarget.classList.remove('show');
+});
 
 /* ================= commission calculator view ================= */
 const PC_SELECT_OPTIONS = [1,2,3,4,5];
@@ -4986,7 +5317,6 @@ function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<
 async function bootstrapApp(){
   await loadAll();
   document.getElementById('saleDate').value = todayISO();
-  renderEmployeeSelect();
   renderGauge();
   renderRecent();
   renderDashboard();
@@ -4996,6 +5326,7 @@ async function bootstrapApp(){
   checkAutoBackup();
   updateAutoBackupToggleUI();
   subscribeRealtimeSync();
+  maybeShowDailyBrief();
 }
 window.addEventListener('nippon-auth-ready', bootstrapApp);
 (async function init(){
