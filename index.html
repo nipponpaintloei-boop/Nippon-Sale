@@ -313,6 +313,22 @@
   .status-out{background:var(--surface2); color:var(--paper-faint);}
   .status-over{background:rgba(191,70,59,0.14); color:var(--clay);}
 
+  /* series group (e.g. "สีน้ำมัน All in 1") collapsing its เบอร์สี variants in สต็อก/สินค้า lists */
+  .series-group{margin-bottom:8px;}
+  .series-group-header{
+    background:var(--surface); border:1px solid var(--line); border-radius:13px; padding:13px 14px;
+    display:flex; align-items:center; gap:12px; cursor:pointer;
+  }
+  .series-group-header:active{background:var(--surface2);}
+  .series-group-header .info{flex:1; min-width:0;}
+  .series-group-header .name{font-size:13.5px; font-weight:600;}
+  .series-group-header .meta{font-size:11px; color:var(--paper-faint); margin-top:2px; font-family:var(--mono);}
+  .series-group-chevron{color:var(--paper-faint); transition:transform .15s ease; flex-shrink:0;}
+  .series-group.open .series-group-chevron{transform:rotate(180deg); color:var(--accent);}
+  .series-group-body{display:none; padding:8px 0 0 14px; border-left:2px solid var(--line); margin-left:6px;}
+  .series-group.open .series-group-body{display:block;}
+  .series-group-body .stock-row, .series-group-body .prod-row{margin-bottom:6px;}
+
   .empty{
     text-align:center; padding:34px 10px; color:var(--paper-faint); font-size:13px;
   }
@@ -1736,6 +1752,7 @@ let MKS_DAY_HISTORY = {};   // { 'YYYY-MM-DD': { date, rows:{BRAND:{pc,sales,not
 let MKS_WEEK_HISTORY = {};  // { 'from_to': { from, to, rows:{BRAND:{pcReg,pcPro,target,sales,note}} } }
 let PRODUCT_INDEX = {}; // name -> {size -> {base -> row}}
 let SERIES_INDEX = {};  // series -> {colorNo -> rawName}  (see buildProductIndex)
+let NAME_TO_SERIES = {}; // rawName -> series (reverse lookup of SERIES_INDEX, for list grouping)
 let CUSTOMERS = {}; // key (phone or name) -> {name, phone, favorite:bool, color:string|null}
 
 function seedProducts(){
@@ -2355,6 +2372,10 @@ function buildProductIndex(){
   // only keep series that actually have 2+ เบอร์ — a single match isn't worth an extra step
   Object.keys(SERIES_INDEX).forEach(series=>{
     if(Object.keys(SERIES_INDEX[series]).length < 2) delete SERIES_INDEX[series];
+  });
+  NAME_TO_SERIES = {};
+  Object.keys(SERIES_INDEX).forEach(series=>{
+    Object.values(SERIES_INDEX[series]).forEach(n=>{ NAME_TO_SERIES[n] = series; });
   });
 }
 
@@ -4021,6 +4042,7 @@ document.querySelectorAll('#view-stock .subtab-row .stbtn').forEach(btn=>{
   });
 });
 
+let stockExpandedSeries = new Set(); // series names currently expanded in the สต็อก list (persists across re-renders)
 function renderStock(){
   const q = document.getElementById('stockSearch').value.trim().toLowerCase();
   let rows = PRODUCTS.filter(r=>r.name);
@@ -4030,7 +4052,8 @@ function renderStock(){
 
   const box = document.getElementById('stockList');
   if(!rows.length){ box.innerHTML = '<div class="empty">ไม่พบสินค้า</div>'; return; }
-  box.innerHTML = rows.slice(0,150).map(r=>{
+
+  const rowHtml = (r)=>{
     const st = statusOf(r.remain);
     const idx = PRODUCTS.indexOf(r);
     return `
@@ -4041,9 +4064,51 @@ function renderStock(){
       </div>
       <div class="status-tag ${statusClass[st]}">${statusLabel[st]}</div>
     </div>`;
+  };
+  const worstStatus = (groupRows)=>{
+    const order = ['out','over','low','ok'];
+    const statuses = groupRows.map(r=>statusOf(r.remain));
+    return order.find(s=>statuses.includes(s)) || 'ok';
+  };
+  const seenSeries = new Set();
+  const html = rows.slice(0,150).map(r=>{
+    const series = NAME_TO_SERIES[r.name];
+    if(series){
+      const groupRows = rows.filter(x=>NAME_TO_SERIES[x.name]===series);
+      if(groupRows.length > 1){
+        if(seenSeries.has(series)) return '';
+        seenSeries.add(series);
+        const nColors = new Set(groupRows.map(x=>x.name)).size;
+        const totalRemain = groupRows.reduce((a,x)=>a+(Number(x.remain)||0),0);
+        const st = worstStatus(groupRows);
+        const open = stockExpandedSeries.has(series);
+        return `
+        <div class="series-group${open?' open':''}" data-series="${series.replace(/"/g,'&quot;')}">
+          <div class="series-group-header">
+            <div class="info">
+              <div class="name">${series}</div>
+              <div class="meta">${nColors} เบอร์สี · คงเหลือรวม ${totalRemain}</div>
+            </div>
+            <div class="status-tag ${statusClass[st]}">${statusLabel[st]}</div>
+            <svg class="series-group-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="series-group-body">${groupRows.map(rowHtml).join('')}</div>
+        </div>`;
+      }
+    }
+    return rowHtml(r);
   }).join('');
+  box.innerHTML = html;
+  box.querySelectorAll('.series-group-header').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const group = el.closest('.series-group');
+      const series = group.dataset.series;
+      if(stockExpandedSeries.has(series)) stockExpandedSeries.delete(series); else stockExpandedSeries.add(series);
+      group.classList.toggle('open');
+    });
+  });
   box.querySelectorAll('.stock-row').forEach(el=>{
-    el.addEventListener('click', ()=>openStockModal(Number(el.dataset.idx)));
+    el.addEventListener('click', (e)=>{ e.stopPropagation(); openStockModal(Number(el.dataset.idx)); });
   });
 }
 
@@ -4207,6 +4272,7 @@ document.getElementById('bulkStockSaveBtn').addEventListener('click', async ()=>
 /* ================= products / price management ================= */
 document.getElementById('productSearch2').addEventListener('input', renderProductsList);
 
+let productsExpandedSeries = new Set(); // series names currently expanded in the สินค้า/ราคา list
 function renderProductsList(){
   const q = document.getElementById('productSearch2').value.trim().toLowerCase();
   let rows = PRODUCTS.filter(r=>r.name);
@@ -4214,7 +4280,8 @@ function renderProductsList(){
   rows = rows.slice().sort((a,b)=>a.name.localeCompare(b.name,'th'));
   const box = document.getElementById('productsList');
   if(!rows.length){ box.innerHTML = '<div class="empty">ไม่พบสินค้า</div>'; return; }
-  box.innerHTML = rows.slice(0,200).map(r=>{
+
+  const rowHtml = (r)=>{
     const idx = PRODUCTS.indexOf(r);
     return `
     <div class="prod-row">
@@ -4224,8 +4291,42 @@ function renderProductsList(){
       </div>
       <button class="edit-btn" data-idx="${idx}">แก้ไข</button>
     </div>`;
+  };
+  const seenSeries = new Set();
+  const html = rows.slice(0,200).map(r=>{
+    const series = NAME_TO_SERIES[r.name];
+    if(series){
+      const groupRows = rows.filter(x=>NAME_TO_SERIES[x.name]===series);
+      if(groupRows.length > 1){
+        if(seenSeries.has(series)) return '';
+        seenSeries.add(series);
+        const nColors = new Set(groupRows.map(x=>x.name)).size;
+        const open = productsExpandedSeries.has(series);
+        return `
+        <div class="series-group${open?' open':''}" data-series="${series.replace(/"/g,'&quot;')}">
+          <div class="series-group-header">
+            <div class="info">
+              <div class="name">${series}</div>
+              <div class="meta">${nColors} เบอร์สี · ${groupRows.length} รายการ</div>
+            </div>
+            <svg class="series-group-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="series-group-body">${groupRows.map(rowHtml).join('')}</div>
+        </div>`;
+      }
+    }
+    return rowHtml(r);
   }).join('');
-  box.querySelectorAll('.edit-btn').forEach(b=>b.addEventListener('click', ()=>openProductModal(Number(b.dataset.idx))));
+  box.innerHTML = html;
+  box.querySelectorAll('.series-group-header').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const group = el.closest('.series-group');
+      const series = group.dataset.series;
+      if(productsExpandedSeries.has(series)) productsExpandedSeries.delete(series); else productsExpandedSeries.add(series);
+      group.classList.toggle('open');
+    });
+  });
+  box.querySelectorAll('.edit-btn').forEach(b=>b.addEventListener('click', (e)=>{ e.stopPropagation(); openProductModal(Number(b.dataset.idx)); }));
 }
 
 function openProductModal(idx){
