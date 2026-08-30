@@ -853,6 +853,17 @@
         <input type="text" id="productSearch" placeholder="พิมพ์ชื่อสินค้า...">
         <div class="suggest" id="suggestBox" style="display:none;"></div>
       </label>
+      <label class="field" id="colorNoField" style="display:none;">
+        <span class="lbl">เบอร์สี</span>
+        <div class="pc-select cselect">
+          <select id="colorNoSelect" class="cselect-native" disabled><option>เลือกสินค้าก่อน</option></select>
+          <button type="button" class="pc-select-trigger" disabled aria-haspopup="listbox" aria-expanded="false">
+            <span class="pc-select-value">เลือกสินค้าก่อน</span>
+            <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="pc-select-menu" role="listbox"></div>
+        </div>
+      </label>
       <div class="row2">
         <label class="field">
           <span class="lbl">ขนาด</span>
@@ -1723,6 +1734,7 @@ const MKS_BRANDS = [
 let MKS_DAY_HISTORY = {};   // { 'YYYY-MM-DD': { date, rows:{BRAND:{pc,sales,note}} } }
 let MKS_WEEK_HISTORY = {};  // { 'from_to': { from, to, rows:{BRAND:{pcReg,pcPro,target,sales,note}} } }
 let PRODUCT_INDEX = {}; // name -> {size -> {base -> row}}
+let SERIES_INDEX = {};  // series -> {colorNo -> rawName}  (see buildProductIndex)
 let CUSTOMERS = {}; // key (phone or name) -> {name, phone, favorite:bool, color:string|null}
 
 function seedProducts(){
@@ -2266,6 +2278,31 @@ async function importBackupFile(file){
   renderRecent();renderGauge();renderDashboard();renderStock();renderProductsList();renderHistMonthOptions();renderHistMonth(); toast('นำเข้าข้อมูลสำเร็จ');
 }
 
+/*
+ * SERIES_INDEX groups product "names" that only differ by a trailing เบอร์/color
+ * number (e.g. "สีน้ำมัน All in 1 S914" and "...S900", or "...(S700)" / "...(S800)")
+ * into one series so the entry form can ask "เบอร์สี" as its own step instead of
+ * showing every เบอร์ as a separate product in the search results.
+ *
+ * This is purely a UI-layer grouping built on top of PRODUCT_INDEX — the underlying
+ * PRODUCTS rows and their `name` strings are NOT changed, so history, commission
+ * rules, stock, and backups all keep working exactly as before untouched.
+ *
+ * Only names where every row has an EMPTY base are considered — products that
+ * already use the A-D base system (e.g. "AirCare (กึ่งเงา)") are left alone even
+ * if their name happens to end in parentheses, since they already have a working
+ * เบส flow and shouldn't get a second, redundant selection step.
+ */
+function parseSeriesColorNo(name){
+  if(!name) return null;
+  let m = name.match(/^(.*?)\s*\(([^)]+)\)\s*$/); // trailing (เบอร์)
+  if(m) return { series: m[1].trim(), colorNo: m[2].trim() };
+  m = name.match(/^(.*?)\s*\[([^\]]+)\]\s*$/);     // trailing [เบอร์]
+  if(m) return { series: m[1].trim(), colorNo: m[2].trim() };
+  m = name.match(/^(สีน้ำมัน All in 1)\s+(\S+)$/); // "สีน้ำมัน All in 1 S914" style, no brackets
+  if(m) return { series: m[1].trim(), colorNo: m[2].trim() };
+  return null;
+}
 function buildProductIndex(){
   PRODUCT_INDEX = {};
   PRODUCTS.forEach(r=>{
@@ -2275,6 +2312,26 @@ function buildProductIndex(){
     if(!PRODUCT_INDEX[r.name][sizeKey]) PRODUCT_INDEX[r.name][sizeKey] = {};
     const baseKey = r.base || '—';
     PRODUCT_INDEX[r.name][sizeKey][baseKey] = r;
+  });
+
+  // Build SERIES_INDEX: series -> { colorNo -> rawName }
+  SERIES_INDEX = {};
+  const namesAllBaseEmpty = {}; // name -> bool (every row for this name has no base)
+  PRODUCTS.forEach(r=>{
+    if(!r.name) return;
+    if(namesAllBaseEmpty[r.name] === undefined) namesAllBaseEmpty[r.name] = true;
+    if(r.base) namesAllBaseEmpty[r.name] = false;
+  });
+  Object.keys(PRODUCT_INDEX).forEach(name=>{
+    if(!namesAllBaseEmpty[name]) return; // has a real base -> skip, keep normal เบส flow
+    const parsed = parseSeriesColorNo(name);
+    if(!parsed) return;
+    if(!SERIES_INDEX[parsed.series]) SERIES_INDEX[parsed.series] = {};
+    SERIES_INDEX[parsed.series][parsed.colorNo] = name;
+  });
+  // only keep series that actually have 2+ เบอร์ — a single match isn't worth an extra step
+  Object.keys(SERIES_INDEX).forEach(series=>{
+    if(Object.keys(SERIES_INDEX[series]).length < 2) delete SERIES_INDEX[series];
   });
 }
 
@@ -2380,9 +2437,12 @@ const productSearch = document.getElementById('productSearch');
 const suggestBox = document.getElementById('suggestBox');
 const sizeSelect = document.getElementById('sizeSelect');
 const baseSelect = document.getElementById('baseSelect');
+const colorNoField = document.getElementById('colorNoField');
+const colorNoSelect = document.getElementById('colorNoSelect');
 const priceChip = document.getElementById('priceChip');
 const priceVal = document.getElementById('priceVal');
-let currentProduct = null; // name
+let currentProduct = null; // resolved raw product name (matches PRODUCT_INDEX key)
+let currentSeries = null;  // series name when the product needs a เบอร์สี step first (see SERIES_INDEX)
 let currentRow = null;     // selected product row object
 
 document.getElementById('saleDate').value = getLastUsedSaleDate();
@@ -2398,39 +2458,101 @@ function hasMeaningfulEntryData(){
   return !!tint || !!cc || (qty && qty !== '1');
 }
 
+// Search list mixes: (a) series that need a เบอร์สี step (one entry per series,
+// not per เบอร์), and (b) plain product names that don't need that extra step.
+function getSearchList(){
+  const usedNames = new Set();
+  const list = [];
+  Object.keys(SERIES_INDEX).forEach(series=>{
+    Object.values(SERIES_INDEX[series]).forEach(n=>usedNames.add(n));
+    list.push({label:series, isSeries:true});
+  });
+  Object.keys(PRODUCT_INDEX).forEach(n=>{
+    if(usedNames.has(n)) return; // already represented via its series above
+    list.push({label:n, isSeries:false});
+  });
+  return list;
+}
+
 productSearch.addEventListener('input', ()=>{
   const q = productSearch.value.trim();
-  if(currentProduct && q.toLowerCase() !== currentProduct.toLowerCase() && hasMeaningfulEntryData()){
+  const currentLabel = currentSeries || currentProduct;
+  if(currentLabel && q.toLowerCase() !== currentLabel.toLowerCase() && hasMeaningfulEntryData()){
     const ok = confirm('คุณกรอกรายละเอียด (รหัสสี/ราคาแม่สี/จำนวน) ของสินค้านี้ไว้ยังไม่ได้บันทึกหรือเพิ่มลงบิล ต้องการเปลี่ยนสินค้าและล้างข้อมูลนี้หรือไม่?');
-    if(!ok){ productSearch.value = currentProduct; return; }
+    if(!ok){ productSearch.value = currentLabel; return; }
   }
   const ql = q.toLowerCase();
-  currentProduct = null; currentRow = null;
+  currentSeries = null; currentProduct = null; currentRow = null;
   resetSizeBase();
   if(!ql){ suggestBox.style.display='none'; return; }
-  const names = Object.keys(PRODUCT_INDEX).filter(n=>n.toLowerCase().includes(ql)).slice(0,20);
-  if(!names.length){ suggestBox.innerHTML = '<div class="suggest-item">ไม่พบสินค้า</div>'; suggestBox.style.display='block'; return; }
-  suggestBox.innerHTML = names.map(n=>{
-    const sizes = Object.keys(PRODUCT_INDEX[n]);
-    return `<div class="suggest-item" data-name="${n.replace(/"/g,'&quot;')}">${n}<div class="meta">${sizes.length} ขนาด</div></div>`;
+  const all = getSearchList().filter(it=>{
+    if(it.label.toLowerCase().includes(ql)) return true;
+    if(it.isSeries) return Object.keys(SERIES_INDEX[it.label]).some(c=>c.toLowerCase().includes(ql));
+    return false;
+  }).slice(0,20);
+  if(!all.length){ suggestBox.innerHTML = '<div class="suggest-item">ไม่พบสินค้า</div>'; suggestBox.style.display='block'; return; }
+  suggestBox.innerHTML = all.map(it=>{
+    const label = it.label.replace(/"/g,'&quot;');
+    if(it.isSeries){
+      const n = Object.keys(SERIES_INDEX[it.label]).length;
+      return `<div class="suggest-item" data-series="${label}">${it.label}<div class="meta">${n} เบอร์สี</div></div>`;
+    }
+    const sizes = Object.keys(PRODUCT_INDEX[it.label]);
+    return `<div class="suggest-item" data-name="${label}">${it.label}<div class="meta">${sizes.length} ขนาด</div></div>`;
   }).join('');
   suggestBox.style.display='block';
 });
 
 suggestBox.addEventListener('click', (e)=>{
   const item = e.target.closest('.suggest-item');
-  if(!item || !item.dataset.name) return;
-  if(currentProduct && item.dataset.name !== currentProduct && hasMeaningfulEntryData()){
+  if(!item || (!item.dataset.name && !item.dataset.series)) return;
+  const target = item.dataset.series || item.dataset.name;
+  const currentLabel = currentSeries || currentProduct;
+  if(currentLabel && target !== currentLabel && hasMeaningfulEntryData()){
     const ok = confirm('คุณกรอกรายละเอียด (รหัสสี/ราคาแม่สี/จำนวน) ของสินค้านี้ไว้ยังไม่ได้บันทึกหรือเพิ่มลงบิล ต้องการเปลี่ยนสินค้าและล้างข้อมูลนี้หรือไม่?');
     if(!ok) return;
   }
-  selectProduct(item.dataset.name);
+  if(item.dataset.series) selectSeries(item.dataset.series);
+  else selectProduct(item.dataset.name);
 });
 
+// Step 1a (products with a เบอร์สี, e.g. "สีน้ำมัน All in 1"): pick the series first,
+// show the เบอร์สี dropdown, then resolve into the real product name below.
+function selectSeries(series){
+  currentSeries = series;
+  currentProduct = null; currentRow = null;
+  productSearch.value = series;
+  suggestBox.style.display = 'none';
+  const colorNos = Object.keys(SERIES_INDEX[series]);
+  colorNoField.style.display = '';
+  colorNoSelect.disabled = false;
+  colorNoSelect.innerHTML = colorNos.map(c=>`<option value="${c.replace(/"/g,'&quot;')}">${c}</option>`).join('');
+  colorNoSelect.value = colorNos[0];
+  handleColorNoChange(true);
+}
+function handleColorNoChange(autoFocusQty){
+  if(!currentSeries) return;
+  const rawName = SERIES_INDEX[currentSeries][colorNoSelect.value];
+  if(!rawName) return;
+  resolveProductName(rawName, autoFocusQty);
+}
+colorNoSelect.addEventListener('change', ()=>handleColorNoChange(false));
+
+// Step 1b (products without a เบอร์สี step): pick straight from the search list.
 function selectProduct(name){
-  currentProduct = name;
+  currentSeries = null;
   productSearch.value = name;
   suggestBox.style.display = 'none';
+  colorNoField.style.display = 'none';
+  colorNoSelect.disabled = true;
+  colorNoSelect.innerHTML = '<option>—</option>';
+  resolveProductName(name, true);
+}
+
+// Shared tail end of both flows above: once the real product `name` (the same
+// string PRODUCT_INDEX/PRODUCTS have always used) is known, populate ขนาด as before.
+function resolveProductName(name, autoFocusQty){
+  currentProduct = name;
   const sizes = Object.keys(PRODUCT_INDEX[name]);
   sizeSelect.disabled = false;
   sizeSelect.innerHTML = sizes.map(s=>`<option value="${s}">${s}</option>`).join('');
@@ -2440,7 +2562,7 @@ function selectProduct(name){
   // menu opening from inside handleSizeChange and undoing it, which is why nothing
   // seemed to update until the size field was tapped a second time).
   sizeSelect.value = sizes[0];
-  handleSizeChange(true); // true: this is the initial pick, ok to auto-jump to qty
+  handleSizeChange(autoFocusQty);
 }
 
 function handleSizeChange(autoFocusQty){
@@ -2508,6 +2630,8 @@ function updateStockHint(){
 function resetSizeBase(){
   sizeSelect.disabled = true; sizeSelect.innerHTML = '<option>เลือกสินค้าก่อน</option>';
   baseSelect.disabled = true; baseSelect.innerHTML = '<option>—</option>';
+  colorNoField.style.display = 'none';
+  colorNoSelect.disabled = true; colorNoSelect.innerHTML = '<option>—</option>';
   priceChip.style.display = 'none';
   document.getElementById('stockHint').style.display = 'none';
   computeTotal();
@@ -2563,7 +2687,7 @@ function buildEntryFromForm(){
   };
 }
 function clearEntryFormFields(){
-  productSearch.value=''; currentProduct=null; currentRow=null;
+  productSearch.value=''; currentProduct=null; currentSeries=null; currentRow=null;
   resetSizeBase();
   document.getElementById('colorCode').value='';
   tintPriceInput.value=''; qtyInput.value='1';
@@ -3338,7 +3462,7 @@ function enhanceCSelect(selectId){
   syncDisplay();
   window.CSELECT_API[selectId] = {open:openMenu, close:closeMenu};
 }
-['sizeSelect','baseSelect','histMonth','histMonthSort','commMonthSelect','commModeSelect','targetMonthSelect','ruleNameSelect','ruleSizeSelect'].forEach(enhanceCSelect);
+['sizeSelect','baseSelect','colorNoSelect','histMonth','histMonthSort','commMonthSelect','commModeSelect','targetMonthSelect','ruleNameSelect','ruleSizeSelect'].forEach(enhanceCSelect);
 function openCSelect(selectId){
   const api = window.CSELECT_API[selectId];
   if(api) api.open();
