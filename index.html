@@ -169,6 +169,16 @@
   .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
   .row3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
   .search-wrap{position:relative;}
+  .stock-search-wrap input[type=text]{padding-right:38px;}
+  .search-clear-btn{
+    position:absolute; right:8px; top:50%; transform:translateY(-50%);
+    width:24px;height:24px;border-radius:50%; border:none; background:var(--line);
+    color:var(--paper-dim); font-size:12px; line-height:1; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; padding:0;
+  }
+  .search-clear-btn:active{background:var(--paper-faint); color:var(--surface);}
+  .search-result-count{font-size:11.5px; color:var(--paper-faint); margin:-8px 2px 14px;}
+  mark.hl{background:rgba(47,111,237,0.24); color:inherit; border-radius:3px; padding:0 1px; font-weight:600;}
   .suggest{
     position:absolute; z-index:20; top:calc(100% + 4px); left:0; right:0;
     background:var(--surface2); border:1px solid var(--line); border-radius:12px;
@@ -307,12 +317,18 @@
 
   .stock-row{
     background:var(--surface); border:1px solid var(--line); border-radius:13px; padding:13px 14px; margin-bottom:8px;
-    display:flex; align-items:center; gap:12px; cursor:pointer;
+    display:flex; align-items:center; gap:11px; cursor:pointer;
   }
   .stock-row:active{background:var(--surface2);}
+  .brand-dot{width:8px; height:8px; border-radius:50%; flex-shrink:0;}
   .stock-row .info{flex:1; min-width:0;}
   .stock-row .name{font-size:13.5px; font-weight:400;}
   .stock-row .meta{font-size:11px; color:var(--paper-faint); margin-top:2px; font-family:var(--mono);}
+  .stock-right{display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex-shrink:0;}
+  .remain-num{font-family:var(--mono); font-weight:700; font-size:19px; line-height:1; color:var(--paper);}
+  .remain-num.st-out{color:var(--paper-faint);}
+  .remain-num.st-low{color:var(--accent);}
+  .remain-num.st-over{color:var(--clay);}
   .status-tag{
     font-size:10.5px; font-family:var(--mono); font-weight:600; padding:5px 9px; border-radius:7px; flex-shrink:0; text-align:center;
   }
@@ -1165,8 +1181,12 @@
 
     <div id="stockPanel">
       <label class="field">
-        <input type="text" id="stockSearch" placeholder="ค้นหาสินค้าในสต็อก...">
+        <div class="search-wrap stock-search-wrap">
+          <input type="text" id="stockSearch" placeholder="ค้นหาชื่อ / ขนาด / เบส / SKU...">
+          <button type="button" class="search-clear-btn" id="stockSearchClear" style="display:none;" aria-label="ล้างคำค้นหา">✕</button>
+        </div>
       </label>
+      <div class="search-result-count" id="stockResultCount" style="display:none;"></div>
       <button class="btn btn-teal" id="bulkStockInBtn" style="margin-bottom:12px;">+ รับเข้าสต็อกหลายรายการ</button>
       <div class="filter-chips" id="stockFilters">
         <div class="chip active" data-f="all">ทั้งหมด</div>
@@ -4515,6 +4535,12 @@ document.querySelectorAll('#stockFilters .chip').forEach(chip=>{
   });
 });
 document.getElementById('stockSearch').addEventListener('input', renderStock);
+document.getElementById('stockSearchClear').addEventListener('click', ()=>{
+  const input = document.getElementById('stockSearch');
+  input.value = '';
+  input.focus();
+  renderStock();
+});
 
 document.querySelectorAll('#view-stock .subtab-row .stbtn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
@@ -4528,26 +4554,89 @@ document.querySelectorAll('#view-stock .subtab-row .stbtn').forEach(btn=>{
 });
 
 let stockExpandedSeries = new Set(); // series names currently expanded in the สต็อก list (persists across re-renders)
+
+/* relevance score for a stock search match — lower is more relevant. -1 = no match. */
+function stockMatchScore(r, q){
+  if(!q) return 0;
+  const name = (r.name||'').toLowerCase();
+  const size = (r.size||'').toLowerCase();
+  const base = (r.base||'').toLowerCase();
+  const sku = (r.sku||'').toLowerCase();
+  const combined = `${name} ${size} ${base} ${sku}`;
+  if(name === q) return 0;
+  if(name.startsWith(q)) return 1;
+  if(sku && (sku === q || sku.startsWith(q))) return 2;
+  if(size === q || base === q) return 3;
+  const esc = q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  if(new RegExp('(^|[^a-z0-9ก-๙])'+esc).test(combined)) return 4;
+  if(combined.includes(q)) return 5;
+  return -1;
+}
+/* wrap matches of q inside text with <mark>, html-escaping first */
+function highlightMatch(text, q){
+  const safe = escapeHtml(text==null ? '' : text);
+  if(!q) return safe;
+  const esc = escapeHtml(q).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  if(!esc) return safe;
+  try{ return safe.replace(new RegExp('('+esc+')','ig'), '<mark class="hl">$1</mark>'); }
+  catch(e){ return safe; }
+}
+const STOCK_DOT_PALETTE = ['#2f6fed','#1fae6c','#ef5a4c','#c98a1f','#8a5cf6','#0891b2','#d6336c','#3f7fd9'];
+function brandDotColor(name){
+  const fam = String(name||'').split('(')[0].split('[')[0].trim() || String(name||'');
+  let hash = 0;
+  for(let i=0;i<fam.length;i++) hash = (hash*31 + fam.charCodeAt(i)) >>> 0;
+  return STOCK_DOT_PALETTE[hash % STOCK_DOT_PALETTE.length];
+}
+
 function renderStock(){
-  const q = document.getElementById('stockSearch').value.trim().toLowerCase();
-  let rows = PRODUCTS.filter(r=>r.name);
-  if(q) rows = rows.filter(r=>r.name.toLowerCase().includes(q));
-  if(stockFilter !== 'all') rows = rows.filter(r=>statusOf(r.remain)===stockFilter);
-  rows = rows.slice().sort((a,b)=>Number(a.remain)-Number(b.remain));
+  const qRaw = document.getElementById('stockSearch').value.trim();
+  const q = qRaw.toLowerCase();
+
+  let base = PRODUCTS.filter(r=>r.name);
+  if(stockFilter !== 'all') base = base.filter(r=>statusOf(r.remain)===stockFilter);
+
+  let rows;
+  if(q){
+    rows = base
+      .map(r=>({r, score:stockMatchScore(r,q)}))
+      .filter(x=>x.score>=0)
+      .sort((a,b)=> a.score-b.score || Number(a.r.remain)-Number(b.r.remain))
+      .map(x=>x.r);
+  }else{
+    rows = base.slice().sort((a,b)=>Number(a.remain)-Number(b.remain));
+  }
 
   const box = document.getElementById('stockList');
+  const clearBtn = document.getElementById('stockSearchClear');
+  const countEl = document.getElementById('stockResultCount');
+  if(clearBtn) clearBtn.style.display = qRaw ? 'flex' : 'none';
+  if(countEl){
+    if(qRaw){
+      countEl.style.display = 'block';
+      countEl.textContent = rows.length ? `พบ ${rows.length} รายการ` : 'ไม่พบรายการที่ตรงกับคำค้นหา';
+    }else{
+      countEl.style.display = 'none';
+    }
+  }
   if(!rows.length){ box.innerHTML = '<div class="empty">ไม่พบสินค้า</div>'; return; }
 
   const rowHtml = (r)=>{
     const st = statusOf(r.remain);
     const idx = PRODUCTS.indexOf(r);
+    const dot = brandDotColor(r.name);
+    const skuMeta = r.sku ? ` · SKU ${highlightMatch(r.sku, qRaw)}` : '';
     return `
     <div class="stock-row" data-idx="${idx}">
+      <span class="brand-dot" style="background:${dot}"></span>
       <div class="info">
-        <div class="name">${r.name} ${r.size} ${r.base}</div>
-        <div class="meta">฿${fmt(r.price)} · คงเหลือ ${r.remain}</div>
+        <div class="name">${highlightMatch(r.name, qRaw)} ${highlightMatch(r.size, qRaw)} ${highlightMatch(r.base, qRaw)}</div>
+        <div class="meta">฿${fmt(r.price)}${skuMeta}</div>
       </div>
-      <div class="status-tag ${statusClass[st]}">${statusLabel[st]}</div>
+      <div class="stock-right">
+        <div class="remain-num st-${st}">${r.remain}</div>
+        <div class="status-tag ${statusClass[st]}">${statusLabel[st]}</div>
+      </div>
     </div>`;
   };
   const worstStatus = (groupRows)=>{
@@ -4556,7 +4645,7 @@ function renderStock(){
     return order.find(s=>statuses.includes(s)) || 'ok';
   };
   const seenSeries = new Set();
-  const html = rows.slice(0,150).map(r=>{
+  const html = rows.slice(0,300).map(r=>{
     const series = NAME_TO_SERIES[r.name];
     if(series){
       const groupRows = rows.filter(x=>NAME_TO_SERIES[x.name]===series);
@@ -4567,14 +4656,19 @@ function renderStock(){
         const totalRemain = groupRows.reduce((a,x)=>a+(Number(x.remain)||0),0);
         const st = worstStatus(groupRows);
         const open = stockExpandedSeries.has(series);
+        const dot = brandDotColor(series);
         return `
         <div class="series-group${open?' open':''}" data-series="${series.replace(/"/g,'&quot;')}">
           <div class="series-group-header">
+            <span class="brand-dot" style="background:${dot}"></span>
             <div class="info">
-              <div class="name">${series}</div>
-              <div class="meta">${nColors} เบอร์สี · คงเหลือรวม ${totalRemain}</div>
+              <div class="name">${highlightMatch(series, qRaw)}</div>
+              <div class="meta">${nColors} เบอร์สี</div>
             </div>
-            <div class="status-tag ${statusClass[st]}">${statusLabel[st]}</div>
+            <div class="stock-right">
+              <div class="remain-num st-${st}">${totalRemain}</div>
+              <div class="status-tag ${statusClass[st]}">${statusLabel[st]}</div>
+            </div>
             <svg class="series-group-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
           <div class="series-group-body">${groupRows.map(rowHtml).join('')}</div>
