@@ -464,6 +464,8 @@
   nav.tabs button.fab-btn .fab-txt{font-weight:600;}
   nav.tabs button.fab-btn.active{color:var(--paper);}
   nav.tabs button.fab-btn:active .ic{transform:scale(0.94);}
+  /* extra sidebar-only items + profile footer: hidden on the mobile bottom bar by default */
+  nav.tabs button.nav-extra, nav.tabs .nav-divider, .nav-footer{display:none;}
 
   /* ================= SIDE MENU DRAWER ================= */
   .drawer-bg{
@@ -637,12 +639,13 @@
   nav.tabs::before{content:"NIPPON SALE"; display:none;}
   @media (min-width: 860px){
     body{padding-bottom:0;}
-    main{margin-left:210px; max-width:800px; padding:0 32px;}
-    header.top{margin-left:210px; padding:26px 32px 18px; max-width:864px;}
+    /* fluid main: fills all space to the right of the fixed sidebar, no hard cap */
+    main{margin-left:210px; max-width:none; width:calc(100% - 210px); padding:0 36px 48px; box-sizing:border-box;}
+    header.top{margin-left:210px; padding:26px 36px 18px; max-width:none; width:calc(100% - 210px); box-sizing:border-box;}
     nav.tabs{
       top:0; bottom:0; left:0; right:auto; width:210px; height:100vh;
       flex-direction:column; justify-content:flex-start; align-items:stretch;
-      padding:26px 14px; gap:2px;
+      padding:26px 14px; gap:2px; overflow-y:auto;
       background:var(--surface); border-top:none; border-right:1px solid var(--line-soft);
       backdrop-filter:none;
     }
@@ -662,16 +665,48 @@
     nav.tabs button.fab-btn .ic svg{width:18px; height:18px; stroke:var(--accent);}
     nav.tabs button.fab-btn.active .ic{background:var(--accent); }
     nav.tabs button.fab-btn.active .ic svg{stroke:var(--accent-ink);}
+    /* extra menu items (report / commission / customers / settings) — sidebar only, hidden from the mobile bottom bar */
+    nav.tabs button.nav-extra{display:flex;}
+    nav.tabs .nav-divider{display:block; height:1px; background:var(--line-soft); margin:10px 6px;}
+    /* profile + logout footer pinned to the bottom of the sidebar */
+    .nav-footer{
+      display:flex; flex-direction:column; gap:10px; margin-top:auto;
+      padding:14px 10px 4px; border-top:1px solid var(--line-soft);
+    }
+    .nav-profile{display:flex; align-items:center; gap:10px;}
+    .nav-avatar{
+      width:34px; height:34px; border-radius:50%; flex-shrink:0; overflow:hidden;
+      background:linear-gradient(160deg,#5c93f5,var(--accent)); color:var(--accent-ink);
+      display:flex; align-items:center; justify-content:center; font-family:var(--disp); font-weight:600; font-size:13px;
+    }
+    .nav-avatar img{width:100%; height:100%; object-fit:cover; display:block;}
+    .nav-profile-txt{min-width:0;}
+    .nav-profile-name{font-family:var(--disp); font-weight:600; font-size:13px; color:var(--paper); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .nav-profile-sub{font-size:10.5px; color:var(--paper-faint); margin-top:1px;}
+    .nav-logout-btn{
+      display:flex; align-items:center; gap:8px; background:none; border:1px solid var(--line);
+      color:var(--paper-dim); border-radius:9px; padding:9px 10px; font-size:12.5px; font-family:var(--body);
+      cursor:pointer; width:100%;
+    }
+    .nav-logout-btn:active{background:var(--surface2);}
+    .nav-logout-btn svg{width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:1.8; flex-shrink:0;}
     .toast{bottom:32px;}
     .drawer{width:320px;}
     .modal-bg{align-items:center;}
     .modal{border-radius:18px; max-width:460px; border:1px solid var(--line); max-height:80vh;}
-    .stat-grid{grid-template-columns:repeat(auto-fit, minmax(170px,1fr));}
+    /* stat cards: 4-across on real desktop widths instead of stacking narrow 2-up columns */
+    .stat-grid{grid-template-columns:repeat(auto-fit, minmax(210px,1fr));}
     .gauge-card{padding:26px 26px;}
+    /* trend chart (left, wide) + side card e.g. MKS mini (right, narrow) sit side by side instead of stacking */
+    .dash-2col{display:grid; grid-template-columns:minmax(0,2fr) minmax(240px,1fr); gap:20px; align-items:start;}
+    .dash-2col .sec-title{margin-top:0;}
+    .dash-2col .chart-card, .dash-2col .card{margin-bottom:0; height:100%;}
   }
   @media (min-width: 1180px){
-    main{max-width:920px;}
-    header.top{max-width:984px;}
+    /* on wide desktops, lock stat cards to exactly 4 columns rather than letting auto-fit stretch to 5+ */
+    .stat-grid{grid-template-columns:repeat(4,1fr);}
+    main{padding:0 48px 48px;}
+    header.top{padding:26px 48px 18px;}
   }
 
   /* ================= EXTRA: history target row ================= */
@@ -1127,24 +1162,29 @@
         </div>
       </div>
 
-      <div class="sec-title"><span class="t">แนวโน้มยอดขายรายวัน — <span id="dailyTrendMonthLbl"></span></span></div>
-      <div class="chart-card">
-        <div class="bars daily-bars" id="dailyTrendBars"></div>
-        <div class="legend-row">
-          <div class="lg"><span class="sw" style="background:var(--accent);"></span>มียอดขาย</div>
-          <div class="lg"><span class="sw" style="background:var(--surface2); border:1px dashed var(--line);"></span>ยังไม่ถึงวันนี้</div>
-        </div>
-        <div class="pace-highlight" id="dailyTrendForecast" style="margin-top:14px;"></div>
-      </div>
-
-      <div class="sec-title"><span class="t">มาร์เก็ตแชร์วันนี้ (MKS)</span></div>
-      <div class="card mks-mini-card" id="mksMiniCard" style="padding:14px 16px; cursor:pointer;">
-        <div class="mks-mini-row">
-          <div>
-            <div class="mks-mini-lbl">ส่วนแบ่งของเรา (NIPPON) เทียบคู่แข่งวันนี้</div>
-            <div class="mks-mini-val" id="mksMiniPct">—</div>
+      <div class="dash-2col">
+        <div>
+          <div class="sec-title"><span class="t">แนวโน้มยอดขายรายวัน — <span id="dailyTrendMonthLbl"></span></span></div>
+          <div class="chart-card">
+            <div class="bars daily-bars" id="dailyTrendBars"></div>
+            <div class="legend-row">
+              <div class="lg"><span class="sw" style="background:var(--accent);"></span>มียอดขาย</div>
+              <div class="lg"><span class="sw" style="background:var(--surface2); border:1px dashed var(--line);"></span>ยังไม่ถึงวันนี้</div>
+            </div>
+            <div class="pace-highlight" id="dailyTrendForecast" style="margin-top:14px;"></div>
           </div>
-          <div class="mks-mini-arrow">›</div>
+        </div>
+        <div>
+          <div class="sec-title"><span class="t">มาร์เก็ตแชร์วันนี้ (MKS)</span></div>
+          <div class="card mks-mini-card" id="mksMiniCard" style="padding:14px 16px; cursor:pointer;">
+            <div class="mks-mini-row">
+              <div>
+                <div class="mks-mini-lbl">ส่วนแบ่งของเรา (NIPPON) เทียบคู่แข่งวันนี้</div>
+                <div class="mks-mini-val" id="mksMiniPct">—</div>
+              </div>
+              <div class="mks-mini-arrow">›</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1511,6 +1551,24 @@
   <button class="fab-btn" data-view="entry"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span><span class="fab-txt">บันทึกขาย</span></button>
   <button data-view="stock"><span class="ic"><svg viewBox="0 0 24 24"><path d="M3.5 7.5l8.5-4 8.5 4-8.5 4-8.5-4z"/><path d="M3.5 7.5V16l8.5 4 8.5-4V7.5M12 11.5V20"/></svg></span>สต็อก/สินค้า</button>
   <button data-view="yearly"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 15l5-5 4 4 7-8"/><path d="M15 6h5v5"/></svg></span>ทั้งปี</button>
+  <div class="nav-divider"></div>
+  <button class="nav-extra" data-view="report"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="12" r="6.5"/><circle cx="15" cy="12" r="6.5"/></svg></span>รายงาน MKS</button>
+  <button class="nav-extra" data-view="commission"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 6.5v11M15.2 9c0-1.4-1.4-2.5-3.2-2.5s-3.2 1-3.2 2.3c0 3 6.4 1.4 6.4 4.4 0 1.4-1.5 2.3-3.2 2.3s-3.2-1.1-3.2-2.5"/></svg></span>ค่าคอมมิชชั่น</button>
+  <button class="nav-extra" data-view="customers"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17.5 21v-2a4 4 0 00-4-4h-5a4 4 0 00-4 4v2"/><circle cx="11" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></span>ลูกค้า</button>
+  <button class="nav-extra" id="sidebarSettingsBtn"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>ตั้งค่า</button>
+  <div class="nav-footer">
+    <div class="nav-profile">
+      <div class="nav-avatar"><img src="/icon-192.png" alt=""></div>
+      <div class="nav-profile-txt">
+        <div class="nav-profile-name" id="sidebarUserName">ผู้ใช้</div>
+        <div class="nav-profile-sub">NIPPON SALE</div>
+      </div>
+    </div>
+    <button class="nav-logout-btn" id="sidebarLogoutBtn">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      ออกจากระบบ
+    </button>
+  </div>
 </nav>
 
 <div class="toast" id="toast"></div>
@@ -2566,11 +2624,13 @@ function findProductRow(sku, name, size, base){
 
 /* ================= tabs ================= */
 function switchToView(viewName){
+  const targetSection = viewName ? document.getElementById('view-'+viewName) : null;
+  if(!targetSection) return; // e.g. sidebar buttons like "ตั้งค่า" that open a modal instead of a view
   document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
   const navBtn = document.querySelector(`nav.tabs button[data-view="${viewName}"]`);
   if(navBtn) navBtn.classList.add('active');
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('view-'+viewName).classList.add('active');
+  targetSection.classList.add('active');
   if(viewName === 'entry'){
     if(!currentProduct) document.getElementById('saleDate').value = todayISO();
     renderRecent(); renderGauge();
@@ -2614,6 +2674,24 @@ document.getElementById('menuSettingsBtn').addEventListener('click', ()=>{
   updateAutoBackupToggleUI();
   document.getElementById('resetModalBg').classList.add('show');
 });
+
+/* ================= desktop sidebar: settings shortcut, logout, profile name sync ================= */
+document.getElementById('sidebarSettingsBtn').addEventListener('click', ()=>{
+  updateAutoBackupToggleUI();
+  document.getElementById('resetModalBg').classList.add('show');
+});
+document.getElementById('sidebarLogoutBtn').addEventListener('click', ()=>{
+  const realLogoutBtn = document.getElementById('authLogoutBtn');
+  if(realLogoutBtn) realLogoutBtn.click();
+});
+(function syncSidebarUserName(){
+  const src = document.getElementById('authUserBadge');
+  const dest = document.getElementById('sidebarUserName');
+  if(!src || !dest) return;
+  const sync = ()=>{ dest.textContent = src.textContent; };
+  sync();
+  new MutationObserver(sync).observe(src, {childList:true, characterData:true, subtree:true});
+})();
 
 /* ================= entry form logic ================= */
 function getLastUsedSaleDate(){
