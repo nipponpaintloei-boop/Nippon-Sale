@@ -709,6 +709,94 @@
     header.top{padding:26px 48px 18px;}
   }
 
+  /* ================= HEADER: search bar / month selector / notification bell (desktop) ================= */
+  .hdr-right{display:flex; align-items:center; gap:12px; flex-shrink:0;}
+  .hdr-search, .hdr-month{display:none;}
+  .hdr-search{position:relative;}
+  .hdr-search input{
+    width:100%; background:var(--surface2); border:1px solid var(--line); border-radius:11px;
+    padding:10px 14px 10px 36px; font-size:13.5px; color:var(--paper);
+  }
+  .hdr-search .search-ic{position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--paper-faint); display:flex; pointer-events:none;}
+  .hdr-search .search-ic svg{width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:1.8;}
+  .hdr-search-results{
+    position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:40;
+    background:var(--surface); border:1px solid var(--line); border-radius:12px;
+    box-shadow:0 14px 34px rgba(30,58,120,0.18); max-height:320px; overflow-y:auto; display:none;
+  }
+  .hdr-search-results.show{display:block;}
+  .hdr-search-result{padding:10px 14px; border-bottom:1px solid var(--line); cursor:pointer;}
+  .hdr-search-result:last-child{border-bottom:none;}
+  .hdr-search-result:hover{background:var(--surface2);}
+  .hdr-search-result .r-name{font-size:13px; font-weight:500; color:var(--paper);}
+  .hdr-search-result .r-meta{font-size:11px; color:var(--paper-faint); margin-top:2px; font-family:var(--mono);}
+  .hdr-search-empty{padding:14px; font-size:12.5px; color:var(--paper-faint); text-align:center;}
+  .hdr-month{
+    align-items:center; gap:7px; background:var(--surface); border:1px solid var(--line);
+    border-radius:11px; padding:8px 12px; flex-shrink:0;
+  }
+  .hdr-month svg{width:14px; height:14px; stroke:var(--paper-dim); fill:none; stroke-width:1.8; flex-shrink:0;}
+  .hdr-month select{border:none; background:none; padding:0; font-size:13px; font-weight:500; color:var(--paper); cursor:pointer;}
+  .hdr-bell{position:relative;}
+  .hdr-bell .bell-dot{
+    position:absolute; top:6px; right:6px; width:8px; height:8px; border-radius:50%;
+    background:var(--clay); border:1.5px solid var(--surface); display:none;
+  }
+  .hdr-bell.has-alerts .bell-dot{display:block;}
+  .hdr-bell-pop{
+    position:absolute; top:calc(100% + 8px); right:0; width:min(320px,86vw); z-index:45;
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    box-shadow:0 16px 40px rgba(30,58,120,0.2); padding:6px; display:none; max-height:360px; overflow-y:auto;
+  }
+  .hdr-bell-pop.show{display:block;}
+  .hdr-bell-pop .bp-title{font-family:var(--disp); font-weight:600; font-size:12px; padding:8px 8px 4px; color:var(--paper-dim); text-transform:uppercase; letter-spacing:0.4px;}
+  .hdr-bell-pop .bp-empty{padding:16px 8px; font-size:12.5px; color:var(--paper-faint); text-align:center;}
+  @media (min-width: 860px){
+    header.top{gap:18px; justify-content:flex-start;}
+    .hdr-search{display:block; flex:1; min-width:0; max-width:440px;}
+    .hdr-month{display:flex; margin-left:auto;}
+  }
+
+  /* ================= stat card icon badges ================= */
+  .stat-card{position:relative; padding-right:52px;}
+  .stat-card .stat-ic{
+    position:absolute; top:14px; right:14px; width:32px; height:32px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center; font-size:15px;
+  }
+  .stat-ic.c-blue{background:rgba(47,111,237,0.14); color:var(--accent);}
+  .stat-ic.c-orange{background:rgba(232,135,74,0.16); color:#c9711f;}
+  .stat-ic.c-green{background:rgba(31,174,108,0.14); color:var(--moss);}
+  .stat-ic.c-purple{background:rgba(154,127,216,0.16); color:#7a5fc9;}
+
+  /* ================= product donut chart (dashboard) ================= */
+  .donut-card{display:flex; flex-direction:column; align-items:center; gap:16px;}
+  .donut-wrap{position:relative; width:168px; height:168px; flex-shrink:0;}
+  .donut-wrap svg{width:100%; height:100%; transform:rotate(-90deg);}
+  .donut-center{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;}
+  .donut-center .dc-val{font-family:var(--mono); font-weight:700; font-size:15px; color:var(--paper);}
+  .donut-center .dc-lbl{font-size:10px; color:var(--paper-faint); margin-top:2px;}
+  .donut-legend{width:100%; display:flex; flex-direction:column; gap:9px;}
+  .donut-legend .dl-row{display:flex; align-items:center; gap:8px; font-size:12px;}
+  .donut-legend .dl-sw{width:9px; height:9px; border-radius:50%; flex-shrink:0;}
+  .donut-legend .dl-name{flex:1; min-width:0; color:var(--paper-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .donut-legend .dl-pct{font-family:var(--mono); font-weight:600; color:var(--paper); flex-shrink:0;}
+  .donut-legend .dl-amt{font-family:var(--mono); font-size:10.5px; color:var(--paper-faint); flex-shrink:0; margin-left:6px;}
+
+  /* ================= full-width recent sales table (dashboard) ================= */
+  .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch;}
+  table.data-table{width:100%; border-collapse:collapse; font-size:12.5px; min-width:640px;}
+  table.data-table th{
+    text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--paper-faint);
+    font-weight:500; padding:0 10px 10px; border-bottom:1px solid var(--line);
+  }
+  table.data-table td{padding:11px 10px; border-bottom:1px solid var(--line-soft); color:var(--paper); white-space:nowrap;}
+  table.data-table tr:last-child td{border-bottom:none;}
+  table.data-table .bill-link{color:var(--accent); font-family:var(--mono); font-weight:600; font-size:12px;}
+  .status-badge{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; padding:4px 9px; border-radius:999px;}
+  .status-badge.status-ok{background:rgba(31,174,108,0.14); color:var(--moss);}
+  .table-action-btn{background:none; border:1px solid var(--line); color:var(--paper-dim); font-size:11.5px; border-radius:8px; padding:6px 10px; cursor:pointer;}
+  .table-action-btn:active{background:var(--surface2);}
+
   /* ================= EXTRA: history target row ================= */
   .hist-target-row{
     display:flex; align-items:center; justify-content:space-between; gap:10px;
@@ -863,10 +951,28 @@
       <div class="sub">Nippon Paint · Global House เลย</div>
     </div>
   </div>
-  <div class="auth-user"><span id="authUserBadge">ผู้ใช้</span></div>
-  <div class="hdr-actions">
-    <button class="icon-btn" id="shareBtn" title="คัดลอกสรุปยอดขายวันนี้"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg></button>
-    <button class="icon-btn" id="menuBtn" title="เมนู"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
+  <div class="hdr-search" id="hdrSearchWrap">
+    <span class="search-ic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></span>
+    <input type="text" id="hdrSearchInput" placeholder="ค้นหาสินค้า ลูกค้า หรือเลขที่บิล..." autocomplete="off">
+    <div class="hdr-search-results" id="hdrSearchResults"></div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-month" id="hdrMonthWrap">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="16" rx="2.5"/><path d="M3.5 9.5h17M8 3v3M16 3v3"/></svg>
+      <select id="hdrMonthSelect"></select>
+    </div>
+    <div class="auth-user"><span id="authUserBadge">ผู้ใช้</span></div>
+    <div class="hdr-actions">
+      <div style="position:relative;">
+        <button class="icon-btn hdr-bell" id="bellBtn" title="การแจ้งเตือน">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="bell-dot"></span>
+        </button>
+        <div class="hdr-bell-pop" id="bellPop"></div>
+      </div>
+      <button class="icon-btn" id="shareBtn" title="คัดลอกสรุปยอดขายวันนี้"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg></button>
+      <button class="icon-btn" id="menuBtn" title="เมนู"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
+    </div>
   </div>
 </header>
 
@@ -1145,19 +1251,23 @@
     <div id="dashPanelOverview">
       <div class="stat-grid">
         <div class="stat-card">
+          <span class="stat-ic c-blue">💰</span>
           <div class="lbl">ยอดขายวันนี้</div>
           <div class="val" id="dashToday">0</div>
         </div>
         <div class="stat-card">
+          <span class="stat-ic c-orange">📦</span>
           <div class="lbl">จำนวนที่ขายวันนี้ (ชิ้น)</div>
           <div class="val" id="dashTodayQty">0</div>
         </div>
         <div class="stat-card">
-          <div class="lbl">ยอดขายเดือนนี้</div>
+          <span class="stat-ic c-green">📈</span>
+          <div class="lbl">ยอดขาย — <span id="dashMonthLbl3"></span></div>
           <div class="val small" id="dashMonth">0</div>
         </div>
         <div class="stat-card">
-          <div class="lbl">Ach% เดือนนี้</div>
+          <span class="stat-ic c-purple">🎯</span>
+          <div class="lbl">Ach% — <span id="dashMonthLbl4"></span></div>
           <div class="val" id="dashPct">0%</div>
         </div>
       </div>
@@ -1175,18 +1285,24 @@
           </div>
         </div>
         <div>
-          <div class="sec-title"><span class="t">มาร์เก็ตแชร์วันนี้ (MKS)</span></div>
-          <div class="card mks-mini-card" id="mksMiniCard" style="padding:14px 16px; cursor:pointer;">
-            <div class="mks-mini-row">
-              <div>
-                <div class="mks-mini-lbl">ส่วนแบ่งของเรา (NIPPON) เทียบคู่แข่งวันนี้</div>
-                <div class="mks-mini-val" id="mksMiniPct">—</div>
-              </div>
-              <div class="mks-mini-arrow">›</div>
-            </div>
-          </div>
+          <div class="sec-title"><span class="t">สัดส่วนยอดขายตามสินค้า</span></div>
+          <div class="chart-card donut-card" id="productDonutCard"></div>
         </div>
       </div>
+
+      <div class="sec-title"><span class="t">มาร์เก็ตแชร์วันนี้ (MKS)</span></div>
+      <div class="card mks-mini-card" id="mksMiniCard" style="padding:14px 16px; cursor:pointer;">
+        <div class="mks-mini-row">
+          <div>
+            <div class="mks-mini-lbl">ส่วนแบ่งของเรา (NIPPON) เทียบคู่แข่งวันนี้</div>
+            <div class="mks-mini-val" id="mksMiniPct">—</div>
+          </div>
+          <div class="mks-mini-arrow">›</div>
+        </div>
+      </div>
+
+      <div class="sec-title"><span class="t">รายการขายล่าสุด</span></div>
+      <div class="chart-card" style="padding:14px;" id="dashRecentTableWrap"></div>
     </div>
 
     <div id="dashPanelDetails" style="display:none;">
@@ -1941,6 +2057,7 @@ const APP_VERSION = 'NIPPON-SALE-SECURE-2.1-PERSISTENT';
 
 let PRODUCTS = [];      // live, mutable — {sku,name,size,base,price,init,inflow,sold,remain}
 let SALES = [];         // full sales log (seed history + app-entered), each {id,date,name,size,base,price,colorCode,tintPrice,qty,total,sku,seed}
+let DASH_MONTH = monthKey(todayISO()); // month currently browsed in the dashboard header month-selector
 let SETTINGS = { targets:{}, defaultTarget: DEFAULT_TARGET };
 const MKS_BRANDS = [
   {key:'NIPPON', label:'NIPPON', us:true, pc:2, target:380000},
@@ -3579,15 +3696,20 @@ function renderRecent(){
 function renderDashboard(){
   const today = todayISO();
   const mKey = monthKey(today);
+  const dashMKey = DASH_MONTH || mKey; // month picked in the header selector; defaults to current month
   const todaySales = SALES.filter(s=>s.date===today);
   const monthSales = SALES.filter(s=>monthKey(s.date)===mKey);
   const monthTotal = monthSales.reduce((a,s)=>a+s.total,0);
   const target = getMonthTarget(mKey);
 
+  const overviewSales = SALES.filter(s=>monthKey(s.date)===dashMKey);
+  const overviewTotal = overviewSales.reduce((a,s)=>a+s.total,0);
+  const overviewTarget = getMonthTarget(dashMKey);
+
   document.getElementById('dashToday').textContent = fmt(todaySales.reduce((a,s)=>a+s.total,0));
   document.getElementById('dashTodayQty').textContent = fmt(todaySales.reduce((a,s)=>a+s.qty,0));
-  document.getElementById('dashMonth').textContent = fmt(monthTotal);
-  const pct = target>0 ? (monthTotal/target*100) : 0;
+  document.getElementById('dashMonth').textContent = fmt(overviewTotal);
+  const pct = overviewTarget>0 ? (overviewTotal/overviewTarget*100) : 0;
   const dashPctEl = document.getElementById('dashPct');
   dashPctEl.textContent = pct.toFixed(1)+'%';
   dashPctEl.classList.toggle('good', pct>=100);
@@ -3595,6 +3717,14 @@ function renderDashboard(){
   document.getElementById('dashMonthLbl').textContent = formatMonthTH(mKey);
   const dashMonthLbl2 = document.getElementById('dashMonthLbl2');
   if(dashMonthLbl2) dashMonthLbl2.textContent = formatMonthTH(mKey);
+  const dashMonthLbl3 = document.getElementById('dashMonthLbl3');
+  if(dashMonthLbl3) dashMonthLbl3.textContent = formatMonthTH(dashMKey);
+  const dashMonthLbl4 = document.getElementById('dashMonthLbl4');
+  if(dashMonthLbl4) dashMonthLbl4.textContent = formatMonthTH(dashMKey);
+  renderHdrMonthSelect();
+  renderProductDonut(dashMKey);
+  renderDashRecentSalesTable();
+  renderHdrBell();
 
   // MKS mini card (today's market share)
   const mmEntry = MKS_DAY_HISTORY[today];
@@ -3725,31 +3855,41 @@ function renderDashboard(){
     abox.innerHTML = html;
   }
 
-  renderDailyTrend();
+  renderDailyTrend(dashMKey);
   renderRecentEdits();
   renderActionCenter();
 }
-function computeSalesPaceStatus(){
+function computeSalesPaceStatus(mKeyParam){
   const now = new Date();
-  const mKey = monthKey(todayISO());
-  const dim = daysInMonth(now.getFullYear(), now.getMonth()+1);
-  const todayNum = now.getDate();
+  const mKey = mKeyParam || monthKey(todayISO());
+  const isCurrentMonth = mKey === monthKey(todayISO());
+  const [yy,mm] = mKey.split('-').map(Number);
+  const dim = daysInMonth(yy, mm);
+  const todayNum = isCurrentMonth ? now.getDate() : dim;
   const daily = [];
   for(let d=1; d<=dim; d++){
     const dateStr = mKey+'-'+String(d).padStart(2,'0');
     const total = SALES.filter(s=>s.date===dateStr).reduce((a,s)=>a+s.total,0);
-    daily.push({d, total, isFuture: d>todayNum});
+    daily.push({d, total, isFuture: isCurrentMonth && d>todayNum});
   }
   const soFar = daily.filter(x=>!x.isFuture);
   const soFarTotal = soFar.reduce((a,x)=>a+x.total,0);
   const daysPassed = Math.min(todayNum, dim);
   const avgPerDay = daysPassed>0 ? soFarTotal/daysPassed : 0;
-  const forecastTotal = Math.round(avgPerDay*dim);
+  const forecastTotal = isCurrentMonth ? Math.round(avgPerDay*dim) : soFarTotal;
   const target = getMonthTarget(mKey);
-  const expectedToDate = Math.round(target*daysPassed/dim);
+  const expectedToDate = isCurrentMonth ? Math.round(target*daysPassed/dim) : target;
   const paceGap = soFarTotal - expectedToDate;
   let status, statusCls, statusReason;
-  if(forecastTotal >= target){
+  if(!isCurrentMonth){
+    if(target>0 && soFarTotal>=target){
+      status='✅ ถึงเป้าหมายเดือนนี้'; statusCls='status-ok';
+      statusReason = `ทำได้ ${fmt(soFarTotal)} บาท จากเป้า ${fmt(target)} บาท`;
+    } else {
+      status='สรุปยอดเดือนนี้'; statusCls = (target>0 && soFarTotal>=target*0.9) ? 'status-low' : 'status-over';
+      statusReason = target>0 ? `ทำได้ ${fmt(soFarTotal)} บาท (${(soFarTotal/target*100).toFixed(0)}% ของเป้า ${fmt(target)} บาท)` : `ทำได้ ${fmt(soFarTotal)} บาท`;
+    }
+  } else if(forecastTotal >= target){
     status='🟢 มีโอกาสถึงเป้า'; statusCls='status-ok';
     statusReason = paceGap>=0 ? `ตอนนี้เร็วกว่าจังหวะที่ควรทำ ${fmt(Math.abs(paceGap))} บาท` : `แม้จะช้ากว่าจังหวะอยู่ ${fmt(Math.abs(paceGap))} บาท แต่แนวโน้มยังพอไปถึงเป้าได้`;
   } else if(forecastTotal >= target*0.9){
@@ -3759,12 +3899,12 @@ function computeSalesPaceStatus(){
     status='🔴 มีความเสี่ยงไม่ถึงเป้า'; statusCls='status-over';
     statusReason = `ช้ากว่าจังหวะที่ควรทำอยู่ ${fmt(Math.abs(paceGap))} บาท ตามจังหวะนี้คาดจะได้แค่ ${fmt(forecastTotal)} บาท (${target>0?(forecastTotal/target*100).toFixed(0):0}% ของเป้า)`;
   }
-  return {daily, mKey, dim, todayNum, soFarTotal, daysPassed, avgPerDay, forecastTotal, target, expectedToDate, paceGap, status, statusCls, statusReason};
+  return {daily, mKey, dim, todayNum, soFarTotal, daysPassed, avgPerDay, forecastTotal, target, expectedToDate, paceGap, status, statusCls, statusReason, isCurrentMonth};
 }
-function renderDailyTrend(){
+function renderDailyTrend(mKeyParam){
   const box = document.getElementById('dailyTrendBars');
   if(!box) return;
-  const pace = computeSalesPaceStatus();
+  const pace = computeSalesPaceStatus(mKeyParam);
   const lblBox = document.getElementById('dailyTrendMonthLbl');
   if(lblBox) lblBox.textContent = formatMonthTH(pace.mKey);
 
@@ -3781,12 +3921,213 @@ function renderDailyTrend(){
 
   const fcBox = document.getElementById('dailyTrendForecast');
   if(fcBox){
-    fcBox.innerHTML = `
-      <span class="p-lbl">คาดการณ์ยอดขายสิ้นเดือน (ตามจังหวะเฉลี่ยที่ทำได้)</span><span class="p-val">${fmt(pace.forecastTotal)}</span><span class="p-unit">บาท</span>
-      <div class="status-tag ${pace.statusCls}" style="display:inline-block; margin-top:8px;">${pace.status}</div>
-      <div class="hint" style="margin-top:6px;">ควรทำได้ ณ วันนี้ ฿${fmt(pace.expectedToDate)} · ทำจริง ฿${fmt(pace.soFarTotal)}<br>${pace.statusReason}</div>`;
+    if(pace.isCurrentMonth){
+      fcBox.innerHTML = `
+        <span class="p-lbl">คาดการณ์ยอดขายสิ้นเดือน (ตามจังหวะเฉลี่ยที่ทำได้)</span><span class="p-val">${fmt(pace.forecastTotal)}</span><span class="p-unit">บาท</span>
+        <div class="status-tag ${pace.statusCls}" style="display:inline-block; margin-top:8px;">${pace.status}</div>
+        <div class="hint" style="margin-top:6px;">ควรทำได้ ณ วันนี้ ฿${fmt(pace.expectedToDate)} · ทำจริง ฿${fmt(pace.soFarTotal)}<br>${pace.statusReason}</div>`;
+    } else {
+      fcBox.innerHTML = `
+        <span class="p-lbl">ยอดขายรวมเดือนนี้</span><span class="p-val">${fmt(pace.soFarTotal)}</span><span class="p-unit">บาท</span>
+        <div class="status-tag ${pace.statusCls}" style="display:inline-block; margin-top:8px;">${pace.status}</div>
+        <div class="hint" style="margin-top:6px;">${pace.statusReason}</div>`;
+    }
   }
 }
+
+/* ================= product-share donut (dashboard) ================= */
+function categorizeProduct(name){
+  name = name || '';
+  if(name.indexOf('ภายใน')>=0) return {label:'สีภายใน', color:'#2f6fed'};
+  if(name.indexOf('ภายนอก')>=0) return {label:'สีภายนอก', color:'#3f7fd9'};
+  if(name.indexOf('รองพื้น')>=0) return {label:'สีรองพื้น', color:'#1fae6c'};
+  if(name.indexOf('สเปรย์')>=0 || name.indexOf('กระป๋อง')>=0 || name.indexOf('อะคริลิค')>=0 || name.indexOf('Wall Filler')>=0) return {label:'อุปกรณ์เสริม', color:'#e8874a'};
+  if(name.indexOf('เคลือบ')>=0 || name.indexOf('แลคเกอร์')>=0 || name.indexOf('Epoxy')>=0 || name.indexOf('หลังคา')>=0 || name.indexOf('กันซึม')>=0) return {label:'สีเคลือบ/กันซึม', color:'#ef5a4c'};
+  return {label:'อื่นๆ', color:'#9a7fd8'};
+}
+function renderProductDonut(mKey){
+  const box = document.getElementById('productDonutCard');
+  if(!box) return;
+  const sales = SALES.filter(s=>monthKey(s.date)===mKey && s.total>0);
+  const totals = {};
+  sales.forEach(s=>{
+    const cat = categorizeProduct(s.name);
+    if(!totals[cat.label]) totals[cat.label] = {label:cat.label, color:cat.color, amount:0};
+    totals[cat.label].amount += s.total;
+  });
+  const arr = Object.values(totals).sort((a,b)=>b.amount-a.amount);
+  const grandTotal = arr.reduce((a,x)=>a+x.amount,0);
+  if(!arr.length || grandTotal<=0){
+    box.innerHTML = '<div class="empty" style="padding:24px 0; text-align:center;">ยังไม่มีข้อมูลยอดขายเดือนนี้</div>';
+    return;
+  }
+  const R = 70, C = 2*Math.PI*R;
+  let offset = 0;
+  const circles = arr.map(x=>{
+    const frac = x.amount/grandTotal;
+    const len = frac*C;
+    const seg = `<circle cx="84" cy="84" r="${R}" fill="none" stroke="${x.color}" stroke-width="20" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-offset}"/>`;
+    offset += len;
+    return seg;
+  }).join('');
+  const legendHtml = arr.map(x=>{
+    const pct = (x.amount/grandTotal*100).toFixed(1);
+    return `<div class="dl-row"><span class="dl-sw" style="background:${x.color};"></span><span class="dl-name">${escapeHtml(x.label)}</span><span class="dl-pct">${pct}%</span><span class="dl-amt">฿${fmt(x.amount)}</span></div>`;
+  }).join('');
+  box.innerHTML = `
+    <div class="donut-wrap">
+      <svg viewBox="0 0 168 168">${circles}</svg>
+      <div class="donut-center">
+        <div class="dc-val">฿${fmt(grandTotal)}</div>
+        <div class="dc-lbl">ยอดขายรวม</div>
+      </div>
+    </div>
+    <div class="donut-legend">${legendHtml}</div>`;
+}
+
+/* ================= full-width recent sales table (dashboard) ================= */
+function renderDashRecentSalesTable(){
+  const wrap = document.getElementById('dashRecentTableWrap');
+  if(!wrap) return;
+  const sorted = SALES.slice().sort((a,b)=>{
+    if(a.date!==b.date) return b.date.localeCompare(a.date);
+    return String(b.id).localeCompare(String(a.id));
+  });
+  const groups = [];
+  const seenBill = {};
+  sorted.forEach(s=>{
+    if(s.billId && seenBill[s.billId]){
+      const g = seenBill[s.billId];
+      g.items.push(s); g.total += s.total; g.qty += s.qty;
+      return;
+    }
+    const g = {billId:s.billId, date:s.date, items:[s], total:s.total, qty:s.qty, customerName:s.customerName||'', firstId:s.id};
+    if(s.billId) seenBill[s.billId] = g;
+    groups.push(g);
+  });
+  const top = groups.slice(0,8);
+  if(!top.length){ wrap.innerHTML = '<div class="empty" style="padding:18px;">ยังไม่มีรายการขาย</div>'; return; }
+  const rowsHtml = top.map((g,i)=>{
+    const names = g.items.map(x=>x.name).filter((v,idx,arr)=>arr.indexOf(v)===idx);
+    const nameDisplay = escapeHtml(names.length>1 ? (names[0]+` +${names.length-1} รายการ`) : (names[0]||''));
+    const billLabel = g.billId ? '#'+String(g.billId).slice(-8).toUpperCase() : (g.items[0].seed ? '—' : '#'+String(g.firstId).slice(-6).toUpperCase());
+    const custDisplay = escapeHtml(g.customerName || (g.items[0].seed ? 'ไม่ระบุ (ข้อมูลเก่า)' : 'ไม่ระบุลูกค้า'));
+    let dateDisplay = formatDateTH(g.date);
+    const ts = Number(String(g.firstId).split('-')[0]);
+    if(!g.items[0].seed && !isNaN(ts) && ts>1e12){
+      const dt = new Date(ts);
+      dateDisplay += ' ' + String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');
+    }
+    return `<tr>
+      <td>${i+1}</td>
+      <td>${dateDisplay}</td>
+      <td><span class="bill-link">${billLabel}</span></td>
+      <td>${custDisplay}</td>
+      <td>${nameDisplay}</td>
+      <td>${g.qty}</td>
+      <td>฿${fmt(g.total)}</td>
+      <td><span class="status-badge status-ok">✓ สำเร็จ</span></td>
+      <td><button class="table-action-btn" data-viewsale="${g.firstId}">ดูรายละเอียด</button></td>
+    </tr>`;
+  }).join('');
+  wrap.innerHTML = `
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr>
+          <th>#</th><th>วันที่</th><th>เลขที่บิล</th><th>ลูกค้า</th><th>สินค้า</th><th>จำนวน</th><th>ยอดขาย</th><th>สถานะ</th><th>การดำเนินการ</th>
+        </tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </div>`;
+  wrap.querySelectorAll('[data-viewsale]').forEach(b=>b.addEventListener('click', ()=>editSaleEntry(b.dataset.viewsale)));
+}
+
+/* ================= header: month selector, search, notification bell ================= */
+function renderHdrMonthSelect(){
+  const sel = document.getElementById('hdrMonthSelect');
+  if(!sel) return;
+  const mSet = new Set();
+  SALES.forEach(s=>mSet.add(monthKey(s.date)));
+  mSet.add(monthKey(todayISO()));
+  const months = Array.from(mSet).sort().reverse();
+  if(sel.dataset.built !== String(months.length)+months[0]){
+    sel.innerHTML = months.map(m=>`<option value="${m}">${formatMonthTH(m)}</option>`).join('');
+    sel.dataset.built = String(months.length)+months[0];
+  }
+  sel.value = months.includes(DASH_MONTH) ? DASH_MONTH : months[0];
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  const sel = document.getElementById('hdrMonthSelect');
+  if(sel){
+    sel.addEventListener('change', ()=>{
+      DASH_MONTH = sel.value;
+      renderDashboard();
+    });
+  }
+});
+
+function hdrSearchResultRow(s){
+  const meta = [formatDateTH(s.date), s.customerName||'ไม่ระบุลูกค้า', '฿'+fmt(s.total)].join(' · ');
+  return `<div class="hdr-search-result" data-searchid="${s.id}">
+    <div class="r-name">${escapeHtml(s.name)}${s.size?(' · '+escapeHtml(s.size)):''}</div>
+    <div class="r-meta">${escapeHtml(meta)}</div>
+  </div>`;
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  const input = document.getElementById('hdrSearchInput');
+  const results = document.getElementById('hdrSearchResults');
+  if(!input || !results) return;
+  input.addEventListener('input', ()=>{
+    const q = input.value.trim().toLowerCase();
+    if(q.length < 2){ results.classList.remove('show'); results.innerHTML=''; return; }
+    const matches = SALES.filter(s=>
+      (s.name||'').toLowerCase().includes(q) ||
+      (s.customerName||'').toLowerCase().includes(q) ||
+      (s.customerPhone||'').toLowerCase().includes(q) ||
+      (s.billId||'').toLowerCase().includes(q)
+    ).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,8);
+    results.innerHTML = matches.length
+      ? matches.map(hdrSearchResultRow).join('')
+      : '<div class="hdr-search-empty">ไม่พบรายการที่ตรงกัน</div>';
+    results.classList.add('show');
+    results.querySelectorAll('[data-searchid]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        results.classList.remove('show');
+        input.value='';
+        editSaleEntry(el.dataset.searchid);
+      });
+    });
+  });
+  document.addEventListener('click', (e)=>{
+    if(!e.target.closest('#hdrSearchWrap')) results.classList.remove('show');
+  });
+});
+
+function renderHdrBell(){
+  const btn = document.getElementById('bellBtn');
+  const pop = document.getElementById('bellPop');
+  if(!btn || !pop) return;
+  const items = computeActionItems();
+  btn.classList.toggle('has-alerts', items.length>0);
+  pop.innerHTML = `<div class="bp-title">รายการที่ต้องติดตาม</div>` +
+    (items.length ? items.map(actionItemHtml).join('') : '<div class="bp-empty">ไม่มีรายการแจ้งเตือนตอนนี้ 🎉</div>');
+  pop.querySelectorAll('[data-gotoview]').forEach(el=>el.addEventListener('click', ()=>{
+    pop.classList.remove('show');
+    switchToView(el.dataset.gotoview);
+  }));
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  const btn = document.getElementById('bellBtn');
+  const pop = document.getElementById('bellPop');
+  if(!btn || !pop) return;
+  btn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    pop.classList.toggle('show');
+  });
+  document.addEventListener('click', (e)=>{
+    if(!e.target.closest('#bellPop') && !e.target.closest('#bellBtn')) pop.classList.remove('show');
+  });
+});
 
 /* ================= action center (Phase 4) ================= */
 function computeActionItems(){
