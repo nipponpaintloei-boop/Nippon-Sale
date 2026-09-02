@@ -146,6 +146,9 @@
 
   .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
   .stat-grid .mks-mini-card{grid-column:1/-1; margin-bottom:0;}
+  /* 4 small stat cards beside the gauge card — always 2 columns x 2 rows (pairs stacking down), regardless of screen width */
+  .stat-quad{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px;}
+  .stat-quad .stat-card{margin-bottom:0;}
   .stat-card{
     background:linear-gradient(160deg, #ffffff, #f8fafe);
     border:1px solid var(--line); border-radius:var(--radius); padding:15px 14px;
@@ -712,6 +715,9 @@
     /* trend chart (left, wide) + side card e.g. MKS mini (right, narrow) sit side by side instead of stacking */
     .dash-2col{display:grid; grid-template-columns:minmax(0,2fr) minmax(240px,1fr); gap:20px; align-items:stretch;}
     .dash-2col .sec-title{margin-top:0;}
+    /* top row: gauge card (wide) + 2x2 stat quad (narrower, fixed-ish width) side by side */
+    .dash-top-row{grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr); align-items:start;}
+    .dash-top-row .stat-quad{height:100%;}
     /* the narrow side card is almost always shorter than its partner — stretch it to match height and center its content vertically, so the extra space reads as intentional padding instead of a dangling gap */
     .dash-2col .chart-card, .dash-2col .card{margin-bottom:0; min-height:100%; box-sizing:border-box; display:flex; flex-direction:column; justify-content:center;}
     /* บันทึกยอดขาย: form cards (left, wide) + sticky summary card (right, narrow) instead of one stretched mobile card */
@@ -810,7 +816,7 @@
   .stat-ic.c-purple{background:rgba(154,127,216,0.16); color:#7a5fc9;}
 
   /* ================= product donut chart (dashboard) ================= */
-  .donut-card{display:flex; flex-direction:column; align-items:center; gap:16px; max-width:480px; margin-left:auto; margin-right:auto;}
+  .donut-card{display:flex; flex-direction:column; align-items:center; gap:16px; max-width:480px; margin-left:0; margin-right:auto;}
   .donut-wrap{position:relative; width:168px; height:168px; flex-shrink:0;}
   .donut-wrap svg{width:100%; height:100%; transform:rotate(-90deg);}
   .donut-center{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;}
@@ -1262,6 +1268,7 @@
 
   <!-- ============ VIEW: DASHBOARD ============ -->
   <section class="view active" id="view-dash">
+    <div class="dash-2col dash-top-row">
     <div class="gauge-card">
       <div class="can-wrap">
         <svg viewBox="0 0 92 110" width="92" height="110">
@@ -1305,11 +1312,31 @@
       </div>
     </div>
 
-    <div class="dash-2col">
-      <div>
-        <div class="sec-title"><span class="t">วันนี้ควรทำอะไร?</span></div>
-        <div class="card" id="actionTodayCard" style="padding:6px 12px;"></div>
+    <div class="stat-quad">
+      <div class="stat-card">
+        <span class="stat-ic c-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+        <div class="lbl">ยอดขายวันนี้</div>
+        <div class="val" id="dashToday">0</div>
       </div>
+      <div class="stat-card">
+        <span class="stat-ic c-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+        <div class="lbl">จำนวนที่ขายวันนี้ (ชิ้น)</div>
+        <div class="val" id="dashTodayQty">0</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-ic c-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span>
+        <div class="lbl">ยอดขาย — <span id="dashMonthLbl3"></span></div>
+        <div class="val small" id="dashMonth">0</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-ic c-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg></span>
+        <div class="lbl">Ach% — <span id="dashMonthLbl4"></span></div>
+        <div class="val" id="dashPct">0%</div>
+      </div>
+    </div>
+    </div>
+
+    <div class="dash-2col">
       <div>
         <div class="sec-title"><span class="t">แนวโน้มยอดขายรายวัน — <span id="dailyTrendMonthLbl"></span></span></div>
         <div class="chart-card">
@@ -1321,6 +1348,10 @@
           <div class="pace-highlight" id="dailyTrendForecast" style="margin-top:14px;"></div>
         </div>
       </div>
+      <div>
+        <div class="sec-title"><span class="t">วันนี้ควรทำอะไร?</span></div>
+        <div class="card" id="actionTodayCard" style="padding:6px 12px;"></div>
+      </div>
     </div>
 
     <div class="subtab-row">
@@ -1330,26 +1361,6 @@
 
     <div id="dashPanelOverview">
       <div class="stat-grid">
-        <div class="stat-card">
-          <span class="stat-ic c-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
-          <div class="lbl">ยอดขายวันนี้</div>
-          <div class="val" id="dashToday">0</div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-ic c-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
-          <div class="lbl">จำนวนที่ขายวันนี้ (ชิ้น)</div>
-          <div class="val" id="dashTodayQty">0</div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-ic c-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span>
-          <div class="lbl">ยอดขาย — <span id="dashMonthLbl3"></span></div>
-          <div class="val small" id="dashMonth">0</div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-ic c-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg></span>
-          <div class="lbl">Ach% — <span id="dashMonthLbl4"></span></div>
-          <div class="val" id="dashPct">0%</div>
-        </div>
         <div class="card mks-mini-card" id="mksMiniCard" style="padding:14px 16px; cursor:pointer;">
           <div class="mks-mini-row">
             <div>
