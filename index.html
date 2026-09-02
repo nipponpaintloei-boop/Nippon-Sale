@@ -710,7 +710,10 @@
     /* trend chart (left, wide) + side card e.g. MKS mini (right, narrow) sit side by side instead of stacking */
     .dash-2col{display:grid; grid-template-columns:minmax(0,2fr) minmax(240px,1fr); gap:20px; align-items:start;}
     .dash-2col .sec-title{margin-top:0;}
-    .dash-2col .chart-card, .dash-2col .card{margin-bottom:0; height:100%;}
+    .dash-2col .chart-card, .dash-2col .card{margin-bottom:0;}
+    /* gauge-card is much taller than the donut card next to it — stretch the donut card to match and center its content, instead of leaving blank space below it */
+    .dash-2col-top .chart-card{height:100%;}
+    .dash-2col-top .donut-card{justify-content:center;}
     /* บันทึกยอดขาย: form cards (left, wide) + sticky summary card (right, narrow) instead of one stretched mobile card */
     .entry-grid{display:grid; grid-template-columns:minmax(0,1.65fr) minmax(280px,1fr); gap:22px; align-items:start;}
     .entry-col-side{position:sticky; top:24px;}
@@ -1252,7 +1255,7 @@
 
   <!-- ============ VIEW: DASHBOARD ============ -->
   <section class="view active" id="view-dash">
-    <div class="dash-2col">
+    <div class="dash-2col dash-2col-top">
     <div class="gauge-card">
       <div class="can-wrap">
         <svg viewBox="0 0 92 110" width="92" height="110">
