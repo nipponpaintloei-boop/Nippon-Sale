@@ -134,6 +134,12 @@
     text-decoration:underline; text-underline-offset:2px; text-transform:none; letter-spacing:0;
   }
 
+  /* entry (บันทึกยอดขาย) view: split the form into separate boxed cards instead of one long stacked card */
+  .entry-grid{display:block;}
+  .entry-col-main .sec-title.sub:first-child, .entry-col-side .sec-title.sub:first-child{margin-top:0;}
+  .entry-summary-card{background:linear-gradient(160deg, #ffffff, #f3f7ff);}
+  .entry-summary-card .total-row .val{color:var(--accent); font-size:23px;}
+
   .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
   .stat-card{
     background:linear-gradient(160deg, #ffffff, #f8fafe);
@@ -701,6 +707,9 @@
     .dash-2col{display:grid; grid-template-columns:minmax(0,2fr) minmax(240px,1fr); gap:20px; align-items:start;}
     .dash-2col .sec-title{margin-top:0;}
     .dash-2col .chart-card, .dash-2col .card{margin-bottom:0; height:100%;}
+    /* บันทึกยอดขาย: form cards (left, wide) + sticky summary card (right, narrow) instead of one stretched mobile card */
+    .entry-grid{display:grid; grid-template-columns:minmax(0,1.65fr) minmax(280px,1fr); gap:22px; align-items:start;}
+    .entry-col-side{position:sticky; top:24px;}
   }
   @media (min-width: 1180px){
     /* on wide desktops, lock stat cards to exactly 4 columns rather than letting auto-fit stretch to 5+ */
@@ -1032,91 +1041,115 @@
   <!-- ============ VIEW: ENTRY ============ -->
   <section class="view" id="view-entry">
     <div class="sec-title"><span class="t">บันทึกยอดขาย</span></div>
-    <div class="card">
-      <label class="field">
-        <span class="lbl">วันที่ขาย</span>
-        <input type="date" id="saleDate">
-      </label>
-      <label class="field search-wrap">
-        <span class="lbl">ค้นหาสินค้า</span>
-        <input type="text" id="productSearch" placeholder="พิมพ์ชื่อสินค้า...">
-        <div class="suggest" id="suggestBox" style="display:none;"></div>
-      </label>
-      <label class="field" id="colorNoField" style="display:none;">
-        <span class="lbl">เบอร์สี</span>
-        <div class="pc-select cselect">
-          <select id="colorNoSelect" class="cselect-native" disabled><option>เลือกสินค้าก่อน</option></select>
-          <button type="button" class="pc-select-trigger" disabled aria-haspopup="listbox" aria-expanded="false">
-            <span class="pc-select-value">เลือกสินค้าก่อน</span>
-            <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <div class="pc-select-menu" role="listbox"></div>
-        </div>
-      </label>
-      <div class="row2">
-        <label class="field">
-          <span class="lbl">ขนาด</span>
-          <div class="pc-select cselect">
-            <select id="sizeSelect" class="cselect-native" disabled><option>เลือกสินค้าก่อน</option></select>
-            <button type="button" class="pc-select-trigger" disabled aria-haspopup="listbox" aria-expanded="false">
-              <span class="pc-select-value">เลือกสินค้าก่อน</span>
-              <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-            <div class="pc-select-menu" role="listbox"></div>
+
+    <div class="entry-grid">
+      <!-- ===== main column: sale info / item details / customer ===== -->
+      <div class="entry-col-main">
+
+        <div class="sec-title sub"><span class="t">ข้อมูลการขาย</span></div>
+        <div class="card">
+          <label class="field">
+            <span class="lbl">วันที่ขาย</span>
+            <input type="date" id="saleDate">
+          </label>
+          <label class="field search-wrap">
+            <span class="lbl">ค้นหาสินค้า</span>
+            <input type="text" id="productSearch" placeholder="พิมพ์ชื่อสินค้า...">
+            <div class="suggest" id="suggestBox" style="display:none;"></div>
+          </label>
+          <label class="field" id="colorNoField" style="display:none;">
+            <span class="lbl">เบอร์สี</span>
+            <div class="pc-select cselect">
+              <select id="colorNoSelect" class="cselect-native" disabled><option>เลือกสินค้าก่อน</option></select>
+              <button type="button" class="pc-select-trigger" disabled aria-haspopup="listbox" aria-expanded="false">
+                <span class="pc-select-value">เลือกสินค้าก่อน</span>
+                <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="pc-select-menu" role="listbox"></div>
+            </div>
+          </label>
+          <div class="row2">
+            <label class="field">
+              <span class="lbl">ขนาด</span>
+              <div class="pc-select cselect">
+                <select id="sizeSelect" class="cselect-native" disabled><option>เลือกสินค้าก่อน</option></select>
+                <button type="button" class="pc-select-trigger" disabled aria-haspopup="listbox" aria-expanded="false">
+                  <span class="pc-select-value">เลือกสินค้าก่อน</span>
+                  <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <div class="pc-select-menu" role="listbox"></div>
+              </div>
+            </label>
+            <label class="field">
+              <span class="lbl">เบส (Base)</span>
+              <div class="pc-select cselect">
+                <select id="baseSelect" class="cselect-native" disabled><option>—</option></select>
+                <button type="button" class="pc-select-trigger" disabled aria-haspopup="listbox" aria-expanded="false">
+                  <span class="pc-select-value">—</span>
+                  <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <div class="pc-select-menu" role="listbox"></div>
+              </div>
+            </label>
           </div>
-        </label>
-        <label class="field">
-          <span class="lbl">เบส (Base)</span>
-          <div class="pc-select cselect">
-            <select id="baseSelect" class="cselect-native" disabled><option>—</option></select>
-            <button type="button" class="pc-select-trigger" disabled aria-haspopup="listbox" aria-expanded="false">
-              <span class="pc-select-value">—</span>
-              <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-            <div class="pc-select-menu" role="listbox"></div>
-          </div>
-        </label>
-      </div>
-      <div class="price-chip" id="priceChip" style="display:none;">฿<span id="priceVal">0</span> / หน่วย</div>
-      <div class="stock-hint" id="stockHint" style="display:none;"></div>
-      <div class="row2" style="margin-top:14px;">
-        <label class="field">
-          <span class="lbl">รหัสสี (ถ้ามี)</span>
-          <input type="text" id="colorCode" placeholder="เช่น A5006">
-        </label>
-        <label class="field">
-          <span class="lbl">ราคาแม่สี (บาท)</span>
-          <input type="number" id="tintPrice" placeholder="0">
-        </label>
-      </div>
-      <label class="field">
-        <span class="lbl">จำนวน</span>
-        <div class="qty-stepper">
-          <button type="button" class="qty-btn" id="qtyMinusBtn" aria-label="ลดจำนวน">−</button>
-          <input type="number" id="qty" value="1" min="1">
-          <button type="button" class="qty-btn" id="qtyPlusBtn" aria-label="เพิ่มจำนวน">+</button>
+          <div class="price-chip" id="priceChip" style="display:none;">฿<span id="priceVal">0</span> / หน่วย</div>
+          <div class="stock-hint" id="stockHint" style="display:none;"></div>
         </div>
-      </label>
-      <div class="row2">
-        <label class="field">
-          <span class="lbl">ชื่อลูกค้า (ไม่บังคับ)</span>
-          <input type="text" id="customerName" placeholder="เช่น คุณสมชาย" list="customerNameList" autocomplete="off">
-        </label>
-        <label class="field">
-          <span class="lbl">เบอร์โทร (ไม่บังคับ)</span>
-          <input type="text" inputmode="tel" id="customerPhone" placeholder="08x-xxx-xxxx" list="customerPhoneList" autocomplete="off" name="cust-phone-field">
-        </label>
+
+        <div class="sec-title sub"><span class="t">รายละเอียดรายการ</span></div>
+        <div class="card">
+          <div class="row2">
+            <label class="field">
+              <span class="lbl">รหัสสี (ถ้ามี)</span>
+              <input type="text" id="colorCode" placeholder="เช่น A5006">
+            </label>
+            <label class="field">
+              <span class="lbl">ราคาแม่สี (บาท)</span>
+              <input type="number" id="tintPrice" placeholder="0">
+            </label>
+          </div>
+          <label class="field" style="margin-bottom:0;">
+            <span class="lbl">จำนวน</span>
+            <div class="qty-stepper">
+              <button type="button" class="qty-btn" id="qtyMinusBtn" aria-label="ลดจำนวน">−</button>
+              <input type="number" id="qty" value="1" min="1">
+              <button type="button" class="qty-btn" id="qtyPlusBtn" aria-label="เพิ่มจำนวน">+</button>
+            </div>
+          </label>
+        </div>
+
+        <div class="sec-title sub"><span class="t">ข้อมูลลูกค้า (ไม่บังคับ)</span></div>
+        <div class="card">
+          <div class="row2">
+            <label class="field">
+              <span class="lbl">ชื่อลูกค้า (ไม่บังคับ)</span>
+              <input type="text" id="customerName" placeholder="เช่น คุณสมชาย" list="customerNameList" autocomplete="off">
+            </label>
+            <label class="field">
+              <span class="lbl">เบอร์โทร (ไม่บังคับ)</span>
+              <input type="text" inputmode="tel" id="customerPhone" placeholder="08x-xxx-xxxx" list="customerPhoneList" autocomplete="off" name="cust-phone-field">
+            </label>
+          </div>
+          <div class="pdpa-note" style="margin-bottom:0;">เก็บไว้เพื่อติดตามลูกค้าประจำและแจ้งโปรโมชั่นเท่านั้น กรุณาแจ้งลูกค้าก่อนบันทึกเบอร์โทร</div>
+          <datalist id="customerNameList"></datalist>
+          <datalist id="customerPhoneList"></datalist>
+        </div>
+
       </div>
-      <div class="pdpa-note">เก็บไว้เพื่อติดตามลูกค้าประจำและแจ้งโปรโมชั่นเท่านั้น กรุณาแจ้งลูกค้าก่อนบันทึกเบอร์โทร</div>
-      <datalist id="customerNameList"></datalist>
-      <datalist id="customerPhoneList"></datalist>
-      <div class="total-row">
-        <div class="lbl">รวมทั้งหมด</div>
-        <div class="val" id="totalVal">0 บาท</div>
-      </div>
-      <div class="row2" style="margin-top:16px;">
-        <button class="btn btn-ghost" id="addToBillBtn" style="margin-top:0;">+ เพิ่มลงบิล</button>
-        <button class="btn btn-primary" id="saveSaleBtn">บันทึกยอดขาย</button>
+
+      <!-- ===== side column: running total + save actions ===== -->
+      <div class="entry-col-side">
+        <div class="sec-title sub"><span class="t">สรุปการขาย</span></div>
+        <div class="card entry-summary-card">
+          <div class="total-row" style="padding-top:0; margin-top:0; border-top:none;">
+            <div class="lbl">รวมทั้งหมด</div>
+            <div class="val" id="totalVal">0 บาท</div>
+          </div>
+          <div class="row2" style="margin-top:16px;">
+            <button class="btn btn-ghost" id="addToBillBtn" style="margin-top:0;">+ เพิ่มลงบิล</button>
+            <button class="btn btn-primary" id="saveSaleBtn">บันทึกยอดขาย</button>
+          </div>
+        </div>
       </div>
     </div>
 
