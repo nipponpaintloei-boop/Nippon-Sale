@@ -651,8 +651,8 @@
   @media (min-width: 860px){
     body{padding-bottom:0;}
     /* fluid main: fills all space to the right of the fixed sidebar, no hard cap */
-    main{margin-left:210px; max-width:none; width:calc(100% - 210px); padding:0 36px 48px; box-sizing:border-box;}
-    header.top{margin-left:210px; padding:26px 36px 18px; max-width:none; width:calc(100% - 210px); box-sizing:border-box;}
+    main{margin-left:210px; max-width:1360px; width:calc(100% - 210px); padding:0 36px 48px; box-sizing:border-box;}
+    header.top{margin-left:210px; padding:26px 36px 18px; max-width:1360px; width:calc(100% - 210px); box-sizing:border-box;}
     nav.tabs{
       top:0; bottom:0; left:0; right:auto; width:210px; height:100vh;
       flex-direction:column; justify-content:flex-start; align-items:stretch;
@@ -708,7 +708,7 @@
     /* stat cards: fixed card size on desktop — more columns appear as the window widens, cards never stretch */
     .stat-grid{grid-template-columns:repeat(auto-fill, 220px); justify-content:start;}
     .stat-grid .mks-mini-card{grid-column:auto;}
-    .gauge-card{padding:26px 26px;}
+    .gauge-card{padding:26px 26px; max-width:760px;}
     /* trend chart (left, wide) + side card e.g. MKS mini (right, narrow) sit side by side instead of stacking */
     .dash-2col{display:grid; grid-template-columns:minmax(0,2fr) minmax(240px,1fr); gap:20px; align-items:stretch;}
     .dash-2col .sec-title{margin-top:0;}
@@ -736,6 +736,13 @@
     .detail-3col{display:grid; grid-template-columns:repeat(auto-fill, 260px); justify-content:start; gap:20px; align-items:start;}
     .detail-3col .sec-title{margin-top:0;}
     .detail-3col .card{margin-bottom:0; height:100%;}
+
+    /* a lone card / chart-card / tier-table outside any grid keeps a comfortable reading width instead of stretching the full column — grid children (dash-2col, entry-grid, stat-grid, detail-3col) are exempted so they still fill their track */
+    .card, .chart-card, .tier-table, #stockList, #productsList{max-width:820px;}
+    .dash-2col .card, .dash-2col .chart-card,
+    .entry-grid .card, .entry-grid .chart-card,
+    .stat-grid .card, .stat-grid .chart-card,
+    .detail-3col .card, .detail-3col .chart-card{max-width:none;}
   }
   @media (min-width: 1180px){
     main{padding:0 48px 48px;}
@@ -803,7 +810,7 @@
   .stat-ic.c-purple{background:rgba(154,127,216,0.16); color:#7a5fc9;}
 
   /* ================= product donut chart (dashboard) ================= */
-  .donut-card{display:flex; flex-direction:column; align-items:center; gap:16px;}
+  .donut-card{display:flex; flex-direction:column; align-items:center; gap:16px; max-width:480px; margin-left:auto; margin-right:auto;}
   .donut-wrap{position:relative; width:168px; height:168px; flex-shrink:0;}
   .donut-wrap svg{width:100%; height:100%; transform:rotate(-90deg);}
   .donut-center{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;}
