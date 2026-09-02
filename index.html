@@ -704,8 +704,8 @@
     .drawer{width:320px;}
     .modal-bg{align-items:center;}
     .modal{border-radius:18px; max-width:460px; border:1px solid var(--line); max-height:80vh;}
-    /* stat cards: 4-across on real desktop widths instead of stacking narrow 2-up columns */
-    .stat-grid{grid-template-columns:repeat(auto-fit, minmax(210px,1fr));}
+    /* stat cards: fixed card size on desktop — more columns appear as the window widens, cards never stretch */
+    .stat-grid{grid-template-columns:repeat(auto-fill, 220px); justify-content:start;}
     .gauge-card{padding:26px 26px;}
     /* trend chart (left, wide) + side card e.g. MKS mini (right, narrow) sit side by side instead of stacking */
     .dash-2col{display:grid; grid-template-columns:minmax(0,2fr) minmax(240px,1fr); gap:20px; align-items:start;}
@@ -727,14 +727,12 @@
     .controls-row{display:flex; align-items:flex-end; gap:12px; flex-wrap:wrap; margin-bottom:14px;}
     .controls-row > label.field{flex:1 1 320px; max-width:400px; margin-bottom:0;}
     .controls-row > .btn{flex:0 0 auto; margin:0;}
-    /* 3 small cards side by side instead of stacked full-width (dashboard details, etc.) */
-    .detail-3col{display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:20px; align-items:start;}
+    /* 3 small cards side by side instead of stacked full-width (dashboard details, etc.) — fixed size, no stretch */
+    .detail-3col{display:grid; grid-template-columns:repeat(auto-fill, 260px); justify-content:start; gap:20px; align-items:start;}
     .detail-3col .sec-title{margin-top:0;}
     .detail-3col .card{margin-bottom:0; height:100%;}
   }
   @media (min-width: 1180px){
-    /* on wide desktops, lock stat cards to exactly 4 columns rather than letting auto-fit stretch to 5+ */
-    .stat-grid{grid-template-columns:repeat(4,1fr);}
     main{padding:0 48px 48px;}
     header.top{padding:26px 48px 18px;}
   }
