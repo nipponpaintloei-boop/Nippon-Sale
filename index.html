@@ -710,6 +710,23 @@
     /* บันทึกยอดขาย: form cards (left, wide) + sticky summary card (right, narrow) instead of one stretched mobile card */
     .entry-grid{display:grid; grid-template-columns:minmax(0,1.65fr) minmax(280px,1fr); gap:22px; align-items:start;}
     .entry-col-side{position:sticky; top:24px;}
+
+    /* ================= APPLIES TO EVERY VIEW: stop desktop from just stretching mobile boxes wider ================= */
+    /* segmented tab control (รายวัน/รายเดือน etc.) shouldn't become one giant stretched bar */
+    .subtab-row{max-width:420px;}
+    /* a lone filter field (date picker, single select, search box) keeps a sane width instead of filling the whole pane */
+    .field-tight{max-width:320px;}
+    .history-tools{max-width:640px;}
+    /* buttons hug their label instead of becoming full-width bars — grid/flex containers (.row2, .mks-actions) still stretch them as needed */
+    .view .btn{width:auto; padding-left:22px; padding-right:22px;}
+    /* pair a filter field with its action button on one row instead of stacking two full-width blocks */
+    .controls-row{display:flex; align-items:flex-end; gap:12px; flex-wrap:wrap; margin-bottom:14px;}
+    .controls-row > label.field{flex:1 1 320px; max-width:400px; margin-bottom:0;}
+    .controls-row > .btn{flex:0 0 auto; margin:0;}
+    /* 3 small cards side by side instead of stacked full-width (dashboard details, etc.) */
+    .detail-3col{display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:20px; align-items:start;}
+    .detail-3col .sec-title{margin-top:0;}
+    .detail-3col .card{margin-bottom:0; height:100%;}
   }
   @media (min-width: 1180px){
     /* on wide desktops, lock stat cards to exactly 4 columns rather than letting auto-fit stretch to 5+ */
@@ -1170,7 +1187,7 @@
     </div>
 
     <div id="histDayPanel">
-      <label class="field">
+      <label class="field field-tight">
         <span class="lbl">เลือกวันที่ต้องการดูย้อนหลัง</span>
         <input type="date" id="histDate">
       </label>
@@ -1188,7 +1205,7 @@
     </div>
 
     <div id="histMonthPanel" style="display:none;">
-      <label class="field">
+      <label class="field field-tight">
         <span class="lbl">เลือกเดือนที่ต้องการดูย้อนหลัง</span>
         <div class="pc-select cselect">
           <select id="histMonth" class="cselect-native"></select>
@@ -1343,18 +1360,26 @@
       <div class="tier-table" id="tierTable"></div>
       <div class="pass-note">* ผ่านเกณฑ์เมื่อทำยอดถึงระดับ 80% ของเป้าหมายสูงสุด</div>
 
-      <div class="sec-title"><span class="t">สินค้าที่น่าจับตา (เทียบเดือนก่อน)</span></div>
-      <div class="card" id="productIntel" style="padding:6px 12px;">
-        <div class="empty">ยังไม่มีข้อมูลพอเปรียบเทียบ</div>
-      </div>
+      <div class="detail-3col">
+        <div>
+          <div class="sec-title sub"><span class="t">สินค้าที่น่าจับตา (เทียบเดือนก่อน)</span></div>
+          <div class="card" id="productIntel" style="padding:6px 12px;">
+            <div class="empty">ยังไม่มีข้อมูลพอเปรียบเทียบ</div>
+          </div>
+        </div>
 
-      <div class="sec-title"><span class="t">ขายดีที่สุด (เดือนนี้)</span></div>
-      <div class="card" id="topSellers" style="padding:6px 12px;">
-        <div class="empty">ยังไม่มีข้อมูลยอดขายเดือนนี้</div>
-      </div>
+        <div>
+          <div class="sec-title sub"><span class="t">ขายดีที่สุด (เดือนนี้)</span></div>
+          <div class="card" id="topSellers" style="padding:6px 12px;">
+            <div class="empty">ยังไม่มีข้อมูลยอดขายเดือนนี้</div>
+          </div>
+        </div>
 
-      <div class="sec-title"><span class="t">สินค้าควรเติมสต็อกด่วน</span></div>
-      <div class="card" id="restockAlert" style="padding:6px 12px;"></div>
+        <div>
+          <div class="sec-title sub"><span class="t">สินค้าควรเติมสต็อกด่วน</span></div>
+          <div class="card" id="restockAlert" style="padding:6px 12px;"></div>
+        </div>
+      </div>
 
       <div class="sec-title"><span class="t">การแก้ไขล่าสุด</span><button class="link-btn" id="recentEditsMoreBtn">ดูทั้งหมด</button></div>
       <div class="card" id="recentEditsCard" style="padding:6px 12px;"></div>
@@ -1369,14 +1394,16 @@
     </div>
 
     <div id="stockPanel">
-      <label class="field">
-        <div class="search-wrap stock-search-wrap">
-          <input type="text" id="stockSearch" placeholder="ค้นหาชื่อ / ขนาด / เบส / SKU...">
-          <button type="button" class="search-clear-btn" id="stockSearchClear" style="display:none;" aria-label="ล้างคำค้นหา">✕</button>
-        </div>
-      </label>
+      <div class="controls-row">
+        <label class="field">
+          <div class="search-wrap stock-search-wrap">
+            <input type="text" id="stockSearch" placeholder="ค้นหาชื่อ / ขนาด / เบส / SKU...">
+            <button type="button" class="search-clear-btn" id="stockSearchClear" style="display:none;" aria-label="ล้างคำค้นหา">✕</button>
+          </div>
+        </label>
+        <button class="btn btn-teal" id="bulkStockInBtn">+ รับเข้าสต็อกหลายรายการ</button>
+      </div>
       <div class="search-result-count" id="stockResultCount" style="display:none;"></div>
-      <button class="btn btn-teal" id="bulkStockInBtn" style="margin-bottom:12px;">+ รับเข้าสต็อกหลายรายการ</button>
       <div class="filter-chips" id="stockFilters">
         <div class="chip active" data-f="all">ทั้งหมด</div>
         <div class="chip" data-f="over">ขายเกินสต็อก</div>
@@ -1388,10 +1415,12 @@
     </div>
 
     <div id="productsPanel" style="display:none;">
-      <label class="field">
-        <input type="text" id="productSearch2" placeholder="ค้นหาสินค้า...">
-      </label>
-      <button class="btn btn-teal" id="addProductBtn" style="margin-bottom:14px;">+ เพิ่มสินค้าใหม่</button>
+      <div class="controls-row">
+        <label class="field">
+          <input type="text" id="productSearch2" placeholder="ค้นหาสินค้า...">
+        </label>
+        <button class="btn btn-teal" id="addProductBtn">+ เพิ่มสินค้าใหม่</button>
+      </div>
       <div id="productsList"></div>
     </div>
   </section>
@@ -1430,49 +1459,63 @@
       <div class="stbtn" data-mks="week">รายสัปดาห์</div>
     </div>
 
-    <div id="mksDayPanel">
-      <label class="field">
-        <span class="lbl">วันที่</span>
-        <input type="date" id="mksDayDate">
-      </label>
-      <div class="sec-title"><span class="t">ยอดขายแยกตามแบรนด์</span></div>
-      <div id="mksDayRows"></div>
-      <div class="mks-total">
-        <span>ยอดรวมทั้งแผนก</span>
-        <span class="v" id="mksDayTotalVal">0 บาท</span>
+    <div id="mksDayPanel" class="entry-grid">
+      <div class="entry-col-main">
+        <label class="field field-tight">
+          <span class="lbl">วันที่</span>
+          <input type="date" id="mksDayDate">
+        </label>
+        <div class="sec-title sub"><span class="t">ยอดขายแยกตามแบรนด์</span></div>
+        <div id="mksDayRows"></div>
       </div>
-      <div class="mks-actions">
-        <button class="btn btn-ghost" id="mksDaySaveBtn">บันทึก</button>
-        <button class="btn btn-primary" id="mksDayShareBtn">
-          <svg viewBox="0 0 24 24"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
-          แชร์เป็นรูปภาพ
-        </button>
+      <div class="entry-col-side">
+        <div class="sec-title sub"><span class="t">สรุป</span></div>
+        <div class="card entry-summary-card">
+          <div class="mks-total">
+            <span>ยอดรวมทั้งแผนก</span>
+            <span class="v" id="mksDayTotalVal">0 บาท</span>
+          </div>
+          <div class="mks-actions">
+            <button class="btn btn-ghost" id="mksDaySaveBtn">บันทึก</button>
+            <button class="btn btn-primary" id="mksDayShareBtn">
+              <svg viewBox="0 0 24 24"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+              แชร์เป็นรูปภาพ
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div id="mksWeekPanel" style="display:none;">
-      <div class="row2">
-        <label class="field">
-          <span class="lbl">จากวันที่</span>
-          <input type="date" id="mksWeekFrom">
-        </label>
-        <label class="field">
-          <span class="lbl">ถึงวันที่</span>
-          <input type="date" id="mksWeekTo">
-        </label>
+    <div id="mksWeekPanel" class="entry-grid" style="display:none;">
+      <div class="entry-col-main">
+        <div class="row2">
+          <label class="field">
+            <span class="lbl">จากวันที่</span>
+            <input type="date" id="mksWeekFrom">
+          </label>
+          <label class="field">
+            <span class="lbl">ถึงวันที่</span>
+            <input type="date" id="mksWeekTo">
+          </label>
+        </div>
+        <div class="sec-title sub"><span class="t">ยอดขายแยกตามแบรนด์</span></div>
+        <div id="mksWeekRows"></div>
       </div>
-      <div class="sec-title"><span class="t">ยอดขายแยกตามแบรนด์</span></div>
-      <div id="mksWeekRows"></div>
-      <div class="mks-total">
-        <span>ยอดรวมทั้งแผนก</span>
-        <span class="v" id="mksWeekTotalVal">0 บาท</span>
-      </div>
-      <div class="mks-actions">
-        <button class="btn btn-ghost" id="mksWeekSaveBtn">บันทึก</button>
-        <button class="btn btn-primary" id="mksWeekShareBtn">
-          <svg viewBox="0 0 24 24"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
-          แชร์เป็นรูปภาพ
-        </button>
+      <div class="entry-col-side">
+        <div class="sec-title sub"><span class="t">สรุป</span></div>
+        <div class="card entry-summary-card">
+          <div class="mks-total">
+            <span>ยอดรวมทั้งแผนก</span>
+            <span class="v" id="mksWeekTotalVal">0 บาท</span>
+          </div>
+          <div class="mks-actions">
+            <button class="btn btn-ghost" id="mksWeekSaveBtn">บันทึก</button>
+            <button class="btn btn-primary" id="mksWeekShareBtn">
+              <svg viewBox="0 0 24 24"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+              แชร์เป็นรูปภาพ
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -1481,124 +1524,132 @@
   <section class="view" id="view-commission">
     <div class="sec-title"><span class="t">คำนวณค่าคอมมิชชั่น</span></div>
 
-    <div class="card">
-      <div class="row2">
-        <label class="field">
-          <span class="lbl">เดือน</span>
-          <div class="pc-select cselect">
-            <select id="commMonthSelect" class="cselect-native"></select>
-            <button type="button" class="pc-select-trigger" aria-haspopup="listbox" aria-expanded="false">
-              <span class="pc-select-value"></span>
-              <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-            <div class="pc-select-menu" role="listbox"></div>
+    <div class="entry-grid">
+      <div class="entry-col-main">
+
+        <div class="card">
+          <div class="row2">
+            <label class="field">
+              <span class="lbl">เดือน</span>
+              <div class="pc-select cselect">
+                <select id="commMonthSelect" class="cselect-native"></select>
+                <button type="button" class="pc-select-trigger" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="pc-select-value"></span>
+                  <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <div class="pc-select-menu" role="listbox"></div>
+              </div>
+            </label>
+            <label class="field">
+              <span class="lbl">โหมด</span>
+              <div class="pc-select cselect">
+                <select id="commModeSelect" class="cselect-native">
+                  <option value="auto">ใช้ข้อมูลจริง</option>
+                  <option value="manual">กรอกเอง (จำลอง)</option>
+                </select>
+                <button type="button" class="pc-select-trigger" aria-haspopup="listbox" aria-expanded="false">
+                  <span class="pc-select-value">ใช้ข้อมูลจริง</span>
+                  <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <div class="pc-select-menu" role="listbox"></div>
+              </div>
+            </label>
           </div>
-        </label>
-        <label class="field">
-          <span class="lbl">โหมด</span>
-          <div class="pc-select cselect">
-            <select id="commModeSelect" class="cselect-native">
-              <option value="auto">ใช้ข้อมูลจริง</option>
-              <option value="manual">กรอกเอง (จำลอง)</option>
-            </select>
-            <button type="button" class="pc-select-trigger" aria-haspopup="listbox" aria-expanded="false">
-              <span class="pc-select-value">ใช้ข้อมูลจริง</span>
-              <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-            <div class="pc-select-menu" role="listbox"></div>
+          <div class="row2" id="commManualInputs" style="display:none;">
+            <label class="field">
+              <span class="lbl">เป้าหมาย (บาท)</span>
+              <input type="number" inputmode="decimal" id="commManualTarget" placeholder="0">
+            </label>
+            <label class="field" style="margin-bottom:0;">
+              <span class="lbl">ยอดขายจริง (บาท)</span>
+              <input type="number" inputmode="decimal" id="commManualSales" placeholder="0">
+            </label>
           </div>
-        </label>
-      </div>
-      <div class="row2" id="commManualInputs" style="display:none;">
-        <label class="field">
-          <span class="lbl">เป้าหมาย (บาท)</span>
-          <input type="number" inputmode="decimal" id="commManualTarget" placeholder="0">
-        </label>
-        <label class="field" style="margin-bottom:0;">
-          <span class="lbl">ยอดขายจริง (บาท)</span>
-          <input type="number" inputmode="decimal" id="commManualSales" placeholder="0">
-        </label>
-      </div>
-      <label class="field" style="margin-bottom:0;">
-        <span class="lbl">จำนวนพนักงาน (PC) ที่ร่วมทำยอดเดือนนี้</span>
-        <div class="pc-select" id="pcSelectWrap">
-          <button type="button" class="pc-select-trigger" id="pcSelectTrigger" aria-haspopup="listbox" aria-expanded="false">
-            <span class="pc-select-value" id="pcSelectValue">1 คน</span>
-            <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <div class="pc-select-menu" id="pcSelectMenu" role="listbox"></div>
+          <label class="field field-tight" style="margin-bottom:0;">
+            <span class="lbl">จำนวนพนักงาน (PC) ที่ร่วมทำยอดเดือนนี้</span>
+            <div class="pc-select" id="pcSelectWrap">
+              <button type="button" class="pc-select-trigger" id="pcSelectTrigger" aria-haspopup="listbox" aria-expanded="false">
+                <span class="pc-select-value" id="pcSelectValue">1 คน</span>
+                <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <div class="pc-select-menu" id="pcSelectMenu" role="listbox"></div>
+            </div>
+            <input type="hidden" id="commHeadcount" value="">
+          </label>
         </div>
-        <input type="hidden" id="commHeadcount" value="">
-      </label>
-    </div>
 
-    <div class="stat-grid">
-      <div class="stat-card">
-        <div class="lbl">เป้าหมาย</div>
-        <div class="val small" id="commTargetVal">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="lbl">ยอดขาย</div>
-        <div class="val small" id="commSalesVal">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="lbl">% ที่ทำได้</div>
-        <div class="val" id="commPctVal">0%</div>
-      </div>
-      <div class="stat-card">
-        <div class="lbl">ช่วงเป้าที่ใช้</div>
-        <div class="val small" id="commBandVal">—</div>
-      </div>
-    </div>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="lbl">เป้าหมาย</div>
+            <div class="val small" id="commTargetVal">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="lbl">ยอดขาย</div>
+            <div class="val small" id="commSalesVal">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="lbl">% ที่ทำได้</div>
+            <div class="val" id="commPctVal">0%</div>
+          </div>
+          <div class="stat-card">
+            <div class="lbl">ช่วงเป้าที่ใช้</div>
+            <div class="val small" id="commBandVal">—</div>
+          </div>
+        </div>
 
-    <div class="sec-title"><span class="t">รายละเอียดค่าคอม</span></div>
-    <div class="tier-table" id="commBreakdown"></div>
+        <div class="sec-title sub"><span class="t">รายละเอียดค่าคอม</span></div>
+        <div class="tier-table" id="commBreakdown"></div>
 
-    <div class="card" style="margin-top:2px;">
-      <div class="total-row" style="padding-top:0; margin-top:0; border-top:none;">
-        <span class="lbl">รวมค่าคอมทั้งหมด</span>
-        <span class="val" id="commTotalVal">0 บาท</span>
-      </div>
-    </div>
-
-    <div class="pass-note">* ทุกส่วน (หลัก / พิเศษ / ต่อคน) จ่ายก็ต่อเมื่อยอดขายรวมของร้านถึง 80% ของเป้าเดือนนั้นก่อนเท่านั้น — ถ้าไม่ถึง 80% จะไม่ได้รับค่าคอมเลย · ค่าคอมหลักใช้ตารางเดียวกันทั้งเป้า 200,000–600,000 บาท/เดือน · ค่าคอมพิเศษใช้เฉพาะเป้า 200,000–400,000 บาท · ค่าคอมต่อคนคิดจากยอดขายรวมร้าน ÷ จำนวนพนักงาน ต้องได้อย่างน้อย 200,000 บาท/คน จึงจะจ่าย แล้วจ่ายเป็นค่าคอม "ต่อคน" (แสดงยอดเดียว ไม่คูณจำนวนคน) · ทุกรายการที่เข้าเงื่อนไขจะบวกรวมกันเป็นยอดคอมทั้งหมด</div>
-
-    <div id="gallonIncentiveSection">
-      <div class="sec-title">
-        <span class="t">อินเซนทีฟรายแกลลอน</span>
-        <span style="display:flex; align-items:center; gap:4px;">
-          <button type="button" class="link-btn" id="addGallonRuleBtn">+ เพิ่มรายการ</button>
-          <button type="button" class="collapse-btn" id="gallonSectionCollapseBtn" title="ย่อ/ขยายรายการ">
+        <div id="gallonIncentiveSection">
+          <div class="sec-title sub">
+            <span class="t">อินเซนทีฟรายแกลลอน</span>
+            <span style="display:flex; align-items:center; gap:4px;">
+              <button type="button" class="link-btn" id="addGallonRuleBtn">+ เพิ่มรายการ</button>
+              <button type="button" class="collapse-btn" id="gallonSectionCollapseBtn" title="ย่อ/ขยายรายการ">
+                <svg viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </span>
+          </div>
+          <div class="gcollapsed-summary" id="gallonCollapsedSummary" style="display:none;">
+            <span><b id="gallonCollapsedCount">0</b> รายการ · รวม <b id="gallonCollapsedTotal">0 บาท</b></span>
             <svg viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-        </span>
-      </div>
-      <div class="gcollapsed-summary" id="gallonCollapsedSummary" style="display:none;">
-        <span><b id="gallonCollapsedCount">0</b> รายการ · รวม <b id="gallonCollapsedTotal">0 บาท</b></span>
-        <svg viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-      <div class="tier-table" id="gallonRuleList"></div>
+          </div>
+          <div class="tier-table" id="gallonRuleList"></div>
+        </div>
 
-      <div class="card" style="margin-top:2px;">
-        <div class="total-row" style="padding-top:0; margin-top:0; border-top:none;">
-          <span class="lbl">ยอดอินเซนทีฟที่คำนวณได้ (ก่อนหาร)</span>
-          <span class="val small" id="gallonSubtotalVal">0 บาท</span>
-        </div>
-        <div class="pass-note" id="gallonGateNote" style="padding:8px 0 0;"></div>
-        <div class="total-row" style="margin-top:10px;">
-          <span class="lbl">จ่ายจริงหลังหารตาม PC (สูงสุด 5,000 บาท/คน)</span>
-          <span class="val" id="gallonPaidVal">0 บาท</span>
-        </div>
-        <div class="pass-note" id="gallonCapNote" style="padding:6px 0 0;"></div>
       </div>
 
-      <div class="card" style="margin-top:2px;">
-        <div class="total-row" style="padding-top:0; margin-top:0; border-top:none;">
-          <span class="lbl">ยอดรวมสุทธิ (ค่าคอม + อินเซนทีฟ)</span>
-          <span class="val" id="commGrandTotalVal">0 บาท</span>
+      <div class="entry-col-side">
+        <div class="sec-title sub"><span class="t">สรุปค่าคอม</span></div>
+        <div class="card entry-summary-card">
+          <div class="total-row" style="padding-top:0; margin-top:0; border-top:none;">
+            <span class="lbl">รวมค่าคอมทั้งหมด</span>
+            <span class="val" id="commTotalVal">0 บาท</span>
+          </div>
         </div>
+        <div class="pass-note">* ทุกส่วน (หลัก / พิเศษ / ต่อคน) จ่ายก็ต่อเมื่อยอดขายรวมของร้านถึง 80% ของเป้าเดือนนั้นก่อนเท่านั้น — ถ้าไม่ถึง 80% จะไม่ได้รับค่าคอมเลย · ค่าคอมหลักใช้ตารางเดียวกันทั้งเป้า 200,000–600,000 บาท/เดือน · ค่าคอมพิเศษใช้เฉพาะเป้า 200,000–400,000 บาท · ค่าคอมต่อคนคิดจากยอดขายรวมร้าน ÷ จำนวนพนักงาน ต้องได้อย่างน้อย 200,000 บาท/คน จึงจะจ่าย แล้วจ่ายเป็นค่าคอม "ต่อคน" (แสดงยอดเดียว ไม่คูณจำนวนคน) · ทุกรายการที่เข้าเงื่อนไขจะบวกรวมกันเป็นยอดคอมทั้งหมด</div>
+
+        <div class="card" style="margin-top:16px;">
+          <div class="total-row" style="padding-top:0; margin-top:0; border-top:none;">
+            <span class="lbl">ยอดอินเซนทีฟที่คำนวณได้ (ก่อนหาร)</span>
+            <span class="val small" id="gallonSubtotalVal">0 บาท</span>
+          </div>
+          <div class="pass-note" id="gallonGateNote" style="padding:8px 0 0;"></div>
+          <div class="total-row" style="margin-top:10px;">
+            <span class="lbl">จ่ายจริงหลังหารตาม PC (สูงสุด 5,000 บาท/คน)</span>
+            <span class="val" id="gallonPaidVal">0 บาท</span>
+          </div>
+          <div class="pass-note" id="gallonCapNote" style="padding:6px 0 0;"></div>
+        </div>
+
+        <div class="card entry-summary-card" style="margin-top:16px;">
+          <div class="total-row" style="padding-top:0; margin-top:0; border-top:none;">
+            <span class="lbl">ยอดรวมสุทธิ (ค่าคอม + อินเซนทีฟ)</span>
+            <span class="val" id="commGrandTotalVal">0 บาท</span>
+          </div>
+        </div>
+        <div class="pass-note">* อินเซนทีฟรายแกลลอนใช้ได้เฉพาะโหมด "ใช้ข้อมูลจริง" และต้องยอดขายรวมร้านถึง 80% ของเป้าหลักก่อนจึงจะจ่าย · ระบบนับยอดขายจริงของสินค้า/ไซส์/เบสที่ตั้งไว้ในเดือนนั้นให้อัตโนมัติ</div>
       </div>
-      <div class="pass-note">* อินเซนทีฟรายแกลลอนใช้ได้เฉพาะโหมด "ใช้ข้อมูลจริง" และต้องยอดขายรวมร้านถึง 80% ของเป้าหลักก่อนจึงจะจ่าย · ระบบนับยอดขายจริงของสินค้า/ไซส์/เบสที่ตั้งไว้ในเดือนนั้นให้อัตโนมัติ</div>
     </div>
   </section>
 
@@ -1621,11 +1672,13 @@
     </div>
     <div class="sec-title"><span class="t">ควรติดตามวันนี้</span></div>
     <div class="card" id="custFollowList" style="padding:6px 12px;"></div>
-    <label class="field">
-      <span class="lbl">ค้นหาลูกค้า</span>
-      <input type="text" id="custSearch" placeholder="ค้นหาชื่อหรือเบอร์โทร...">
-    </label>
-    <button class="btn btn-ghost" id="exportCustomersBtn" style="margin-bottom:16px;">ส่งออกฐานลูกค้าเป็น Excel</button>
+    <div class="controls-row">
+      <label class="field">
+        <span class="lbl">ค้นหาลูกค้า</span>
+        <input type="text" id="custSearch" placeholder="ค้นหาชื่อหรือเบอร์โทร...">
+      </label>
+      <button class="btn btn-ghost" id="exportCustomersBtn">ส่งออกฐานลูกค้าเป็น Excel</button>
+    </div>
     <div class="sec-title"><span class="t">รายชื่อลูกค้า</span></div>
     <div class="card" id="custList" style="padding:6px 12px;"></div>
   </section>
