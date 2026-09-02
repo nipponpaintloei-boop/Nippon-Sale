@@ -721,6 +721,8 @@
     /* a lone filter field (date picker, single select, search box) keeps a sane width instead of filling the whole pane */
     .field-tight{max-width:320px;}
     .history-tools{max-width:640px;}
+    /* "วันนี้ควรทำอะไร?" action list: keep a readable card width instead of stretching edge-to-edge */
+    #actionTodayCard{max-width:640px;}
     /* buttons hug their label instead of becoming full-width bars — grid/flex containers (.row2, .mks-actions) still stretch them as needed */
     .view .btn{width:auto; padding-left:22px; padding-right:22px;}
     /* pair a filter field with its action button on one row instead of stacking two full-width blocks */
@@ -1250,6 +1252,7 @@
 
   <!-- ============ VIEW: DASHBOARD ============ -->
   <section class="view active" id="view-dash">
+    <div class="dash-2col">
     <div class="gauge-card">
       <div class="can-wrap">
         <svg viewBox="0 0 92 110" width="92" height="110">
@@ -1291,6 +1294,12 @@
         <div class="gap-highlight" id="monthGapLine">ขาดอีก <b id="monthGapVal">0</b> บาท ถึงเป้า</div>
         <div class="pace-highlight" id="paceLine"><span class="p-lbl">ต้องทำเฉลี่ยต่อวัน เพื่อให้ถึงเป้า</span><span class="p-val">0</span><span class="p-unit">บาท/วัน</span></div>
       </div>
+    </div>
+
+    <div>
+      <div class="sec-title"><span class="t">สัดส่วนยอดขายตามสินค้า</span></div>
+      <div class="chart-card donut-card" id="productDonutCard"></div>
+    </div>
     </div>
 
     <div class="sec-title"><span class="t">วันนี้ควรทำอะไร?</span></div>
@@ -1338,19 +1347,16 @@
           </div>
         </div>
         <div>
-          <div class="sec-title"><span class="t">สัดส่วนยอดขายตามสินค้า</span></div>
-          <div class="chart-card donut-card" id="productDonutCard"></div>
-        </div>
-      </div>
-
-      <div class="sec-title"><span class="t">มาร์เก็ตแชร์วันนี้ (MKS)</span></div>
-      <div class="card mks-mini-card" id="mksMiniCard" style="padding:14px 16px; cursor:pointer;">
-        <div class="mks-mini-row">
-          <div>
-            <div class="mks-mini-lbl">ส่วนแบ่งของเรา (NIPPON) เทียบคู่แข่งวันนี้</div>
-            <div class="mks-mini-val" id="mksMiniPct">—</div>
+          <div class="sec-title"><span class="t">มาร์เก็ตแชร์วันนี้ (MKS)</span></div>
+          <div class="card mks-mini-card" id="mksMiniCard" style="padding:14px 16px; cursor:pointer;">
+            <div class="mks-mini-row">
+              <div>
+                <div class="mks-mini-lbl">ส่วนแบ่งของเรา (NIPPON) เทียบคู่แข่งวันนี้</div>
+                <div class="mks-mini-val" id="mksMiniPct">—</div>
+              </div>
+              <div class="mks-mini-arrow">›</div>
+            </div>
           </div>
-          <div class="mks-mini-arrow">›</div>
         </div>
       </div>
 
