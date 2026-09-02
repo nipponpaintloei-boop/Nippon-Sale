@@ -15,6 +15,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
+  .ico{width:1em;height:1em;display:inline-block;vertical-align:-0.14em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+  .ico-fill{fill:currentColor;stroke:none;}
+  .ico-dot{width:9px;height:9px;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:2px;}
+  .ico-dot.red{background:#ef5a4c;} .ico-dot.yellow{background:#e2a52f;} .ico-dot.green{background:#3fb672;}
   :root{
     --ink:#eef2f9;
     --surface:#ffffff;
@@ -789,6 +793,7 @@
     position:absolute; top:14px; right:14px; width:32px; height:32px; border-radius:10px;
     display:flex; align-items:center; justify-content:center; font-size:15px;
   }
+  .stat-card .stat-ic svg{width:17px; height:17px;}
   .stat-ic.c-blue{background:rgba(47,111,237,0.14); color:var(--accent);}
   .stat-ic.c-orange{background:rgba(232,135,74,0.16); color:#c9711f;}
   .stat-ic.c-green{background:rgba(31,174,108,0.14); color:var(--moss);}
@@ -1301,22 +1306,22 @@
     <div id="dashPanelOverview">
       <div class="stat-grid">
         <div class="stat-card">
-          <span class="stat-ic c-blue">💰</span>
+          <span class="stat-ic c-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
           <div class="lbl">ยอดขายวันนี้</div>
           <div class="val" id="dashToday">0</div>
         </div>
         <div class="stat-card">
-          <span class="stat-ic c-orange">📦</span>
+          <span class="stat-ic c-orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8v8a2 2 0 0 1-1 1.73l-7 4a2 2 0 0 1-2 0l-7-4A2 2 0 0 1 3 16V8"/><path d="M3.27 6.96 12 12l8.73-5.04"/><path d="M12 22.08V12"/></svg></span>
           <div class="lbl">จำนวนที่ขายวันนี้ (ชิ้น)</div>
           <div class="val" id="dashTodayQty">0</div>
         </div>
         <div class="stat-card">
-          <span class="stat-ic c-green">📈</span>
+          <span class="stat-ic c-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span>
           <div class="lbl">ยอดขาย — <span id="dashMonthLbl3"></span></div>
           <div class="val small" id="dashMonth">0</div>
         </div>
         <div class="stat-card">
-          <span class="stat-ic c-purple">🎯</span>
+          <span class="stat-ic c-purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg></span>
           <div class="lbl">Ach% — <span id="dashMonthLbl4"></span></div>
           <div class="val" id="dashPct">0%</div>
         </div>
@@ -1398,7 +1403,7 @@
         <label class="field">
           <div class="search-wrap stock-search-wrap">
             <input type="text" id="stockSearch" placeholder="ค้นหาชื่อ / ขนาด / เบส / SKU...">
-            <button type="button" class="search-clear-btn" id="stockSearchClear" style="display:none;" aria-label="ล้างคำค้นหา">✕</button>
+            <button type="button" class="search-clear-btn" id="stockSearchClear" style="display:none;" aria-label="ล้างคำค้นหา"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
           </div>
         </label>
         <button class="btn btn-teal" id="bulkStockInBtn">+ รับเข้าสต็อกหลายรายการ</button>
@@ -2064,6 +2069,29 @@
 <script src="/supabase-config.js"></script>
 <script src="/auth.js"></script>
 <script>
+/* Inline icon set (replaces emoji used as icons throughout the app) */
+const ICONS = {
+  money: '<svg class="ico" viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+  box: '<svg class="ico" viewBox="0 0 24 24"><path d="M21 8v8a2 2 0 0 1-1 1.73l-7 4a2 2 0 0 1-2 0l-7-4A2 2 0 0 1 3 16V8"/><path d="M3.27 6.96 12 12l8.73-5.04"/><path d="M12 22.08V12"/><path d="M8.5 3.5 16 8"/><path d="M16 8 12 12"/><path d="M12 12 8 8"/></svg>',
+  trendUp: '<svg class="ico" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
+  trendDown: '<svg class="ico" viewBox="0 0 24 24"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>',
+  target: '<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" class="ico-fill"/></svg>',
+  close: '<svg class="ico" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  check: '<svg class="ico" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>',
+  checkCircle: '<svg class="ico" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+  warning: '<svg class="ico" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+  edit: '<svg class="ico" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>',
+  arrowRight: '<svg class="ico" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
+  user: '<svg class="ico" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+  starFilled: '<svg class="ico ico-fill" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+  starOutline: '<svg class="ico" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+  party: '<svg class="ico" viewBox="0 0 24 24"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12v0c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11v0c-.11.7-.72 1.22-1.43 1.22H17"/><path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98v0C9.52 4.9 9 5.51 9 6.22V7"/></svg>',
+  clock: '<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg>',
+  dotRed: '<span class="ico-dot red"></span>',
+  dotYellow: '<span class="ico-dot yellow"></span>',
+  dotGreen: '<span class="ico-dot green"></span>'
+};
+
 /* ================= SEED DATA (from uploaded workbook) ================= */
 /* PRODUCTS_SEED: [sku, name, size, base, price, initStock, inflow, soldCumulative(as of Aug 25 2569), remain] */
 const PRODUCTS_SEED = [["8851286681115","WEATHERBOND (กึ่งเงา)","1 GL","A",1130,6.0,0,16,-10],["8851286681252","WEATHERBOND (กึ่งเงา)","1 GL","B",1090,1.0,0,3,-2],["8851286681290","WEATHERBOND (กึ่งเงา)","1 GL","C",1040,1.0,0,9,-8],["8851286681344","WEATHERBOND (กึ่งเงา)","1 GL","D",900,1.0,0,9,-8],["8851286633619","WEATHERBOND (กึ่งเงา)","2.5 GL","A",2490,50.0,0,139,-89],["8851286633626","WEATHERBOND (กึ่งเงา)","2.5 GL","B",2390,5.0,0,20,-15],["8851286633633","WEATHERBOND (กึ่งเงา)","2.5 GL","C",2290,7.0,0,13,-6],["8851286633640","WEATHERBOND (กึ่งเงา)","2.5 GL","D",2060,4.0,0,11,-7],["8851286633572","WEATHERBOND (เนียน)","2.5 GL","A",2250,8.0,0,13,-5],["8851286675695","AirCare (กึ่งเงา)","1 GL","A",980,0.0,0,0,0],["8851286675732","AirCare (กึ่งเงา)","2.5 GL","A",2070,9.0,0,47,-38],["8851286683850","AirCare (เนียน)","1 GL","A",900,1.0,0,2,-1],["8851286683867","AirCare (เนียน)","2.5 GL","A",2020,5.0,0,10,-5],["8851286522821","HYBRIDESHIELD (กึ่งเงา) ภายใน","1 GL","A",710,3.0,0,3,0],["8851286523934","HYBRIDESHIELD (กึ่งเงา) ภายใน","2.5 GL","A",1580,14.0,0,47,-33],["8851286523576","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","A",790,9.0,0,21,-12],["8851286523583","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","B",770,4.0,0,3,1],["8851286523590","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","C",730,1.0,0,5,-4],["8851286523804","HYBRIDESHIELD (กึ่งเงา) ภายนอก","1 GL","D",640,3.0,0,13,-10],["8851286523811","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","A",1740,40.0,0,127,-87],["8851286523828","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","B",1710,7.0,0,7,0],["8851286523835","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","C",1690,5.0,0,23,-18],["8851286523842","HYBRIDESHIELD (กึ่งเงา) ภายนอก","2.5 GL","D",1630,4.0,0,12,-8],["8851286522050","HYBRIDESHIELD (ด้าน)","1 GL","A",730,11.0,0,1,10],["","HYBRIDESHIELD (ด้าน)","2.5 GL","A",1620,7.0,0,1,6],["8851286472645","VINILEX (กึ่งเงา) ภายนอก","1 GL","A",740,3.0,0,2,1],["8851286472676","VINILEX (กึ่งเงา) ภายนอก","1 GL","B",700,1.0,0,1,0],["8851286472713","VINILEX (กึ่งเงา) ภายนอก","1 GL","C",680,1.0,0,1,0],["8851286472737","VINILEX (กึ่งเงา) ภายนอก","1 GL","D",550,1.0,0,2,-1],["8851286472669","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","A",1490,5.0,0,29,-24],["8851286472683","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","B",1460,6.0,0,1,5],["8851286472720","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","C",1380,5.0,0,3,2],["8851286472744","VINILEX (กึ่งเงา) ภายนอก","2.5 GL","D",1180,6.0,0,4,2],["8851286094472","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","A",500,5.0,0,9,-4],["8851286094496","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","B",480,3.0,0,3,0],["8851286094519","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","C",450,5.0,0,2,3],["","SUPER SERVE (กึ่งเงา) ภายนอก","1 GL","D",400,4.0,0,2,2],["8852186036128","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","A",1190,33.0,0,32,1],["8852186036135","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","B",1110,6.0,0,1,5],["8852186036142","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","C",1050,1.0,0,6,-5],["8852186036159","SUPER SERVE (กึ่งเงา) ภายนอก","2.5 GL","D",900,5.0,0,1,4],["8851286094489","SUPER SERVE (กึ่งเงา) ภายนอก","5 GL","A",2300,22.0,0,12,10],["8852186006671","SUPER SERVE (ด้าน) ภายใน","1 GL","A",330,3.0,0,0,3],["8852186036173","SUPER SERVE (ด้าน) ภายใน","2.5 GL","A",460,2.0,0,0,2],["8852186006749","SUPER SERVE (ด้าน) ภายนอก","1 GL","A",400,2.0,0,4,-2],["8852186006770","SUPER SERVE (ด้าน) ภายนอก","1 GL","B",370,3.0,0,1,2],["8852186006794","SUPER SERVE (ด้าน) ภายนอก","1 GL","C",360,0.0,0,0,0],["8852186006817","SUPER SERVE (ด้าน) ภายนอก","1 GL","D",300,0.0,0,1,-1],["8852186036562","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","A",910,4.0,0,12,-8],["","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","B",865,0.0,0,0,0],["","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","C",830,0.0,0,1,-1],["","SUPER SERVE (ด้าน) ภายนอก","2.5 GL","D",680,0.0,0,0,0],["","JUNIOR99 ภายนอก (9506)","1 GL","",300,0,0,0,0],["8851286180359","JUNIOR99 ภายนอก (9506)","5 GL","",1050,1.0,0,6,-5],["","JUNIOR99 ภายนอก (900)","1 GL","",300,0,0,1,-1],["8851286180533","JUNIOR99 ภายนอก (900)","5 GL","",1050,3.0,0,5,-2],["","JUNIOR99 ภายใน (9106)","1 GL","",300,0,0,1,-1],["8851286180151","JUNIOR99 ภายใน (9106)","5 GL","",860,1.0,0,6,-5],["8851286180205","JUNIOR99 ภายใน (300)","1 GL","",300,3.0,0,2,1],["8851286180212","JUNIOR99 ภายใน (300)","5 GL","",860,1.0,0,8,-7],["8851286533537","สีท้าฝ้า HYBRIDESHIELD (777C)","1 GL","",540,2.0,0,4,-2],["8851286533544","สีท้าฝ้า HYBRIDESHIELD (777C)","5 GL","",2200,3.0,0,6,-3],["8851286533551","สีท้าฝ้า HYBRIDESHIELD (999C)","1 GL","",540,3.0,0,3,0],["8851286533568","สีท้าฝ้า HYBRIDESHIELD (999C)","5 GL","",2200,6.0,0,13,-7],["8852186318194","สีทาฝ้า SUPER SERVE  (S800)","1 GL","",350,5.0,0,5,0],["8852186318507","สีทาฝ้า SUPER SERVE  (S800)","5 GL","",1440,1.0,0,7,-6],["8852186318170","สีทาฝ้า SUPER SERVE (S700)","1 GL","",350,1.0,0,2,-1],["8852186318187","สีทาฝ้า SUPER SERVE (S700)","5 GL","",1440,2.0,0,4,-2],["8851286207346","สีทาฝ้า JUNIOR99 (S700)","1 GL","",225,5.0,0,1,4],["8851286207339","สีทาฝ้า JUNIOR99 (S700)","5 GL","",900,1.0,0,5,-4],["8851286207704","สีทาฝ้า JUNIOR99 (S800)","1 GL","",225,0.0,0,3,-3],["8851286207711","สีทาฝ้า JUNIOR99 (S800)","5 GL","",900,4.0,0,12,-8],["8851286383163","รองพื้น WEATHERBOND 5100","5 GL","",3190,5.0,0,12,-7],["8851286141299","รองพื้น VINILEX ","1 GL","",635,3.0,0,5,-2],["8851286141305","รองพื้น VINILEX ","5 GL","",2550,9.0,0,28,-19],["8851286018676","รองพื้น SUPER SERVE ","5 GL","",1790,19.0,0,26,-7],["8851286180540","รองพื้น JUNIOR99 (น้ำ)","1 GL","",325,5.0,0,7,-2],["8851286180557","รองพื้น JUNIOR99 (น้ำ)","5 GL","",1130,11.0,0,34,-23],["8851286233802","รองพื้นอเนกประสงค์ FLEXISEAL","1 GL","",650,8.0,0,1,7],["8851286448237","รองพื้นอเนกประสงค์ FLEXISEAL","2.5 GL","",1350,7.0,0,19,-12],["8851286233819","รองพื้นอเนกประสงค์ FLEXISEAL","5 GL","",2190,21.0,0,6,15],["8851286094663","รองพื้น Quick Sealer","1 GL","",740,6.0,0,12,-6],["8851286094670","รองพื้น Quick Sealer","2.5 GL","",1800,7.0,0,13,-6],["8851286094687","รองพื้น Quick Sealer","5 GL","",3190,5.0,0,15,-10],["8852186521426","รองพื้น Quick Coat","1 GL","",740,5.0,0,9,-4],["8852186523628","รองพื้น Quick Coat","2.5 GL","",1690,16.0,0,17,-1],["8852186521914","รองพื้น Quick Coat","5 GL","",2690,9.0,0,19,-10],["8851286459998","ร้องพื้น Excel","1 GL","",800,2.0,0,3,-1],["8851286460000","ร้องพื้น Excel","5 GL","",3150,8.0,0,6,2],["8851286520971","รองพื้นปูนเก่า JUNIOR99","1 GL","",425,3.0,0,2,1],["8851286521008","รองพื้นปูนเก่า JUNIOR100","5 GL","",1980,1.0,0,0,1],["","รองพื้นกันสนิม JUNIOR99 (แดง)","1 GL","",400,0,0,0,0],["","รองพื้นกันสนิม JUNIOR99 (แดง)","5 GL","",1980,0,0,0,0],["","รองพื้นกันสนิม JUNIOR99 (เทา)","1 GL","",400,0,0,3,-3],["","รองพื้นกันสนิม JUNIOR99 (เทา)","5 GL","",1980,0,0,2,-2],["","สีทาหลังคา ROOF PAINT ","1 GL","",490,10.0,0,26,-16],["8852186347071","Roof Seal กันซึมดาดฟ้า (ขาว)","4 KG","",690,4.0,0,0,4],["8852186349068","Roof Seal กันซึมดาดฟ้า (เทาเข้ม)","4 KG","",690,4.0,0,1,3],["8852186347064","Roof Seal กันซึมดาดฟ้า (ขาว)","20 KG","",2890,4.0,0,1,3],["8852186349075","Roof Seal กันซึมดาดฟ้า (เทาเข้ม)","20 KG","",2890,3.0,0,2,1],["8851286094311","สีน้ำมัน All in 1 S914","1 GL","",720,6.0,0,19,-13],["8851286094229","สีน้ำมัน All in 1 S914","1/4 GL","",225,4.0,0,11,-7],["8851286094144","สีน้ำมัน All in 1 F914","1 GL","",690,1.0,0,27,-26],["","สีน้ำมัน All in 1 F914","1/4 GL","",225,0,0,0,0],["8851286094151","สีน้ำมัน All in 1 S900","1/4 GL","",225,2.0,0,11,-9],["","สีน้ำมัน All in 1 S900","1 GL","",720,0,0,17,-17],["8851286094335","สีน้ำมัน All in 1 S910","1 GL","",720,5.0,0,6,-1],["8851286094236","สีน้ำมัน All in 1 S912","1/4 GL","",225,8.0,0,2,6],["8851286094328","สีน้ำมัน All in 1 S912","1 GL","",720,2.0,0,1,1],["","สีน้ำมัน All in 1 S138","1 GL","",720,0,0,2,-2],["8851286094267","สีน้ำมัน All in 1 S138","1/4 GL","",225,3.0,0,10,-7],["","สีน้ำมัน JUNIOR99 [9711]","1 GL","",0,0,0,0,0],["","สีน้ำมัน JUNIOR99 [9736]","1 GL","",0,0,0,0,0],["","สีน้ำมัน JUNIOR99 [9727]","1 GL","",0,0,0,0,0],["","สีน้ำมัน JUNIOR99 [9700]","1 GL","",520,0,0,0,0],["","สีน้ำมัน JUNIOR99 [9741]","1 GL","",0,0,0,0,0],["","สีน้ำมัน BODELAG","1 GL","A",880,3.0,0,6,-3],["","สีน้ำมัน BODELAG","1 GL","B",0,0,0,0,0],["","สีน้ำมัน BODELAG","1 GL","C",0,0,0,0,0],["8851286079059","สีน้ำมัน BODELAG","1 GL","D",760,1.0,0,5,-4],["","สีน้ำมัน BODELAG","2.5 GL","A",2070,0,0,2,-2],["","สีน้ำมัน BODELAG","2.5 GL","B",0,0,0,0,0],["","สีน้ำมัน BODELAG","2.5 GL","C",0,0,0,0,0],["8851286079097","สีน้ำมัน BODELAG","2.5 GL","D",1830,4.0,0,3,1],["8852186427421","AQUA Epoxy","1 Set","A",2310,4.0,0,0,4],["8852186427438","AQUA Epoxy","1 Set","B",2310,4.0,0,3,1],["8852186427445","AQUA Epoxy","1 Set","C",1800,4.0,0,0,4],["8852186427452","AQUA Epoxy","1 Set","D",1800,2.0,0,2,0],["8852186427636","รองพื้น AQUA Epoxy","1 Set","",1950,3.0,0,1,2],["","สีสร้างลาย Momento Loft","1 Set","",2450,1.0,0,0,1],["","กันซึม A100","1 GL","",640,3.0,0,16,-13],["","กันซึม A200","1 GL","",760,5.0,0,11,-6],["","อะคริลิค Wall Filler","5 KG","",260,6.0,0,9,-3],["","สีสเปรย์กระป๋อง PYLAC","1 กป","",98,10.0,0,11,-1],["","สีสเปรย์กระป๋อง LAZER","1 กป","",58,10.0,0,120,-110],["","รายได้แม่สี (ฉีดเพิ่ม)","","",0,5.0,0,11,-6],["","อื่นๆ","","",0,0,0,11,-11]];
@@ -2803,7 +2831,7 @@ function formatDateTH(iso){
 }
 function toast(msg){
   const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
+  t.innerHTML = msg; t.classList.add('show');
   clearTimeout(toast._t);
   toast._t = setTimeout(()=>t.classList.remove('show'), 2200);
 }
@@ -3090,10 +3118,10 @@ function updateStockHint(){
   hint.style.display = 'inline-block';
   hint.classList.remove('low','out');
   if(remain <= 0){
-    hint.textContent = `⚠ สินค้านี้หมดสต็อกแล้ว (คงเหลือ ${remain})`;
+    hint.innerHTML = `${ICONS.warning} สินค้านี้หมดสต็อกแล้ว (คงเหลือ ${remain})`;
     hint.classList.add('out');
   } else if(remain <= 3){
-    hint.textContent = `⚠ คงเหลือ ${remain} ชิ้น — ใกล้หมด`;
+    hint.innerHTML = `${ICONS.warning} คงเหลือ ${remain} ชิ้น — ใกล้หมด`;
     hint.classList.add('low');
   } else {
     hint.textContent = `คงเหลือ ${remain} ชิ้น`;
@@ -3184,14 +3212,14 @@ function renderBillCart(){
   title.style.display='flex'; list.style.display='block';
   document.getElementById('billCartCount').textContent = billCart.length;
   list.innerHTML = billCart.map((s,i)=>`
-    <div class="swipe-wrap"><div class="swipe-bg">ปัดเพื่อลบ ✕</div>
+    <div class="swipe-wrap"><div class="swipe-bg">ปัดเพื่อลบ ${ICONS.close}</div>
     <div class="list-row" data-swipedel="${i}">
       <div class="info">
         <div class="name">${s.name} ${s.size} ${s.base}</div>
-        <div class="sub">${s.employee ? '👤 '+s.employee+' · ' : ''}${s.colorCode ? 'รหัสสี '+s.colorCode+' · ' : ''}x${s.qty}</div>
+        <div class="sub">${s.employee ? ICONS.user+' '+s.employee+' \u00b7 ' : ''}${s.colorCode ? 'รหัสสี '+s.colorCode+' · ' : ''}x${s.qty}</div>
       </div>
       <div class="amt">${fmt(s.total)}฿</div>
-      <button class="del-btn" data-billrm="${i}">✕</button>
+      <button class="del-btn" data-billrm="${i}">${ICONS.close}</button>
     </div></div>`).join('');
   list.querySelectorAll('[data-billrm]').forEach(b=>b.addEventListener('click', ()=>{
     billCart.splice(Number(b.dataset.billrm),1);
@@ -3360,8 +3388,8 @@ function computeOpportunities(rec, limit=5){
   return computeOverallProductPopularity().filter(p=>!bought.has(p.name)).slice(0, limit);
 }
 const FOLLOW_BADGE = {
-  overdue: {label:'หายไปนาน', cls:'follow-overdue', icon:'🔴'},
-  due:     {label:'ใกล้ถึงรอบซื้อ', cls:'follow-due', icon:'🟡'},
+  overdue: {label:'หายไปนาน', cls:'follow-overdue', icon:ICONS.dotRed},
+  due:     {label:'ใกล้ถึงรอบซื้อ', cls:'follow-due', icon:ICONS.dotYellow},
   ok:      {label:'', cls:'', icon:''},
   new:     {label:'', cls:'', icon:''}
 };
@@ -3374,7 +3402,7 @@ function custRowHtml(c){
   const badgeHtml = badge.label ? `<span class="follow-badge ${badge.cls}">${badge.icon} ${badge.label}</span>` : '';
   return `<div class="cust-row">
     <div class="cust-top">
-      <button type="button" class="cust-star ${c.favorite?'on':''}" data-favkey="${escapeHtml(c.key)}" title="ลูกค้าประจำ">${c.favorite?'★':'☆'}</button>
+      <button type="button" class="cust-star ${c.favorite?'on':''}" data-favkey="${escapeHtml(c.key)}" title="ลูกค้าประจำ">${c.favorite?ICONS.starFilled:ICONS.starOutline}</button>
       <div class="cust-info" data-detailkey="${escapeHtml(c.key)}">
         <div class="name">${dotIndicator}${escapeHtml(c.name||'(ไม่ระบุชื่อ)')}</div>
         <div class="sub">${c.phone?escapeHtml(c.phone):'ไม่มีเบอร์โทร'} · ซื้อล่าสุด ${formatDateTH(c.lastDate)}</div>
@@ -3427,7 +3455,7 @@ function openCustomerDetail(key){
   document.getElementById('custDetailCycle').textContent = rec.avgCycleDays ? ('ทุก ~'+rec.avgCycleDays+' วัน') : 'ข้อมูลยังไม่พอ';
   const badge = FOLLOW_BADGE[rec.followStatus] || FOLLOW_BADGE.ok;
   const statusEl = document.getElementById('custDetailStatus');
-  statusEl.textContent = badge.label ? (badge.icon+' '+badge.label+' · ห่างจากซื้อล่าสุด '+rec.daysSinceLast+' วัน') : ('ยังอยู่ในรอบปกติ · ห่างจากซื้อล่าสุด '+rec.daysSinceLast+' วัน');
+  statusEl.innerHTML = badge.label ? (badge.icon+' '+badge.label+' · ห่างจากซื้อล่าสุด '+rec.daysSinceLast+' วัน') : ('ยังอยู่ในรอบปกติ · ห่างจากซื้อล่าสุด '+rec.daysSinceLast+' วัน');
   statusEl.className = 'hint '+(badge.cls||'');
 
   const topBox = document.getElementById('custDetailTopProducts');
@@ -3584,7 +3612,7 @@ function renderGauge(){
   const gapValEl = document.getElementById('monthGapVal');
   if(gapEl){
     gapEl.classList.toggle('done', reached);
-    if(reached){ gapEl.innerHTML = '🎉 ถึงเป้าหมายเดือนนี้แล้ว!'; }
+    if(reached){ gapEl.innerHTML = ICONS.party+' ถึงเป้าหมายเดือนนี้แล้ว!'; }
     else { gapEl.innerHTML = `ขาดอีก <b>${fmt(gap)}</b> บาท ถึงเป้า`; }
   }
 
@@ -3649,7 +3677,7 @@ function launchConfetti(){
     }
     container.appendChild(el);
   }
-  toast('🎉 ถึงเป้าหมาย 100% แล้ว!');
+  toast(ICONS.party+' ถึงเป้าหมาย 100% แล้ว!');
   setTimeout(()=>container.remove(), 3800);
 }
 
@@ -3705,14 +3733,14 @@ function renderBillGroupedRows(rows, opts={}){
     <div class="list-row" ${delAttr}>
       <div class="info">
         <div class="name">${s.name} ${s.size} ${s.base}</div>
-        <div class="sub">${s.employee ? '👤 '+s.employee+' · ' : ''}${s.colorCode ? 'รหัสสี '+s.colorCode+' · ' : ''}x${s.qty}</div>
+        <div class="sub">${s.employee ? ICONS.user+' '+s.employee+' \u00b7 ' : ''}${s.colorCode ? 'รหัสสี '+s.colorCode+' · ' : ''}x${s.qty}</div>
       </div>
       <div class="amt">${fmt(s.total)}฿</div>
       ${s.seed ? '' : (mode==='full'
-        ? `<button class="del-btn" data-edit="${s.id}" title="แก้ไข">✎</button><button class="del-btn" data-delete="${s.id}" title="ลบ">×</button>`
-        : `<button class="del-btn" data-del="${s.id}">✕</button>`)}
+        ? `<button class="del-btn" data-edit="${s.id}" title="แก้ไข">${ICONS.edit}</button><button class="del-btn" data-delete="${s.id}" title="ลบ">${ICONS.close}</button>`
+        : `<button class="del-btn" data-del="${s.id}">${ICONS.close}</button>`)}
     </div>`;
-    return s.seed ? inner : `<div class="swipe-wrap"><div class="swipe-bg">ปัดเพื่อลบ ✕</div>${inner}</div>`;
+    return s.seed ? inner : `<div class="swipe-wrap"><div class="swipe-bg">ปัดเพื่อลบ ${ICONS.close}</div>${inner}</div>`;
   };
   return groups.map(g=>{
     const rowsHtml = g.items.map(rowHtml).join('');
@@ -3892,11 +3920,11 @@ function renderDashboard(){
     } else {
       let html = '';
       if(rising.length){
-        html += `<div class="hint" style="margin:6px 0 2px;">📈 ยอดกำลังเพิ่มขึ้น</div>` + rising.map(c=>`
+        html += `<div class="hint" style="margin:6px 0 2px;">${ICONS.trendUp} ยอดกำลังเพิ่มขึ้น</div>` + rising.map(c=>`
           <div class="list-row"><div class="info"><div class="name">${c.name} ${c.size} ${c.base}</div><div class="sub">เดือนก่อน ${c.prevQty} → เดือนนี้ ${c.qty}</div></div></div>`).join('');
       }
       if(falling.length){
-        html += `<div class="hint" style="margin:10px 0 2px;">📉 ยอดกำลังลดลง</div>` + falling.map(c=>`
+        html += `<div class="hint" style="margin:10px 0 2px;">${ICONS.trendDown} ยอดกำลังลดลง</div>` + falling.map(c=>`
           <div class="list-row"><div class="info"><div class="name">${c.name} ${c.size} ${c.base}</div><div class="sub">เดือนก่อน ${c.prevQty} → เดือนนี้ ${c.qty}</div></div></div>`).join('');
       }
       piBox.innerHTML = html;
@@ -3969,20 +3997,20 @@ function computeSalesPaceStatus(mKeyParam){
   let status, statusCls, statusReason;
   if(!isCurrentMonth){
     if(target>0 && soFarTotal>=target){
-      status='✅ ถึงเป้าหมายเดือนนี้'; statusCls='status-ok';
+      status=ICONS.checkCircle+' ถึงเป้าหมายเดือนนี้'; statusCls='status-ok';
       statusReason = `ทำได้ ${fmt(soFarTotal)} บาท จากเป้า ${fmt(target)} บาท`;
     } else {
       status='สรุปยอดเดือนนี้'; statusCls = (target>0 && soFarTotal>=target*0.9) ? 'status-low' : 'status-over';
       statusReason = target>0 ? `ทำได้ ${fmt(soFarTotal)} บาท (${(soFarTotal/target*100).toFixed(0)}% ของเป้า ${fmt(target)} บาท)` : `ทำได้ ${fmt(soFarTotal)} บาท`;
     }
   } else if(forecastTotal >= target){
-    status='🟢 มีโอกาสถึงเป้า'; statusCls='status-ok';
+    status=ICONS.dotGreen+' มีโอกาสถึงเป้า'; statusCls='status-ok';
     statusReason = paceGap>=0 ? `ตอนนี้เร็วกว่าจังหวะที่ควรทำ ${fmt(Math.abs(paceGap))} บาท` : `แม้จะช้ากว่าจังหวะอยู่ ${fmt(Math.abs(paceGap))} บาท แต่แนวโน้มยังพอไปถึงเป้าได้`;
   } else if(forecastTotal >= target*0.9){
-    status='🟡 ต้องเร่งยอด'; statusCls='status-low';
+    status=ICONS.dotYellow+' ต้องเร่งยอด'; statusCls='status-low';
     statusReason = `ช้ากว่าจังหวะที่ควรทำอยู่ ${fmt(Math.abs(paceGap))} บาท ต้องเพิ่มยอดเฉลี่ย/วันอีกเล็กน้อยถึงจะถึงเป้า`;
   } else {
-    status='🔴 มีความเสี่ยงไม่ถึงเป้า'; statusCls='status-over';
+    status=ICONS.dotRed+' มีความเสี่ยงไม่ถึงเป้า'; statusCls='status-over';
     statusReason = `ช้ากว่าจังหวะที่ควรทำอยู่ ${fmt(Math.abs(paceGap))} บาท ตามจังหวะนี้คาดจะได้แค่ ${fmt(forecastTotal)} บาท (${target>0?(forecastTotal/target*100).toFixed(0):0}% ของเป้า)`;
   }
   return {daily, mKey, dim, todayNum, soFarTotal, daysPassed, avgPerDay, forecastTotal, target, expectedToDate, paceGap, status, statusCls, statusReason, isCurrentMonth};
@@ -4096,8 +4124,6 @@ function renderDashRecentSalesTable(){
   const rowsHtml = top.map((g,i)=>{
     const names = g.items.map(x=>x.name).filter((v,idx,arr)=>arr.indexOf(v)===idx);
     const nameDisplay = escapeHtml(names.length>1 ? (names[0]+` +${names.length-1} รายการ`) : (names[0]||''));
-    const billLabel = g.billId ? '#'+String(g.billId).slice(-8).toUpperCase() : (g.items[0].seed ? '—' : '#'+String(g.firstId).slice(-6).toUpperCase());
-    const custDisplay = escapeHtml(g.customerName || (g.items[0].seed ? 'ไม่ระบุ (ข้อมูลเก่า)' : 'ไม่ระบุลูกค้า'));
     let dateDisplay = formatDateTH(g.date);
     const ts = Number(String(g.firstId).split('-')[0]);
     if(!g.items[0].seed && !isNaN(ts) && ts>1e12){
@@ -4107,12 +4133,10 @@ function renderDashRecentSalesTable(){
     return `<tr>
       <td>${i+1}</td>
       <td>${dateDisplay}</td>
-      <td><span class="bill-link">${billLabel}</span></td>
-      <td>${custDisplay}</td>
       <td>${nameDisplay}</td>
       <td>${g.qty}</td>
       <td>฿${fmt(g.total)}</td>
-      <td><span class="status-badge status-ok">✓ สำเร็จ</span></td>
+      <td><span class="status-badge status-ok">${ICONS.check} สำเร็จ</span></td>
       <td><button class="table-action-btn" data-viewsale="${g.firstId}">ดูรายละเอียด</button></td>
     </tr>`;
   }).join('');
@@ -4120,7 +4144,7 @@ function renderDashRecentSalesTable(){
     <div class="table-scroll">
       <table class="data-table">
         <thead><tr>
-          <th>#</th><th>วันที่</th><th>เลขที่บิล</th><th>ลูกค้า</th><th>สินค้า</th><th>จำนวน</th><th>ยอดขาย</th><th>สถานะ</th><th>การดำเนินการ</th>
+          <th>#</th><th>วันที่</th><th>สินค้า</th><th>จำนวน</th><th>ยอดขาย</th><th>สถานะ</th><th>การดำเนินการ</th>
         </tr></thead>
         <tbody>${rowsHtml}</tbody>
       </table>
@@ -4196,7 +4220,7 @@ function renderHdrBell(){
   const items = computeActionItems();
   btn.classList.toggle('has-alerts', items.length>0);
   pop.innerHTML = `<div class="bp-title">รายการที่ต้องติดตาม</div>` +
-    (items.length ? items.map(actionItemHtml).join('') : '<div class="bp-empty">ไม่มีรายการแจ้งเตือนตอนนี้ 🎉</div>');
+    (items.length ? items.map(actionItemHtml).join('') : '<div class="bp-empty">${ICONS.party} ไม่มีรายการแจ้งเตือนตอนนี้</div>');
   pop.querySelectorAll('[data-gotoview]').forEach(el=>el.addEventListener('click', ()=>{
     pop.classList.remove('show');
     switchToView(el.dataset.gotoview);
@@ -4224,9 +4248,9 @@ function computeActionItems(){
   // sales pace
   const pace = computeSalesPaceStatus();
   if(pace.statusCls === 'status-over'){
-    items.push({priority:1, icon:'📉', view:'dash', title:'ยอดขายเสี่ยงไม่ถึงเป้าเดือนนี้', detail:pace.statusReason});
+    items.push({priority:1, icon:ICONS.trendDown, view:'dash', title:'ยอดขายเสี่ยงไม่ถึงเป้าเดือนนี้', detail:pace.statusReason});
   } else if(pace.statusCls === 'status-low'){
-    items.push({priority:2, icon:'⏱️', view:'dash', title:'ต้องเร่งยอดขายให้ทันเป้า', detail:pace.statusReason});
+    items.push({priority:2, icon:ICONS.clock, view:'dash', title:'ต้องเร่งยอดขายให้ทันเป้า', detail:pace.statusReason});
   }
 
   // stock intelligence
@@ -4245,15 +4269,15 @@ function computeActionItems(){
     if(avgPerDay <= 0) return false;
     return (Number(r.remain) / avgPerDay) <= 3;
   });
-  if(oversold.length) items.push({priority:1, icon:'📦', view:'stock', title:`สินค้าติดลบสต็อก ${oversold.length} รายการ`, detail:oversold.slice(0,3).map(r=>r.name+' '+r.size+' '+r.base).join(', ')});
-  if(lowStock.length) items.push({priority:2, icon:'📦', view:'stock', title:`สต็อกใกล้หมด ${lowStock.length} รายการ`, detail:'คาดหมดภายใน 3 วัน ควรเติมด่วน'});
+  if(oversold.length) items.push({priority:1, icon:ICONS.box, view:'stock', title:`สินค้าติดลบสต็อก ${oversold.length} รายการ`, detail:oversold.slice(0,3).map(r=>r.name+' '+r.size+' '+r.base).join(', ')});
+  if(lowStock.length) items.push({priority:2, icon:ICONS.box, view:'stock', title:`สต็อกใกล้หมด ${lowStock.length} รายการ`, detail:'คาดหมดภายใน 3 วัน ควรเติมด่วน'});
 
   // customer follow-up
   const custList = aggregateCustomers();
   const overdueCust = custList.filter(c=>c.followStatus==='overdue');
   const dueCust = custList.filter(c=>c.followStatus==='due');
-  if(overdueCust.length) items.push({priority:1, icon:'👤', view:'customers', title:`ลูกค้าหายไปนาน ${overdueCust.length} คน`, detail:overdueCust.slice(0,3).map(c=>c.name||'(ไม่ระบุชื่อ)').join(', ')});
-  if(dueCust.length) items.push({priority:2, icon:'👤', view:'customers', title:`ลูกค้าใกล้ถึงรอบซื้อ ${dueCust.length} คน`, detail:dueCust.slice(0,3).map(c=>c.name||'(ไม่ระบุชื่อ)').join(', ')});
+  if(overdueCust.length) items.push({priority:1, icon:ICONS.user, view:'customers', title:`ลูกค้าหายไปนาน ${overdueCust.length} คน`, detail:overdueCust.slice(0,3).map(c=>c.name||'(ไม่ระบุชื่อ)').join(', ')});
+  if(dueCust.length) items.push({priority:2, icon:ICONS.user, view:'customers', title:`ลูกค้าใกล้ถึงรอบซื้อ ${dueCust.length} คน`, detail:dueCust.slice(0,3).map(c=>c.name||'(ไม่ระบุชื่อ)').join(', ')});
 
   // commission pass-threshold proximity
   const monthSales = SALES.filter(s=>monthKey(s.date)===mKey);
@@ -4262,7 +4286,7 @@ function computeActionItems(){
   const passTarget = Math.round(target*0.8);
   if(target>0 && monthTotal < passTarget){
     const gap = passTarget - monthTotal;
-    items.push({priority: gap <= passTarget*0.1 ? 1 : 3, icon:'💰', view:'dash', title:'ยังไม่ถึงเกณฑ์ 80% รับค่าคอม', detail:`ขาดอีก ฿${fmt(gap)} ถึงจะเริ่มได้ค่าคอมมิชชั่นเดือนนี้`});
+    items.push({priority: gap <= passTarget*0.1 ? 1 : 3, icon:ICONS.money, view:'dash', title:'ยังไม่ถึงเกณฑ์ 80% รับค่าคอม', detail:`ขาดอีก ฿${fmt(gap)} ถึงจะเริ่มได้ค่าคอมมิชชั่นเดือนนี้`});
   }
 
   items.sort((a,b)=>a.priority-b.priority);
@@ -4283,7 +4307,7 @@ function renderActionCenter(){
   const items = computeActionItems();
   const todayBox = document.getElementById('actionTodayCard');
   if(todayBox){
-    todayBox.innerHTML = items.length ? items.map(actionItemHtml).join('') : '<div class="empty">วันนี้ไม่มีอะไรต้องเร่งจัดการ 🎉</div>';
+    todayBox.innerHTML = items.length ? items.map(actionItemHtml).join('') : `<div class="empty">${ICONS.party} วันนี้ไม่มีอะไรต้องเร่งจัดการ</div>`;
     todayBox.querySelectorAll('[data-gotoview]').forEach(el=>el.addEventListener('click', ()=>switchToView(el.dataset.gotoview)));
   }
 }
@@ -4307,7 +4331,7 @@ async function maybeShowDailyBrief(){
   document.getElementById('briefMonthPct').textContent = pct.toFixed(1)+'%';
   const listBox = document.getElementById('briefActionList');
   const top = items.slice(0,4);
-  listBox.innerHTML = top.length ? top.map(actionItemHtml).join('') : '<div class="empty">วันนี้ไม่มีอะไรต้องเร่งจัดการ 🎉</div>';
+  listBox.innerHTML = top.length ? top.map(actionItemHtml).join('') : `<div class="empty">${ICONS.party} วันนี้ไม่มีอะไรต้องเร่งจัดการ</div>`;
   listBox.querySelectorAll('[data-gotoview]').forEach(el=>el.addEventListener('click', ()=>{
     document.getElementById('dailyBriefModalBg').classList.remove('show');
     switchToView(el.dataset.gotoview);
@@ -5316,7 +5340,7 @@ function renderBulkStockCart(){
         <div class="meta">คงเหลือปัจจุบัน ${r.remain}</div>
       </div>
       <input type="number" placeholder="0" data-bulkqty="${i}" value="${c.qty}">
-      <button class="del-btn" data-bulkrm="${i}">✕</button>
+      <button class="del-btn" data-bulkrm="${i}">${ICONS.close}</button>
     </div>`;
   }).join('');
   box.querySelectorAll('[data-bulkqty]').forEach(inp=>{
