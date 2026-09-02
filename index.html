@@ -713,7 +713,7 @@
     .dash-2col{display:grid; grid-template-columns:minmax(0,2fr) minmax(240px,1fr); gap:20px; align-items:stretch;}
     .dash-2col .sec-title{margin-top:0;}
     /* the narrow side card is almost always shorter than its partner — stretch it to match height and center its content vertically, so the extra space reads as intentional padding instead of a dangling gap */
-    .dash-2col .chart-card, .dash-2col .card{margin-bottom:0; height:100%; box-sizing:border-box; display:flex; flex-direction:column; justify-content:center;}
+    .dash-2col .chart-card, .dash-2col .card{margin-bottom:0; min-height:100%; box-sizing:border-box; display:flex; flex-direction:column; justify-content:center;}
     /* บันทึกยอดขาย: form cards (left, wide) + sticky summary card (right, narrow) instead of one stretched mobile card */
     .entry-grid{display:grid; grid-template-columns:minmax(0,1.65fr) minmax(280px,1fr); gap:22px; align-items:start;}
     .entry-col-side{position:sticky; top:24px;}
