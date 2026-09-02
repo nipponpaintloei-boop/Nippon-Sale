@@ -145,6 +145,7 @@
   .entry-summary-card .total-row .val{color:var(--accent); font-size:23px;}
 
   .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .stat-grid .mks-mini-card{grid-column:1/-1; margin-bottom:0;}
   .stat-card{
     background:linear-gradient(160deg, #ffffff, #f8fafe);
     border:1px solid var(--line); border-radius:var(--radius); padding:15px 14px;
@@ -706,6 +707,7 @@
     .modal{border-radius:18px; max-width:460px; border:1px solid var(--line); max-height:80vh;}
     /* stat cards: fixed card size on desktop — more columns appear as the window widens, cards never stretch */
     .stat-grid{grid-template-columns:repeat(auto-fill, 220px); justify-content:start;}
+    .stat-grid .mks-mini-card{grid-column:auto;}
     .gauge-card{padding:26px 26px;}
     /* trend chart (left, wide) + side card e.g. MKS mini (right, narrow) sit side by side instead of stacking */
     .dash-2col{display:grid; grid-template-columns:minmax(0,2fr) minmax(240px,1fr); gap:20px; align-items:start;}
@@ -1305,8 +1307,23 @@
     </div>
     </div>
 
-    <div class="sec-title"><span class="t">วันนี้ควรทำอะไร?</span></div>
-    <div class="card" id="actionTodayCard" style="padding:6px 12px;"></div>
+    <div class="dash-2col">
+      <div>
+        <div class="sec-title"><span class="t">วันนี้ควรทำอะไร?</span></div>
+        <div class="card" id="actionTodayCard" style="padding:6px 12px;"></div>
+      </div>
+      <div>
+        <div class="sec-title"><span class="t">แนวโน้มยอดขายรายวัน — <span id="dailyTrendMonthLbl"></span></span></div>
+        <div class="chart-card">
+          <div class="bars daily-bars" id="dailyTrendBars"></div>
+          <div class="legend-row">
+            <div class="lg"><span class="sw" style="background:var(--accent);"></span>มียอดขาย</div>
+            <div class="lg"><span class="sw" style="background:var(--surface2); border:1px dashed var(--line);"></span>ยังไม่ถึงวันนี้</div>
+          </div>
+          <div class="pace-highlight" id="dailyTrendForecast" style="margin-top:14px;"></div>
+        </div>
+      </div>
+    </div>
 
     <div class="subtab-row">
       <div class="stbtn active" data-dashtab="overview">ภาพรวม</div>
@@ -1335,30 +1352,13 @@
           <div class="lbl">Ach% — <span id="dashMonthLbl4"></span></div>
           <div class="val" id="dashPct">0%</div>
         </div>
-      </div>
-
-      <div class="dash-2col">
-        <div>
-          <div class="sec-title"><span class="t">แนวโน้มยอดขายรายวัน — <span id="dailyTrendMonthLbl"></span></span></div>
-          <div class="chart-card">
-            <div class="bars daily-bars" id="dailyTrendBars"></div>
-            <div class="legend-row">
-              <div class="lg"><span class="sw" style="background:var(--accent);"></span>มียอดขาย</div>
-              <div class="lg"><span class="sw" style="background:var(--surface2); border:1px dashed var(--line);"></span>ยังไม่ถึงวันนี้</div>
+        <div class="card mks-mini-card" id="mksMiniCard" style="padding:14px 16px; cursor:pointer;">
+          <div class="mks-mini-row">
+            <div>
+              <div class="mks-mini-lbl">ส่วนแบ่งของเรา (NIPPON) เทียบคู่แข่งวันนี้</div>
+              <div class="mks-mini-val" id="mksMiniPct">—</div>
             </div>
-            <div class="pace-highlight" id="dailyTrendForecast" style="margin-top:14px;"></div>
-          </div>
-        </div>
-        <div>
-          <div class="sec-title"><span class="t">มาร์เก็ตแชร์วันนี้ (MKS)</span></div>
-          <div class="card mks-mini-card" id="mksMiniCard" style="padding:14px 16px; cursor:pointer;">
-            <div class="mks-mini-row">
-              <div>
-                <div class="mks-mini-lbl">ส่วนแบ่งของเรา (NIPPON) เทียบคู่แข่งวันนี้</div>
-                <div class="mks-mini-val" id="mksMiniPct">—</div>
-              </div>
-              <div class="mks-mini-arrow">›</div>
-            </div>
+            <div class="mks-mini-arrow">›</div>
           </div>
         </div>
       </div>
