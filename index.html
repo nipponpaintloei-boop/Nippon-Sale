@@ -721,8 +721,9 @@
     /* top row: gauge card (wide) + 2x2 stat quad (narrower, fixed-ish width) side by side */
     .dash-top-row{grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr); align-items:start;}
     .dash-top-row .stat-quad{height:100%;}
-    /* the narrow side card is almost always shorter than its partner — stretch it to match height and center its content vertically, so the extra space reads as intentional padding instead of a dangling gap */
-    .dash-2col .chart-card, .dash-2col .card{margin-bottom:0; min-height:100%; box-sizing:border-box; display:flex; flex-direction:column; justify-content:center;}
+    /* the narrow side card is almost always shorter than its partner — stretch the column to match height, then let the card (not the heading) absorb the extra space, so it never overflows past the row */
+    .dash-2col .dash-col{display:flex; flex-direction:column; min-height:0;}
+    .dash-2col .dash-col .chart-card, .dash-2col .dash-col .card{margin-bottom:0; flex:1; min-height:0; box-sizing:border-box; display:flex; flex-direction:column; justify-content:center;}
     /* บันทึกยอดขาย: form cards (left, wide) + sticky summary card (right, narrow) instead of one stretched mobile card */
     .entry-grid{display:grid; grid-template-columns:minmax(0,1.65fr) minmax(280px,1fr); gap:22px; align-items:start;}
     .entry-col-side{position:sticky; top:24px;}
@@ -1340,7 +1341,7 @@
     </div>
 
     <div class="dash-2col">
-      <div>
+      <div class="dash-col">
         <div class="sec-title"><span class="t">แนวโน้มยอดขายรายวัน — <span id="dailyTrendMonthLbl"></span></span></div>
         <div class="chart-card">
           <div class="bars daily-bars" id="dailyTrendBars"></div>
@@ -1351,7 +1352,7 @@
           <div class="pace-highlight" id="dailyTrendForecast" style="margin-top:14px;"></div>
         </div>
       </div>
-      <div>
+      <div class="dash-col">
         <div class="sec-title"><span class="t">วันนี้ควรทำอะไร?</span></div>
         <div class="card" id="actionTodayCard" style="padding:6px 12px;"></div>
       </div>
