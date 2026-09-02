@@ -268,6 +268,9 @@
   .list-row .name{font-size:13.5px; font-weight:400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .list-row .sub{font-size:11px; color:var(--paper-faint); margin-top:2px; font-family:var(--mono);}
   .list-row .amt{font-family:var(--mono); font-weight:600; font-size:13.5px; color:var(--paper); flex-shrink:0;}
+  .list-row .amt-wrap{display:flex; flex-direction:column; align-items:flex-end; gap:2px; flex-shrink:0;}
+  .list-row .amt-wrap .amt{font-size:13.5px;}
+  .list-row .row-stamp{font-family:var(--mono); font-size:9.5px; color:var(--paper-faint); white-space:nowrap;}
   .list-row .del-btn{
     background:none; border:none; color:var(--paper-faint); font-size:15px; cursor:pointer; flex-shrink:0; padding:4px 2px;
   }
@@ -2848,6 +2851,16 @@ function formatDateTH(iso){
   const [y,m,d] = iso.split('-').map(Number);
   return d + ' ' + THAI_MONTHS[m-1] + ' ' + buddhistYear(y);
 }
+function saleDateTimeLabel(s){
+  const [y,m,d] = String(s.date||'').split('-').map(Number);
+  const dateStr = (d&&m) ? (d+'/'+m) : '';
+  const ms = Number(String(s.id).split('-')[0]);
+  if(!Number.isFinite(ms) || ms < 1000000000000) return dateStr;
+  const dt = new Date(ms);
+  const hh = String(dt.getHours()).padStart(2,'0');
+  const mm = String(dt.getMinutes()).padStart(2,'0');
+  return dateStr + ' · ' + hh + ':' + mm;
+}
 function toast(msg){
   const t = document.getElementById('toast');
   t.innerHTML = msg; t.classList.add('show');
@@ -3748,13 +3761,17 @@ function renderBillGroupedRows(rows, opts={}){
   });
   const rowHtml = s => {
     const delAttr = s.seed ? '' : (mode==='full' ? `data-swipedel="${s.id}"` : `data-swipedel="${s.id}"`);
+    const stampHtml = `<div class="row-stamp">${saleDateTimeLabel(s)}</div>`;
     const inner = `
     <div class="list-row" ${delAttr}>
       <div class="info">
         <div class="name">${s.name} ${s.size} ${s.base}</div>
         <div class="sub">${s.employee ? ICONS.user+' '+s.employee+' \u00b7 ' : ''}${s.colorCode ? 'รหัสสี '+s.colorCode+' · ' : ''}x${s.qty}</div>
       </div>
-      <div class="amt">${fmt(s.total)}฿</div>
+      <div class="amt-wrap">
+        <div class="amt">${fmt(s.total)}฿</div>
+        ${stampHtml}
+      </div>
       ${s.seed ? '' : (mode==='full'
         ? `<button class="del-btn" data-edit="${s.id}" title="แก้ไข">${ICONS.edit}</button><button class="del-btn" data-delete="${s.id}" title="ลบ">${ICONS.close}</button>`
         : `<button class="del-btn" data-del="${s.id}">${ICONS.close}</button>`)}
