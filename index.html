@@ -1409,6 +1409,7 @@
           </div>
         </label>
         <button class="btn btn-teal" id="bulkStockInBtn">+ รับเข้าสต็อกหลายรายการ</button>
+        <button class="btn btn-ghost" id="exportStockCountBtn">ส่งออกใบนับสต็อก (.xlsx)</button>
       </div>
       <div class="search-result-count" id="stockResultCount" style="display:none;"></div>
       <div class="filter-chips" id="stockFilters">
@@ -1603,6 +1604,8 @@
             <div class="val small" id="commBandVal">—</div>
           </div>
         </div>
+
+        <div class="gap-highlight" id="commPassGate">—</div>
 
         <div class="sec-title sub"><span class="t">รายละเอียดค่าคอม</span></div>
         <div class="tier-table" id="commBreakdown"></div>
@@ -2748,6 +2751,35 @@ async function exportProductsExcel(){
   await addAudit('สำรองรายการสินค้า/สต็อก',`ไฟล์ ${fileName} · ${PRODUCTS.length} รายการ`);
   toast('สำรองรายการสินค้า/สต็อกแล้ว — ไฟล์อยู่ใน Downloads');
 }
+// Stock count sheet — for printing and counting physical stock against the system.
+// Sorted alphabetically (not by remain, like the on-screen list) since that's easier
+// to walk shelf-by-shelf with a paper printout. Leaves blank columns for the counted
+// qty and any note, so the sheet can be filled in by hand while counting.
+async function exportStockCountSheet(){
+  if(typeof XLSX==='undefined'){ toast('ไม่สามารถโหลดระบบ Excel ได้ กรุณาเชื่อมต่ออินเทอร์เน็ตแล้วลองใหม่'); return; }
+  const wb=XLSX.utils.book_new();
+  const rows = PRODUCTS.filter(p=>p.name).slice().sort((a,b)=>
+    (a.name||'').localeCompare(b.name||'','th') ||
+    (a.size||'').localeCompare(b.size||'','th') ||
+    (a.base||'').localeCompare(b.base||'','th')
+  );
+  const sheetRows = rows.map((p,i)=>({
+    'ลำดับ':i+1, 'SKU':p.sku||'', 'สินค้า':p.name, 'ขนาด':p.size, 'Base':p.base||'',
+    'สถานะ':statusLabel[statusOf(p.remain)], 'คงเหลือในระบบ':Number(p.remain)||0,
+    'นับได้จริง':null, 'ผลต่าง':null, 'หมายเหตุ':null
+  }));
+  const ws=XLSX.utils.json_to_sheet(sheetRows.length?sheetRows:[{}]);
+  ws['!cols']=[{wch:8},{wch:18},{wch:32},{wch:10},{wch:8},{wch:10},{wch:14},{wch:12},{wch:10},{wch:24}];
+  XLSX.utils.book_append_sheet(wb,ws,'ใบนับสต็อก');
+  const meta=XLSX.utils.aoa_to_sheet([
+    ['NIPPON SALE — ใบนับสต็อกสำหรับปริ้น'],['พิมพ์เมื่อ',new Date().toLocaleString('th-TH')],
+    ['จำนวนรายการ',rows.length],['วิธีใช้','กรอกจำนวนที่นับได้จริงในคอลัมน์ "นับได้จริง" แล้วเทียบกับ "คงเหลือในระบบ"']
+  ]); meta['!cols']=[{wch:20},{wch:50}]; XLSX.utils.book_append_sheet(wb,meta,'ข้อมูลไฟล์');
+  const fileName=`NIPPON-SALE-ใบนับสต็อก-${todayISO()}.xlsx`;
+  XLSX.writeFile(wb,fileName,{compression:true});
+  await addAudit('ส่งออกใบนับสต็อก',`ไฟล์ ${fileName} · ${rows.length} รายการ`);
+  toast('ส่งออกใบนับสต็อกแล้ว — ไฟล์อยู่ใน Downloads');
+}
 async function importBackupFile(file){
   const text=await file.text(); const doc=new DOMParser().parseFromString(text,'text/html'); const node=doc.getElementById('tintBackupJson');
   if(!node) throw new Error('ไม่พบข้อมูลสำรองของ NIPPON SALE');
@@ -3537,6 +3569,7 @@ async function exportCustomersExcel(){
   toast('ส่งออกฐานลูกค้าแล้ว — ไฟล์อยู่ใน Downloads');
 }
 document.getElementById('exportCustomersBtn').addEventListener('click', exportCustomersExcel);
+document.getElementById('exportStockCountBtn').addEventListener('click', exportStockCountSheet);
 
 async function deleteSaleEntry(id){
   const idx = SALES.findIndex(s=>s.id===id);
@@ -4586,6 +4619,18 @@ function renderCommission(){
   pctEl.classList.toggle('good', r.pct>=100);
   pctEl.classList.toggle('warn', r.pct<80);
   document.getElementById('commBandVal').textContent = r.inSpecialBand ? '200,000-400,000' : (target>0 ? 'นอกช่วง 200K-400K' : '—');
+
+  const passTarget = target * 0.8;
+  const passGap = Math.max(0, passTarget - sales);
+  const gateBox = document.getElementById('commPassGate');
+  gateBox.classList.toggle('done', target>0 && r.monthGoalReached);
+  if(target<=0){
+    gateBox.innerHTML = 'ยังไม่ได้ตั้งเป้าหมายเดือนนี้ — ตั้งเป้าก่อนเพื่อดูเกณฑ์รับค่าคอม';
+  } else if(r.monthGoalReached){
+    gateBox.innerHTML = `ผ่านเกณฑ์รับค่าคอมแล้ว ✓ ต้องทำยอดถึง <b>฿${fmt(passTarget)}</b> (80% ของเป้า ${fmt(target)} บาท) — ตอนนี้ทำได้ <b>฿${fmt(sales)}</b> แล้ว`;
+  } else {
+    gateBox.innerHTML = `ต้องทำยอดให้ถึง <b>฿${fmt(passTarget)}</b> (80% ของเป้า ${fmt(target)} บาท) จึงจะเริ่มได้ค่าคอม — ตอนนี้ขาดอีก <b>฿${fmt(passGap)}</b>`;
+  }
 
   const rows = [
     {
