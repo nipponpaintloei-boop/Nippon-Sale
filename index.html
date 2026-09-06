@@ -621,17 +621,38 @@
   .mks-capture .cap-sub{font-size:10.5px; color:var(--paper-faint); margin-top:1px;}
   .mks-capture .cap-title{font-family:var(--disp); font-weight:600; font-size:17px; margin:2px 0 3px;}
   .mks-capture .cap-date{font-size:12px; color:var(--paper-faint); margin-bottom:16px; font-family:var(--mono);}
-  .mks-capture .cap-row{display:flex; align-items:center; justify-content:space-between; padding:10px 2px; border-bottom:1px solid var(--line);}
-  .mks-capture .cap-row.us{background:rgba(47,111,237,0.08); margin:0 -10px; padding:10px 12px; border-radius:10px; border-bottom-color:rgba(47,111,237,0.18);}
-  .mks-capture .cap-left{min-width:0;}
+  .mks-capture .cap-row{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:12px 2px; border-bottom:1px solid var(--line);}
+  .mks-capture .cap-row.us{background:rgba(47,111,237,0.08); margin:0 -10px; padding:12px 12px; border-radius:10px; border-bottom-color:rgba(47,111,237,0.18);}
+  .mks-capture .cap-rank{
+    flex-shrink:0; width:22px; height:22px; border-radius:7px; background:var(--surface2); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-weight:700; font-size:11px; color:var(--paper-dim); margin-top:1px;
+  }
+  .mks-capture .cap-row.rank1 .cap-rank{background:var(--accent); border-color:var(--accent); color:var(--accent-ink);}
+  .mks-capture .cap-left{min-width:0; flex:1;}
   .mks-capture .cap-brand{font-family:var(--disp); font-weight:600; font-size:13.5px; display:flex; align-items:center; gap:6px;}
   .mks-capture .cap-brand .tag-us{font-size:8.5px; font-family:var(--body); font-weight:700; color:var(--accent-ink); background:var(--accent); padding:2px 6px; border-radius:5px;}
   .mks-capture .cap-meta{font-size:10.5px; color:var(--paper-faint); margin-top:3px;}
-  .mks-capture .cap-right{text-align:right; flex-shrink:0; padding-left:10px;}
-  .mks-capture .cap-sales{font-family:var(--mono); font-weight:600; font-size:13.5px;}
+  .mks-capture .cap-note{font-size:10px; color:var(--paper-faint); margin-top:3px; font-style:italic;}
+  .mks-capture .cap-bar-track{width:100%; height:5px; border-radius:4px; background:var(--surface2); margin-top:8px; overflow:hidden;}
+  .mks-capture .cap-bar-fill{height:100%; border-radius:4px; background:var(--accent);}
+  .mks-capture .cap-bar-fill.hit{background:var(--moss);}
+  .mks-capture .cap-right{text-align:right; flex-shrink:0; padding-left:10px; min-width:118px;}
+  .mks-capture .cap-sales{font-family:var(--mono); font-weight:600; font-size:13.5px; display:flex; align-items:baseline; justify-content:flex-end; gap:5px;}
+  .mks-capture .cap-wow{font-family:var(--mono); font-size:10px; font-weight:600; padding:1px 5px; border-radius:5px;}
+  .mks-capture .cap-wow.up{color:var(--moss); background:rgba(31,174,108,0.12);}
+  .mks-capture .cap-wow.down{color:var(--clay); background:rgba(239,90,76,0.12);}
+  .mks-capture .cap-wow.flat{color:var(--paper-faint); background:var(--surface2);}
+  .mks-capture .cap-target{font-family:var(--mono); font-size:10.5px; color:var(--paper-faint); margin-top:3px;}
+  .mks-capture .cap-target .hit{color:var(--moss); font-weight:600;}
   .mks-capture .cap-mks{font-family:var(--mono); font-size:11px; color:var(--accent); margin-top:2px;}
   .mks-capture .cap-total{display:flex; align-items:center; justify-content:space-between; margin-top:14px; padding-top:14px; border-top:1px solid var(--line); font-family:var(--disp); font-weight:700; font-size:14px;}
   .mks-capture .cap-total .v{font-family:var(--mono); color:var(--accent);}
+  .mks-capture .cap-summary{margin-top:12px; padding:12px 14px; background:var(--surface2); border-radius:12px;}
+  .mks-capture .cap-summary-row{display:flex; align-items:center; justify-content:space-between; font-size:11px; color:var(--paper-dim); padding:4px 0;}
+  .mks-capture .cap-summary-row .k{color:var(--paper-faint);}
+  .mks-capture .cap-summary-row .v{font-family:var(--mono); font-weight:600; color:var(--paper);}
+  .mks-capture .cap-summary-row .v.good{color:var(--moss);}
+  .mks-capture .cap-lead{margin-top:8px; font-size:10.5px; color:var(--paper-faint); text-align:center;}
   .mks-capture .cap-foot{margin-top:20px; text-align:center; font-size:9.5px; color:var(--paper-faint); font-family:var(--mono); letter-spacing:0.3px;}
 
   /* ================= AUTH GATE ================= */
@@ -5727,6 +5748,20 @@ function weekAgoISO(iso){
   const d=new Date(iso+'T00:00:00'); d.setDate(d.getDate()-6);
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
+function isoAddDays(iso,n){
+  const d=new Date(iso+'T00:00:00'); d.setDate(d.getDate()+n);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function daysBetweenInclusive(fromIso,toIso){
+  const a=new Date(fromIso+'T00:00:00'), b=new Date(toIso+'T00:00:00');
+  return Math.round((b-a)/86400000)+1;
+}
+function prevPeriodRange(fromIso,toIso){
+  const len=daysBetweenInclusive(fromIso,toIso);
+  const prevTo=isoAddDays(fromIso,-1);
+  const prevFrom=isoAddDays(prevTo,-(len-1));
+  return {prevFrom,prevTo};
+}
 
 /* ---- daily ---- */
 let mksDayState=null; // {date, rows:{BRAND:{pc,sales,note}}}
@@ -5954,26 +5989,91 @@ function buildMksCaptureNode(type){
     ? {totalTarget:0, totalSales:computeMksDayTotal()}
     : computeMksWeekTotals();
 
-  const rowsHtml = MKS_BRANDS.map(b=>{
+  /* previous-period data for WoW / DoD comparison, when it exists in history */
+  let prevRows=null;
+  if(isDay){
+    const prevDate=isoAddDays(mksDayState.date,-1);
+    if(MKS_DAY_HISTORY[prevDate]) prevRows=MKS_DAY_HISTORY[prevDate].rows;
+  }else{
+    const {prevFrom,prevTo}=prevPeriodRange(mksWeekState.from, mksWeekState.to);
+    const prevKey=mksWeekKey(prevFrom,prevTo);
+    if(MKS_WEEK_HISTORY[prevKey]) prevRows=MKS_WEEK_HISTORY[prevKey].rows;
+  }
+
+  /* build per-brand data + rank by sales */
+  const brandData = MKS_BRANDS.map(b=>{
     const r=state.rows[b.key];
     const sales=Number(r.sales)||0;
-    const pct = isDay
+    const target=isDay?0:(Number(r.target)||0);
+    const pctOfTotalTarget = isDay
       ? (totalSales>0 ? (sales/totalSales*100) : 0)
       : (totalTarget>0 ? (sales/totalTarget*100) : 0);
+    const pctOwnTarget = (!isDay && target>0) ? (sales/target*100) : null;
+    let wow=null;
+    if(prevRows && prevRows[b.key]){
+      const prevSales=Number(prevRows[b.key].sales)||0;
+      if(prevSales>0) wow = (sales-prevSales)/prevSales*100;
+      else if(sales>0) wow = 100;
+    }
+    return {b,r,sales,target,pctOfTotalTarget,pctOwnTarget,wow};
+  });
+  const ranked=[...brandData].sort((x,y)=>y.sales-x.sales);
+  ranked.forEach((d,i)=>{ d.rank=i+1; });
+  const rankMap={}; ranked.forEach(d=>{ rankMap[d.b.key]=d.rank; });
+
+  const rowsHtml = brandData.map(d=>{
+    const {b,r,sales,target,pctOfTotalTarget,pctOwnTarget,wow}=d;
+    const rank=rankMap[b.key];
     const pcMeta = isDay ? `PC ${r.pc}` : `PC ${r.pcReg}${r.pcPro&&r.pcPro!=='-'?' + '+r.pcPro+' โปร':''}`;
-    const noteHtml = r.note ? `<div class="cap-meta">${escapeHtml(r.note)}</div>` : '';
-    return `<div class="cap-row ${b.us?'us':''}">
+    const noteHtml = r.note ? `<div class="cap-note">${escapeHtml(r.note)}</div>` : '';
+    const wowHtml = wow===null ? '' :
+      `<span class="cap-wow ${wow>0.4?'up':(wow<-0.4?'down':'flat')}">${wow>0?'▲':(wow<0?'▼':'—')}${Math.abs(wow).toFixed(0)}%</span>`;
+    const targetHtml = (!isDay && target>0)
+      ? `<div class="cap-target">เป้า ${fmt(target)}฿ · <span class="${pctOwnTarget>=100?'hit':''}">${pctOwnTarget>=100?'บรรลุเป้า ':'บรรลุ '}${pctOwnTarget.toFixed(1)}%</span></div>
+         <div class="cap-bar-track"><div class="cap-bar-fill ${pctOwnTarget>=100?'hit':''}" style="width:${Math.min(100,pctOwnTarget)}%"></div></div>`
+      : '';
+    return `<div class="cap-row ${b.us?'us':''} ${rank===1?'rank1':''}">
+      <div class="cap-rank">${rank}</div>
       <div class="cap-left">
         <div class="cap-brand">${b.label}${b.us?'<span class="tag-us">เรา</span>':''}</div>
         <div class="cap-meta">${pcMeta}</div>
+        ${targetHtml}
         ${noteHtml}
       </div>
       <div class="cap-right">
-        <div class="cap-sales">${fmt(sales)}฿</div>
-        <div class="cap-mks">MKS ${pct.toFixed(1)}%</div>
+        <div class="cap-sales">${fmt(sales)}฿ ${wowHtml}</div>
+        <div class="cap-mks">MKS ${pctOfTotalTarget.toFixed(1)}%</div>
       </div>
     </div>`;
   }).join('');
+
+  /* department-level summary for the footer */
+  let summaryHtml='';
+  if(!isDay){
+    const achievePct = totalTarget>0 ? (totalSales/totalTarget*100) : 0;
+    const days = daysBetweenInclusive(mksWeekState.from, mksWeekState.to);
+    const avgPerDay = days>0 ? totalSales/days : 0;
+    const overTargetCount = brandData.filter(d=>d.target>0 && d.sales>=d.target).length;
+    summaryHtml = `<div class="cap-summary">
+      <div class="cap-summary-row"><span class="k">ยอดรวม / เป้ารวม</span><span class="v ${achievePct>=100?'good':''}">${fmt(totalSales)} / ${fmt(totalTarget)}฿ (${achievePct.toFixed(1)}%)</span></div>
+      <div class="cap-summary-row"><span class="k">เฉลี่ยต่อวัน</span><span class="v">${fmt(avgPerDay)}฿ · ${days} วัน</span></div>
+      <div class="cap-summary-row"><span class="k">แบรนด์ที่บรรลุเป้า</span><span class="v ${overTargetCount>0?'good':''}">${overTargetCount}/${MKS_BRANDS.length}</span></div>
+    </div>`;
+  }
+
+  /* headline: our rank + gap to the market leader */
+  const us=brandData.find(d=>d.b.us);
+  let leadHtml='';
+  if(us){
+    const ourRank=rankMap[us.b.key];
+    if(ourRank===1){
+      const second=ranked[1];
+      leadHtml = second ? `เราเป็นอันดับ 1 นำ ${second.b.label} อยู่ ${fmt(us.sales-second.sales)}฿` : 'เราเป็นอันดับ 1';
+    }else{
+      const leader=ranked[0];
+      leadHtml = `เราอันดับ ${ourRank} จาก ${MKS_BRANDS.length} · ตามหลัง ${leader.b.label} (อันดับ 1) อยู่ ${fmt(leader.sales-us.sales)}฿`;
+    }
+  }
 
   node.innerHTML = `
     <div class="cap-hdr">
@@ -5990,6 +6090,8 @@ function buildMksCaptureNode(type){
       <span>ยอดรวมทั้งแผนก</span>
       <span class="v">${fmt(totalSales)}฿</span>
     </div>
+    ${summaryHtml}
+    ${leadHtml?`<div class="cap-lead">${leadHtml}</div>`:''}
     <div class="cap-foot">สร้างจากแอป NIPPON SALE · ${new Date().toLocaleString('th-TH')}</div>
   `;
   return node;
