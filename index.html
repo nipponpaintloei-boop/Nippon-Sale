@@ -1450,6 +1450,9 @@
         </label>
         <button class="btn btn-teal" id="addProductBtn">+ เพิ่มสินค้าใหม่</button>
       </div>
+      <div class="controls-row">
+        <button class="btn btn-ghost" id="exportPriceListBtn" style="width:100%;">ส่งออกรายการสินค้า/ราคา (.xlsx)</button>
+      </div>
       <div id="productsList"></div>
     </div>
   </section>
@@ -2800,6 +2803,33 @@ async function exportStockCountSheet(){
   XLSX.writeFile(wb,fileName,{compression:true});
   await addAudit('ส่งออกใบนับสต็อก',`ไฟล์ ${fileName} · ${rows.length} รายการ`);
   toast('ส่งออกใบนับสต็อกแล้ว — ไฟล์อยู่ใน Downloads');
+}
+// Simple current price list — just name/size/base/price, no stock numbers.
+// Meant for quickly sharing "what do we sell and for how much" (e.g. to a customer
+// or another staff member) without exposing stock/sales figures.
+async function exportPriceList(){
+  if(typeof XLSX==='undefined'){ toast('ไม่สามารถโหลดระบบ Excel ได้ กรุณาเชื่อมต่ออินเทอร์เน็ตแล้วลองใหม่'); return; }
+  const wb=XLSX.utils.book_new();
+  const rows = PRODUCTS.filter(p=>p.name).slice().sort((a,b)=>
+    (a.name||'').localeCompare(b.name||'','th') ||
+    (a.size||'').localeCompare(b.size||'','th') ||
+    (a.base||'').localeCompare(b.base||'','th')
+  );
+  const sheetRows = rows.map((p,i)=>({
+    'ลำดับ':i+1, 'SKU':p.sku||'', 'สินค้า':p.name, 'ขนาด':p.size, 'Base':p.base||'',
+    'ราคา (บาท)':Number(p.price)||0
+  }));
+  const ws=XLSX.utils.json_to_sheet(sheetRows.length?sheetRows:[{}]);
+  ws['!cols']=[{wch:8},{wch:18},{wch:32},{wch:10},{wch:8},{wch:12}];
+  XLSX.utils.book_append_sheet(wb,ws,'ราคาสินค้า');
+  const meta=XLSX.utils.aoa_to_sheet([
+    ['NIPPON SALE — รายการสินค้าและราคาปัจจุบัน'],['ส่งออกเมื่อ',new Date().toLocaleString('th-TH')],
+    ['จำนวนรายการ',rows.length]
+  ]); meta['!cols']=[{wch:20},{wch:50}]; XLSX.utils.book_append_sheet(wb,meta,'ข้อมูลไฟล์');
+  const fileName=`NIPPON-SALE-ราคาสินค้า-${todayISO()}.xlsx`;
+  XLSX.writeFile(wb,fileName,{compression:true});
+  await addAudit('ส่งออกรายการสินค้าและราคา',`ไฟล์ ${fileName} · ${rows.length} รายการ`);
+  toast('ส่งออกรายการสินค้าและราคาแล้ว — ไฟล์อยู่ใน Downloads');
 }
 async function importBackupFile(file){
   const text=await file.text(); const doc=new DOMParser().parseFromString(text,'text/html'); const node=doc.getElementById('tintBackupJson');
@@ -5698,6 +5728,7 @@ document.getElementById('confirmResetBtn').addEventListener('click', async ()=>{
 
 document.getElementById('exportBtn').addEventListener('click',async()=>{if(await ensurePin())await exportExcelFile();});
 document.getElementById('exportProductsBtn').addEventListener('click',async()=>{if(await ensurePin())await exportProductsExcel();});
+document.getElementById('exportPriceListBtn').addEventListener('click', exportPriceList);
 document.getElementById('importBtn').addEventListener('click',async()=>{if(await ensurePin())document.getElementById('importFile').click();});
 document.getElementById('importFile').addEventListener('change',async e=>{
   const f=e.target.files[0];if(!f)return;
