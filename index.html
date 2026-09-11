@@ -337,6 +337,7 @@
   }
   .order-capture .doc-total-bar .lbl{font-family:var(--disp); font-weight:600; font-size:15px;}
   .order-capture .doc-total-bar .v{font-family:var(--mono); font-weight:800; font-size:19px; color:#8fb4ff;}
+  .order-capture .doc-continued{text-align:right; font-size:11.5px; color:#9aa4bd; font-style:italic; margin-top:8px;}
   .order-capture .doc-sign-row{display:flex; gap:40px; margin-top:auto; padding-top:56px;}
   .order-capture .sign-box{flex:1; text-align:center;}
   .order-capture .sign-box .line{border-bottom:1.5px dashed #c7cee0; height:1px; margin-bottom:9px;}
@@ -5790,35 +5791,62 @@ document.getElementById('orderShareBtn').addEventListener('click', async ()=>{
   await shareOrderImage();
 });
 
+const ORDER_ROWS_PER_PAGE = 10; // max order rows per A4 page before splitting into another sheet
+
 async function shareOrderImage(){
   const btn = document.getElementById('orderShareBtn');
   const originalHTML = btn.innerHTML;
-  btn.disabled = true; btn.style.opacity = '0.7'; btn.textContent = 'กำลังสร้างรูปภาพ...';
+  btn.disabled = true; btn.style.opacity = '0.7';
   try{
-    const node = buildOrderCaptureNode();
-    document.body.appendChild(node);
-    // small delay so layout settles before snapshotting
-    await new Promise(r=>setTimeout(r, 60));
-    const canvas = await html2canvas(node, {backgroundColor:'#ffffff', scale:2});
-    document.body.removeChild(node);
-    const filename = `ใบสั่งสินค้า-${todayISO()}.png`;
-    canvas.toBlob(async (blob)=>{
-      if(!blob){ toast('สร้างรูปภาพไม่สำเร็จ'); return; }
-      try{
-        const file = new File([blob], filename, {type:'image/png'});
-        if(navigator.canShare && navigator.canShare({files:[file]})){
-          await navigator.share({files:[file], title: filename});
-        }else{
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+    const chunks = [];
+    for(let i=0;i<orderCart.length;i+=ORDER_ROWS_PER_PAGE) chunks.push(orderCart.slice(i, i+ORDER_ROWS_PER_PAGE));
+    const totalPages = chunks.length;
+    const now = new Date();
+    const docId = 'PO-' + now.toISOString().slice(0,10).replace(/-/g,'') + '-' + now.toTimeString().slice(0,8).replace(/:/g,'');
+    const grandTotalQty = orderCart.reduce((s,c)=>s+(Number(c.qty)||0),0);
+
+    const files = [];
+    for(let p=0; p<totalPages; p++){
+      btn.textContent = totalPages>1 ? `กำลังสร้างรูปภาพ... (${p+1}/${totalPages})` : 'กำลังสร้างรูปภาพ...';
+      const node = buildOrderCaptureNode({
+        pageItems: chunks[p],
+        startIndex: p*ORDER_ROWS_PER_PAGE,
+        pageNum: p+1,
+        totalPages,
+        docId, now,
+        grandTotalQty,
+        grandTotalCount: orderCart.length
+      });
+      document.body.appendChild(node);
+      // small delay so layout settles before snapshotting
+      await new Promise(r=>setTimeout(r, 60));
+      const canvas = await html2canvas(node, {backgroundColor:'#ffffff', scale:2});
+      document.body.removeChild(node);
+      const blob = await new Promise(res=>canvas.toBlob(res, 'image/png'));
+      if(!blob) throw new Error(`สร้างรูปภาพไม่สำเร็จ (หน้า ${p+1})`);
+      const filename = totalPages>1
+        ? `ใบสั่งสินค้า-${todayISO()}-หน้า${p+1}จาก${totalPages}.png`
+        : `ใบสั่งสินค้า-${todayISO()}.png`;
+      files.push(new File([blob], filename, {type:'image/png'}));
+    }
+
+    try{
+      if(navigator.canShare && navigator.canShare({files})){
+        await navigator.share({files, title: files[0].name});
+      }else{
+        // fallback: download each page, staggered slightly so browsers don't block multiple downloads
+        for(let i=0;i<files.length;i++){
+          const url = URL.createObjectURL(files[i]);
+          const a = document.createElement('a'); a.href=url; a.download=files[i].name; document.body.appendChild(a); a.click();
           document.body.removeChild(a); URL.revokeObjectURL(url);
-          toast('บันทึกรูปภาพแล้ว');
+          if(i < files.length-1) await new Promise(r=>setTimeout(r, 300));
         }
-      }catch(shareErr){
-        if(shareErr && shareErr.name==='AbortError'){ /* user cancelled share sheet */ }
-        else toast('แชร์ไม่สำเร็จ: '+shareErr.message);
+        toast(totalPages>1 ? `บันทึกรูปภาพแล้ว ${totalPages} ใบ` : 'บันทึกรูปภาพแล้ว');
       }
-    }, 'image/png');
+    }catch(shareErr){
+      if(shareErr && shareErr.name==='AbortError'){ /* user cancelled share sheet */ }
+      else toast('แชร์ไม่สำเร็จ: '+shareErr.message);
+    }
   }catch(err){
     toast('สร้างรูปภาพไม่สำเร็จ: '+err.message);
   }finally{
@@ -5826,18 +5854,18 @@ async function shareOrderImage(){
   }
 }
 
-function buildOrderCaptureNode(){
+function buildOrderCaptureNode({pageItems, startIndex, pageNum, totalPages, docId, now, grandTotalQty, grandTotalCount}){
   const node = document.createElement('div');
   node.className = 'order-capture';
   const byName = document.getElementById('orderByName').value.trim();
   const note = document.getElementById('orderNote').value.trim();
-  const totalQty = orderCart.reduce((s,c)=>s+(Number(c.qty)||0),0);
-  const now = new Date();
-  const docId = 'PO-' + now.toISOString().slice(0,10).replace(/-/g,'') + '-' + now.toTimeString().slice(0,8).replace(/:/g,'');
+  const isLastPage = pageNum === totalPages;
+  const isMultiPage = totalPages > 1;
+  const pageTotalQty = pageItems.reduce((s,c)=>s+(Number(c.qty)||0),0);
   const dateLabel = now.toLocaleDateString('th-TH', {day:'numeric', month:'long', year:'numeric'});
   const timeLabel = now.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
 
-  const rowsHtml = orderCart.map((c,i)=>{
+  const rowsHtml = pageItems.map((c,i)=>{
     const r = PRODUCTS[c.idx];
     if(!r) return '';
     const barcodeCellId = 'ordbc-'+Math.random().toString(36).slice(2,9);
@@ -5847,7 +5875,7 @@ function buildOrderCaptureNode(){
       c.colorCode ? `<span>รหัสสี ${escapeHtml(c.colorCode)}</span>` : ''
     ].join('');
     return `<div class="doc-row">
-      <div class="c-no">${i+1}</div>
+      <div class="c-no">${startIndex+i+1}</div>
       <div class="c-item">
         <div class="nm">${escapeHtml(r.name)}</div>
         <div class="meta">${metaSpans}</div>
@@ -5856,6 +5884,24 @@ function buildOrderCaptureNode(){
       <div class="c-qty"><div class="n">${c.qty}</div><div class="u">ชิ้น</div></div>
     </div>`;
   }).join('');
+
+  const totalBarHtml = isLastPage
+    ? `<div class="doc-total-bar">
+        <span class="lbl">ยอดรวมทั้งหมด</span>
+        <span class="v">${grandTotalCount} ชนิด · ${grandTotalQty} ชิ้น</span>
+      </div>`
+    : `<div class="doc-total-bar">
+        <span class="lbl">ยอดรวมหน้านี้</span>
+        <span class="v">${pageItems.length} ชนิด · ${pageTotalQty} ชิ้น</span>
+      </div>
+      <div class="doc-continued">มีต่อหน้าถัดไป →</div>`;
+
+  const signHtml = isLastPage
+    ? `<div class="doc-sign-row">
+        <div class="sign-box"><div class="line"></div><div class="lbl">ผู้สั่งสินค้า</div></div>
+        <div class="sign-box"><div class="line"></div><div class="lbl">ผู้อนุมัติ</div></div>
+      </div>`
+    : '';
 
   node.innerHTML = `
     <div class="doc-topbar"></div>
@@ -5874,30 +5920,24 @@ function buildOrderCaptureNode(){
     </div>
     <div class="doc-title-row">
       <div class="doc-title">ใบสั่งสินค้า</div>
-      <div class="doc-title-sub">Purchase Request</div>
+      <div class="doc-title-sub">Purchase Request${isMultiPage ? ` · หน้า ${pageNum}/${totalPages}` : ''}</div>
     </div>
     <div class="doc-meta-grid">
       <div class="doc-meta-item"><span class="k">วันที่ออกเอกสาร</span><span class="v">${dateLabel}</span></div>
       <div class="doc-meta-item"><span class="k">เวลา</span><span class="v">${timeLabel} น.</span></div>
       <div class="doc-meta-item"><span class="k">ผู้สั่ง</span><span class="v">${byName ? escapeHtml(byName) : '—'}</span></div>
-      <div class="doc-meta-item"><span class="k">จำนวนรายการ</span><span class="v">${orderCart.length} ชนิด · ${totalQty} ชิ้น</span></div>
+      <div class="doc-meta-item"><span class="k">จำนวนรายการทั้งหมด</span><span class="v">${grandTotalCount} ชนิด · ${grandTotalQty} ชิ้น</span></div>
     </div>
-    ${note ? `<div class="doc-note-box"><span class="lbl">หมายเหตุ:</span><span>${escapeHtml(note)}</span></div>` : ''}
+    ${(note && pageNum===1) ? `<div class="doc-note-box"><span class="lbl">หมายเหตุ:</span><span>${escapeHtml(note)}</span></div>` : ''}
     <div class="doc-table">
       <div class="doc-table-head">
         <span class="c-no">#</span><span class="c-item">รายการสินค้า</span><span class="c-code">รหัสสินค้า</span><span class="c-qty">จำนวน</span>
       </div>
       ${rowsHtml}
     </div>
-    <div class="doc-total-bar">
-      <span class="lbl">ยอดรวมทั้งหมด</span>
-      <span class="v">${orderCart.length} ชนิด · ${totalQty} ชิ้น</span>
-    </div>
-    <div class="doc-sign-row">
-      <div class="sign-box"><div class="line"></div><div class="lbl">ผู้สั่งสินค้า</div></div>
-      <div class="sign-box"><div class="line"></div><div class="lbl">ผู้อนุมัติ</div></div>
-    </div>
-    <div class="doc-footer">สร้างจากแอป NIPPON SALE · ${now.toLocaleString('th-TH')}</div>
+    ${totalBarHtml}
+    ${signHtml}
+    <div class="doc-footer">สร้างจากแอป NIPPON SALE · ${now.toLocaleString('th-TH')}${isMultiPage ? ` · หน้า ${pageNum} จาก ${totalPages}` : ''}</div>
   `;
 
   // show just the product code (SKU) as text — no need for a real scannable barcode image
@@ -5909,6 +5949,8 @@ function buildOrderCaptureNode(){
     }
     cell.innerHTML = `<div class="code-box"><div class="code-eyebrow">SKU</div><div class="code-val">${escapeHtml(sku)}</div></div>`;
   });
+
+  if(!isLastPage) node.querySelector('.doc-footer').style.marginTop = 'auto';
 
   return node;
 }
