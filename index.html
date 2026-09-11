@@ -266,42 +266,85 @@
   .order-summary-row{display:flex; justify-content:space-between; align-items:center; font-size:12.5px; color:var(--paper-faint); margin:2px 2px 12px;}
   .order-summary-row .v{font-family:var(--mono); color:var(--paper); font-weight:600;}
 
-  /* shareable order-slip capture node (built off-screen, same pattern as .mks-capture) */
+  /* shareable order-slip capture node — premium A4 portrait purchase-order document (built off-screen) */
   .order-capture{
-    width:640px; padding:34px; background:var(--ink); color:var(--paper); font-family:var(--body);
+    width:794px; min-height:1123px; /* A4 @ 96dpi portrait */
+    background:#ffffff; color:#1a2540; font-family:var(--body);
     position:fixed; left:-9999px; top:0;
+    padding:64px 58px 46px;
+    display:flex; flex-direction:column;
   }
-  .order-capture .cap-hdr{display:flex; align-items:center; gap:10px; margin-bottom:18px;}
-  .order-capture .cap-mark{width:38px; height:38px; border-radius:10px; background:var(--surface2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-family:var(--disp); font-weight:700; color:var(--accent); font-size:14px;}
-  .order-capture .cap-name{font-family:var(--disp); font-weight:700; font-size:17px;}
-  .order-capture .cap-sub{font-size:12px; color:var(--paper-faint); margin-top:1px;}
-  .order-capture .cap-title{font-family:var(--disp); font-weight:600; font-size:20px; margin:4px 0 3px;}
-  .order-capture .cap-date{font-size:13.5px; color:var(--paper-faint); font-family:var(--mono);}
-  .order-capture .cap-by{font-size:13.5px; color:var(--paper-dim); margin-top:4px;}
-  .order-capture .cap-note-box{margin-top:12px; padding:11px 13px; background:var(--surface2); border-radius:10px; font-size:13.5px; color:var(--paper-dim); font-style:italic;}
-  .order-capture .ord-cap-row{display:flex; align-items:center; gap:16px; padding:16px 2px; border-bottom:1px solid var(--line);}
-  .order-capture .ord-cap-row:first-of-type{margin-top:18px;}
-  .order-capture .ord-cap-barcode{flex-shrink:0; width:110px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;}
-  .order-capture .ord-cap-barcode .code-box{
-    width:100%; background:var(--surface2); border:1px dashed var(--line); border-radius:8px;
-    padding:9px 4px; text-align:center;
+
+  .order-capture .doc-topbar{
+    position:absolute; top:0; left:0; right:0; height:10px;
+    background:linear-gradient(90deg, var(--accent), #5a93f2);
   }
-  .order-capture .ord-cap-barcode .code-box .code-eyebrow{font-size:9px; letter-spacing:0.5px; color:var(--paper-faint); text-transform:uppercase;}
-  .order-capture .ord-cap-barcode .code-box .code-val{font-family:var(--mono); font-weight:700; font-size:13.5px; color:var(--paper); margin-top:2px; word-break:break-all;}
-  .order-capture .ord-cap-barcode .no-code{
-    width:100%; height:50px; border-radius:4px; background:var(--surface2); color:var(--paper-faint);
-    display:flex; align-items:center; justify-content:center; font-size:11px; text-align:center;
+  .order-capture .doc-header{display:flex; align-items:flex-start; justify-content:space-between; padding-bottom:26px; border-bottom:2px solid #101d38;}
+  .order-capture .doc-brand-block{display:flex; align-items:center; gap:14px;}
+  .order-capture .doc-mark{
+    width:52px; height:52px; border-radius:13px; background:#101d38; color:#fff;
+    display:flex; align-items:center; justify-content:center; font-family:var(--disp); font-weight:800; font-size:18px; letter-spacing:0.4px;
   }
-  .order-capture .ord-cap-info{flex:1; min-width:0;}
-  .order-capture .ord-cap-info .nm{font-family:var(--disp); font-weight:600; font-size:15.5px; line-height:1.3;}
-  .order-capture .ord-cap-info .meta{font-size:13.5px; color:var(--paper-dim); margin-top:5px; display:flex; gap:8px; flex-wrap:wrap;}
-  .order-capture .ord-cap-info .meta span{background:var(--surface2); border-radius:6px; padding:3px 8px; font-family:var(--mono);}
-  .order-capture .ord-cap-qty{flex-shrink:0; text-align:center; min-width:56px;}
-  .order-capture .ord-cap-qty .n{font-family:var(--mono); font-weight:700; font-size:24px; color:var(--accent);}
-  .order-capture .ord-cap-qty .u{font-size:10.5px; color:var(--paper-faint); margin-top:2px;}
-  .order-capture .cap-total{display:flex; align-items:center; justify-content:space-between; margin-top:14px; padding-top:14px; border-top:1px solid var(--line); font-family:var(--disp); font-weight:700; font-size:16px;}
-  .order-capture .cap-total .v{font-family:var(--mono); color:var(--accent);}
-  .order-capture .cap-foot{margin-top:20px; text-align:center; font-size:11px; color:var(--paper-faint); font-family:var(--mono); letter-spacing:0.3px;}
+  .order-capture .doc-brand{font-family:var(--disp); font-weight:700; font-size:21px; letter-spacing:0.3px; color:#101d38;}
+  .order-capture .doc-brand-sub{font-size:12.5px; color:#69748e; margin-top:2px;}
+  .order-capture .doc-id-block{text-align:right;}
+  .order-capture .doc-id-label{font-size:10px; letter-spacing:1.2px; text-transform:uppercase; color:#9aa4bd; font-weight:600;}
+  .order-capture .doc-id-val{font-family:var(--mono); font-weight:700; font-size:14.5px; color:#101d38; margin-top:4px;}
+  .order-capture .doc-title-row{display:flex; align-items:baseline; justify-content:space-between; margin-top:26px;}
+  .order-capture .doc-title{font-family:var(--disp); font-weight:700; font-size:28px; color:#101d38; letter-spacing:0.2px;}
+  .order-capture .doc-title-sub{font-family:var(--mono); font-size:12px; color:#9aa4bd; letter-spacing:1.5px; text-transform:uppercase;}
+  .order-capture .doc-meta-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:14px 28px;
+    margin-top:22px; padding:18px 20px; background:#f4f6fb; border-radius:12px;
+  }
+  .order-capture .doc-meta-item{display:flex; flex-direction:column; gap:4px;}
+  .order-capture .doc-meta-item .k{font-size:10.5px; letter-spacing:0.6px; text-transform:uppercase; color:#8b96b0; font-weight:600;}
+  .order-capture .doc-meta-item .v{font-size:15px; color:#1a2540; font-weight:600;}
+  .order-capture .doc-note-box{
+    margin-top:16px; padding:14px 18px; background:#fff8ec; border:1px solid #f0deb3; border-radius:10px;
+    font-size:13.5px; color:#7a5f1f; display:flex; gap:9px; align-items:flex-start;
+  }
+  .order-capture .doc-note-box .lbl{font-weight:700; flex-shrink:0;}
+  .order-capture .doc-table{margin-top:28px;}
+  .order-capture .doc-table-head{
+    display:grid; grid-template-columns:38px 1fr 132px 78px; gap:14px; align-items:center;
+    padding:0 4px 12px; border-bottom:2px solid #101d38;
+    font-size:10.5px; letter-spacing:0.8px; text-transform:uppercase; color:#69748e; font-weight:700;
+  }
+  .order-capture .doc-table-head .c-qty, .order-capture .doc-table-head .c-code{text-align:center;}
+  .order-capture .doc-row{
+    display:grid; grid-template-columns:38px 1fr 132px 78px; gap:14px; align-items:center;
+    padding:16px 4px; border-bottom:1px solid #e7eaf2;
+  }
+  .order-capture .doc-row:nth-child(even){background:#fafbfd;}
+  .order-capture .doc-row .c-no{font-family:var(--mono); font-weight:700; font-size:14px; color:#9aa4bd; text-align:center;}
+  .order-capture .doc-row .nm{font-family:var(--disp); font-weight:600; font-size:15.5px; color:#101d38; line-height:1.35;}
+  .order-capture .doc-row .meta{font-size:12.5px; color:#69748e; margin-top:4px; display:flex; gap:7px; flex-wrap:wrap;}
+  .order-capture .doc-row .meta span{background:#eef1f8; border-radius:6px; padding:2px 8px; font-family:var(--mono);}
+  .order-capture .c-code{text-align:center;}
+  .order-capture .code-box{
+    display:inline-block; width:100%; background:#f4f6fb; border:1px dashed #c7cee0; border-radius:8px; padding:8px 6px;
+  }
+  .order-capture .code-box .code-eyebrow{font-size:8.5px; letter-spacing:0.5px; color:#9aa4bd; text-transform:uppercase;}
+  .order-capture .code-box .code-val{font-family:var(--mono); font-weight:700; font-size:12.5px; color:#101d38; margin-top:2px; word-break:break-all;}
+  .order-capture .no-code{font-size:11px; color:#b9c0d2; text-align:center;}
+  .order-capture .c-qty{text-align:center;}
+  .order-capture .c-qty .n{font-family:var(--mono); font-weight:800; font-size:21px; color:var(--accent);}
+  .order-capture .c-qty .u{font-size:10px; color:#9aa4bd; margin-top:1px;}
+  .order-capture .doc-total-bar{
+    display:flex; align-items:center; justify-content:space-between; margin-top:6px;
+    padding:18px 20px; background:#101d38; border-radius:12px; color:#fff;
+  }
+  .order-capture .doc-total-bar .lbl{font-family:var(--disp); font-weight:600; font-size:15px;}
+  .order-capture .doc-total-bar .v{font-family:var(--mono); font-weight:800; font-size:19px; color:#8fb4ff;}
+  .order-capture .doc-sign-row{display:flex; gap:40px; margin-top:auto; padding-top:56px;}
+  .order-capture .sign-box{flex:1; text-align:center;}
+  .order-capture .sign-box .line{border-bottom:1.5px dashed #c7cee0; height:1px; margin-bottom:9px;}
+  .order-capture .sign-box .lbl{font-size:12px; color:#69748e; font-weight:600;}
+  .order-capture .doc-footer{
+    margin-top:22px; padding-top:16px; border-top:1px solid #e7eaf2; text-align:center;
+    font-size:10.5px; color:#9aa4bd; font-family:var(--mono); letter-spacing:0.3px;
+  }
 
   .total-row{
     display:flex; justify-content:space-between; align-items:center;
@@ -5756,7 +5799,7 @@ async function shareOrderImage(){
     document.body.appendChild(node);
     // small delay so layout settles before snapshotting
     await new Promise(r=>setTimeout(r, 60));
-    const canvas = await html2canvas(node, {backgroundColor:getComputedStyle(document.documentElement).getPropertyValue('--ink').trim()||'#101d38', scale:2});
+    const canvas = await html2canvas(node, {backgroundColor:'#ffffff', scale:2});
     document.body.removeChild(node);
     const filename = `ใบสั่งสินค้า-${todayISO()}.png`;
     canvas.toBlob(async (blob)=>{
@@ -5789,8 +5832,12 @@ function buildOrderCaptureNode(){
   const byName = document.getElementById('orderByName').value.trim();
   const note = document.getElementById('orderNote').value.trim();
   const totalQty = orderCart.reduce((s,c)=>s+(Number(c.qty)||0),0);
+  const now = new Date();
+  const docId = 'PO-' + now.toISOString().slice(0,10).replace(/-/g,'') + '-' + now.toTimeString().slice(0,8).replace(/:/g,'');
+  const dateLabel = now.toLocaleDateString('th-TH', {day:'numeric', month:'long', year:'numeric'});
+  const timeLabel = now.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
 
-  const rowsHtml = orderCart.map(c=>{
+  const rowsHtml = orderCart.map((c,i)=>{
     const r = PRODUCTS[c.idx];
     if(!r) return '';
     const barcodeCellId = 'ordbc-'+Math.random().toString(36).slice(2,9);
@@ -5799,44 +5846,68 @@ function buildOrderCaptureNode(){
       r.base ? `<span>เบส ${escapeHtml(r.base)}</span>` : '',
       c.colorCode ? `<span>รหัสสี ${escapeHtml(c.colorCode)}</span>` : ''
     ].join('');
-    return `<div class="ord-cap-row">
-      <div class="ord-cap-barcode" data-barcode-cell="${barcodeCellId}" data-sku="${escapeHtml(r.sku||'')}"></div>
-      <div class="ord-cap-info">
+    return `<div class="doc-row">
+      <div class="c-no">${i+1}</div>
+      <div class="c-item">
         <div class="nm">${escapeHtml(r.name)}</div>
         <div class="meta">${metaSpans}</div>
       </div>
-      <div class="ord-cap-qty"><div class="n">${c.qty}</div><div class="u">ชิ้น</div></div>
+      <div class="c-code" data-barcode-cell="${barcodeCellId}" data-sku="${escapeHtml(r.sku||'')}"></div>
+      <div class="c-qty"><div class="n">${c.qty}</div><div class="u">ชิ้น</div></div>
     </div>`;
   }).join('');
 
   node.innerHTML = `
-    <div class="cap-hdr">
-      <div class="cap-mark">NS</div>
-      <div>
-        <div class="cap-name">NIPPON SALE</div>
-        <div class="cap-sub">Nippon Paint · Global House เลย</div>
+    <div class="doc-topbar"></div>
+    <div class="doc-header">
+      <div class="doc-brand-block">
+        <div class="doc-mark">NS</div>
+        <div>
+          <div class="doc-brand">NIPPON SALE</div>
+          <div class="doc-brand-sub">Nippon Paint · Global House เลย</div>
+        </div>
+      </div>
+      <div class="doc-id-block">
+        <div class="doc-id-label">เลขที่เอกสาร</div>
+        <div class="doc-id-val">${docId}</div>
       </div>
     </div>
-    <div class="cap-title">ใบสั่งสินค้า</div>
-    <div class="cap-date">${new Date().toLocaleString('th-TH')}</div>
-    ${byName ? `<div class="cap-by">ผู้สั่ง: ${escapeHtml(byName)}</div>` : ''}
-    ${note ? `<div class="cap-note-box">${escapeHtml(note)}</div>` : ''}
-    ${rowsHtml}
-    <div class="cap-total">
-      <span>รวมทั้งหมด</span>
+    <div class="doc-title-row">
+      <div class="doc-title">ใบสั่งสินค้า</div>
+      <div class="doc-title-sub">Purchase Request</div>
+    </div>
+    <div class="doc-meta-grid">
+      <div class="doc-meta-item"><span class="k">วันที่ออกเอกสาร</span><span class="v">${dateLabel}</span></div>
+      <div class="doc-meta-item"><span class="k">เวลา</span><span class="v">${timeLabel} น.</span></div>
+      <div class="doc-meta-item"><span class="k">ผู้สั่ง</span><span class="v">${byName ? escapeHtml(byName) : '—'}</span></div>
+      <div class="doc-meta-item"><span class="k">จำนวนรายการ</span><span class="v">${orderCart.length} ชนิด · ${totalQty} ชิ้น</span></div>
+    </div>
+    ${note ? `<div class="doc-note-box"><span class="lbl">หมายเหตุ:</span><span>${escapeHtml(note)}</span></div>` : ''}
+    <div class="doc-table">
+      <div class="doc-table-head">
+        <span class="c-no">#</span><span class="c-item">รายการสินค้า</span><span class="c-code">รหัสสินค้า</span><span class="c-qty">จำนวน</span>
+      </div>
+      ${rowsHtml}
+    </div>
+    <div class="doc-total-bar">
+      <span class="lbl">ยอดรวมทั้งหมด</span>
       <span class="v">${orderCart.length} ชนิด · ${totalQty} ชิ้น</span>
     </div>
-    <div class="cap-foot">สร้างจากแอป NIPPON SALE · ${new Date().toLocaleString('th-TH')}</div>
+    <div class="doc-sign-row">
+      <div class="sign-box"><div class="line"></div><div class="lbl">ผู้สั่งสินค้า</div></div>
+      <div class="sign-box"><div class="line"></div><div class="lbl">ผู้อนุมัติ</div></div>
+    </div>
+    <div class="doc-footer">สร้างจากแอป NIPPON SALE · ${now.toLocaleString('th-TH')}</div>
   `;
 
   // show just the product code (SKU) as text — no need for a real scannable barcode image
   node.querySelectorAll('[data-barcode-cell]').forEach(cell=>{
     const sku = cell.dataset.sku;
     if(!sku){
-      cell.innerHTML = '<div class="no-code">ไม่มี<br>รหัสสินค้า</div>';
+      cell.innerHTML = '<div class="no-code">ไม่มีรหัส</div>';
       return;
     }
-    cell.innerHTML = `<div class="code-box"><div class="code-eyebrow">รหัสสินค้า</div><div class="code-val">${escapeHtml(sku)}</div></div>`;
+    cell.innerHTML = `<div class="code-box"><div class="code-eyebrow">SKU</div><div class="code-val">${escapeHtml(sku)}</div></div>`;
   });
 
   return node;
