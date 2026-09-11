@@ -235,6 +235,70 @@
     background:none; border:none; color:var(--paper-faint); font-size:15px; cursor:pointer; flex-shrink:0; padding:4px 2px;
   }
 
+  /* ================= order / สั่งสินค้า ================= */
+  .ord-row{
+    background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:12px; margin-bottom:9px;
+  }
+  .ord-row .ord-top{display:flex; align-items:flex-start; gap:10px;}
+  .ord-row .ord-info{flex:1; min-width:0;}
+  .ord-row .ord-name{font-size:13.5px; font-weight:500; line-height:1.35;}
+  .ord-row .ord-meta{font-size:11px; color:var(--paper-faint); margin-top:3px; font-family:var(--mono); display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
+  .ord-row .ord-meta .ord-no-sku{color:var(--paper-faint); font-style:italic;}
+  .ord-row .del-btn{
+    background:none; border:none; color:var(--paper-faint); font-size:15px; cursor:pointer; flex-shrink:0; padding:2px;
+  }
+  .ord-row .del-btn:active{color:var(--clay);}
+  .ord-row .ord-bottom{display:flex; align-items:center; gap:8px; margin-top:10px;}
+  .ord-row .ord-cc{
+    flex:1; min-width:0; background:var(--surface); border:1px solid var(--line); border-radius:9px;
+    padding:9px 10px; font-size:13px; color:var(--paper);
+  }
+  .ord-row .ord-qty{display:flex; align-items:stretch; gap:5px; flex-shrink:0;}
+  .ord-row .ord-qty button{
+    width:32px; border-radius:8px; border:1px solid var(--line); background:var(--surface);
+    color:var(--paper); font-size:16px; font-family:var(--mono); cursor:pointer; line-height:1;
+  }
+  .ord-row .ord-qty button:active{background:var(--surface2); color:var(--accent); border-color:var(--accent);}
+  .ord-row .ord-qty input{
+    width:42px; text-align:center; background:var(--surface); border:1px solid var(--line); border-radius:8px;
+    padding:8px 2px; color:var(--paper); font-family:var(--mono); font-size:13px;
+  }
+  .order-summary-row{display:flex; justify-content:space-between; align-items:center; font-size:12.5px; color:var(--paper-faint); margin:2px 2px 12px;}
+  .order-summary-row .v{font-family:var(--mono); color:var(--paper); font-weight:600;}
+
+  /* shareable order-slip capture node (built off-screen, same pattern as .mks-capture) */
+  .order-capture{
+    width:640px; padding:34px; background:var(--ink); color:var(--paper); font-family:var(--body);
+    position:fixed; left:-9999px; top:0;
+  }
+  .order-capture .cap-hdr{display:flex; align-items:center; gap:10px; margin-bottom:18px;}
+  .order-capture .cap-mark{width:38px; height:38px; border-radius:10px; background:var(--surface2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-family:var(--disp); font-weight:700; color:var(--accent); font-size:14px;}
+  .order-capture .cap-name{font-family:var(--disp); font-weight:700; font-size:17px;}
+  .order-capture .cap-sub{font-size:12px; color:var(--paper-faint); margin-top:1px;}
+  .order-capture .cap-title{font-family:var(--disp); font-weight:600; font-size:20px; margin:4px 0 3px;}
+  .order-capture .cap-date{font-size:13.5px; color:var(--paper-faint); font-family:var(--mono);}
+  .order-capture .cap-by{font-size:13.5px; color:var(--paper-dim); margin-top:4px;}
+  .order-capture .cap-note-box{margin-top:12px; padding:11px 13px; background:var(--surface2); border-radius:10px; font-size:13.5px; color:var(--paper-dim); font-style:italic;}
+  .order-capture .ord-cap-row{display:flex; align-items:center; gap:16px; padding:16px 2px; border-bottom:1px solid var(--line);}
+  .order-capture .ord-cap-row:first-of-type{margin-top:18px;}
+  .order-capture .ord-cap-barcode{flex-shrink:0; width:150px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;}
+  .order-capture .ord-cap-barcode canvas{width:100%; height:auto; background:#fff; border-radius:4px; padding:4px;}
+  .order-capture .ord-cap-barcode .no-code{
+    width:100%; height:50px; border-radius:4px; background:var(--surface2); color:var(--paper-faint);
+    display:flex; align-items:center; justify-content:center; font-size:11px; text-align:center;
+  }
+  .order-capture .ord-cap-barcode .code-txt{font-family:var(--mono); font-size:10.5px; color:var(--paper-faint); margin-top:3px;}
+  .order-capture .ord-cap-info{flex:1; min-width:0;}
+  .order-capture .ord-cap-info .nm{font-family:var(--disp); font-weight:600; font-size:15.5px; line-height:1.3;}
+  .order-capture .ord-cap-info .meta{font-size:13.5px; color:var(--paper-dim); margin-top:5px; display:flex; gap:8px; flex-wrap:wrap;}
+  .order-capture .ord-cap-info .meta span{background:var(--surface2); border-radius:6px; padding:3px 8px; font-family:var(--mono);}
+  .order-capture .ord-cap-qty{flex-shrink:0; text-align:center; min-width:56px;}
+  .order-capture .ord-cap-qty .n{font-family:var(--mono); font-weight:700; font-size:24px; color:var(--accent);}
+  .order-capture .ord-cap-qty .u{font-size:10.5px; color:var(--paper-faint); margin-top:2px;}
+  .order-capture .cap-total{display:flex; align-items:center; justify-content:space-between; margin-top:14px; padding-top:14px; border-top:1px solid var(--line); font-family:var(--disp); font-weight:700; font-size:16px;}
+  .order-capture .cap-total .v{font-family:var(--mono); color:var(--accent);}
+  .order-capture .cap-foot{margin-top:20px; text-align:center; font-size:11px; color:var(--paper-faint); font-family:var(--mono); letter-spacing:0.3px;}
+
   .total-row{
     display:flex; justify-content:space-between; align-items:center;
     padding-top:16px; margin-top:6px; border-top:1px solid var(--line);
@@ -1052,6 +1116,13 @@
       </div>
       <button class="icon-btn" id="closeMenuBtn" title="ปิด"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>
     </div>
+    <button class="drawer-item" id="menuOrderBtn">
+      <span class="di-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span>
+      <span class="di-txt">
+        <span class="di-title">สั่งสินค้า</span>
+        <span class="di-sub">เลือกสินค้า/ขนาด/เบส/จำนวน แล้วแชร์เป็นรูปให้หัวหน้า</span>
+      </span>
+    </button>
     <button class="drawer-item" id="menuReportBtn">
       <span class="di-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="12" r="6.5"/><circle cx="15" cy="12" r="6.5"/></svg></span>
       <span class="di-txt">
@@ -1954,6 +2025,38 @@
   </div>
 </div>
 
+<!-- modal: order product (สั่งสินค้าเพิ่ม) -->
+<div class="modal-bg" id="orderModalBg">
+  <div class="modal">
+    <h3>สั่งสินค้าเพิ่ม</h3>
+    <p class="hint">ค้นหาสินค้า เลือกขนาด/เบส ใส่จำนวนที่ต้องการสั่ง แล้วกดแชร์เป็นรูปภาพส่งไลน์ให้หัวหน้าสั่งให้</p>
+    <label class="field">
+      <span class="lbl">ชื่อผู้สั่ง (ไม่บังคับ)</span>
+      <input type="text" id="orderByName" placeholder="เช่น พีซี สมชาย">
+    </label>
+    <label class="field search-wrap">
+      <span class="lbl">ค้นหาสินค้า</span>
+      <input type="text" id="orderSearch" placeholder="พิมพ์ชื่อสินค้าเพื่อเพิ่ม...">
+      <div class="suggest" id="orderSuggest" style="display:none;"></div>
+    </label>
+    <div id="orderCartList" style="margin:12px 0;"></div>
+    <div class="order-summary-row" id="orderSummaryRow" style="display:none;">
+      <span>รวมทั้งหมด</span>
+      <span class="v" id="orderSummaryVal">0 รายการ</span>
+    </div>
+    <label class="field">
+      <span class="lbl">หมายเหตุเพิ่มเติม (ไม่บังคับ)</span>
+      <input type="text" id="orderNote" placeholder="เช่น ขอด่วน รอลูกค้าอยู่">
+    </label>
+    <button class="btn btn-primary" id="orderShareBtn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>
+      แชร์เป็นรูปภาพ
+    </button>
+    <button class="btn btn-ghost" id="orderClearBtn">ล้างรายการ</button>
+    <button class="btn btn-ghost" id="orderCancelBtn">ปิด</button>
+  </div>
+</div>
+
 <!-- modal: stock audit -->
 <div class="modal-bg" id="auditModalBg">
   <div class="modal">
@@ -2095,6 +2198,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
 <script src="/supabase-config.js"></script>
 <script src="/auth.js"></script>
 <script>
@@ -5474,6 +5578,253 @@ document.getElementById('bulkStockSaveBtn').addEventListener('click', async ()=>
   document.getElementById('bulkStockModalBg').classList.remove('show');
   renderStock(); renderDashboard();
 });
+
+/* ================= order product (สั่งสินค้า) ================= */
+let orderCart = []; // [{idx, qty, colorCode}]
+const orderSearch = document.getElementById('orderSearch');
+const orderSuggest = document.getElementById('orderSuggest');
+const ORDER_BY_KEY = 'orderByName';
+
+document.getElementById('menuOrderBtn').addEventListener('click', ()=>{
+  document.getElementById('menuDrawerBg').classList.remove('show');
+  orderCart = [];
+  orderSearch.value = '';
+  document.getElementById('orderNote').value = '';
+  orderSuggest.style.display = 'none';
+  try{
+    document.getElementById('orderByName').value = localStorage.getItem(LOCAL_STORAGE_PREFIX+ORDER_BY_KEY) || '';
+  }catch(e){ document.getElementById('orderByName').value=''; }
+  renderOrderCart();
+  document.getElementById('orderModalBg').classList.add('show');
+});
+document.getElementById('orderByName').addEventListener('change', ()=>{
+  try{ localStorage.setItem(LOCAL_STORAGE_PREFIX+ORDER_BY_KEY, document.getElementById('orderByName').value.trim()); }catch(e){}
+});
+document.getElementById('orderCancelBtn').addEventListener('click', ()=>{
+  document.getElementById('orderModalBg').classList.remove('show');
+});
+document.getElementById('orderModalBg').addEventListener('click', (e)=>{
+  if(e.target.id==='orderModalBg') e.currentTarget.classList.remove('show');
+});
+document.getElementById('orderClearBtn').addEventListener('click', ()=>{
+  if(!orderCart.length) return;
+  if(!confirm('ล้างรายการสั่งสินค้าทั้งหมดหรือไม่?')) return;
+  orderCart = [];
+  renderOrderCart();
+});
+
+orderSearch.addEventListener('input', ()=>{
+  const q = orderSearch.value.trim().toLowerCase();
+  if(!q){ orderSuggest.style.display='none'; return; }
+  const matches = PRODUCTS
+    .map((r,idx)=>({r,idx}))
+    .filter(x=>x.r.name && x.r.name.toLowerCase().includes(q))
+    .slice(0,20);
+  if(!matches.length){ orderSuggest.innerHTML = '<div class="suggest-item">ไม่พบสินค้า</div>'; orderSuggest.style.display='block'; return; }
+  orderSuggest.innerHTML = matches.map(x=>{
+    const skuMeta = x.r.sku ? `บาร์โค้ด ${x.r.sku}` : 'ไม่มีบาร์โค้ด';
+    return `<div class="suggest-item" data-idx="${x.idx}">${x.r.name} ${x.r.size} ${x.r.base}<div class="meta">${skuMeta}</div></div>`;
+  }).join('');
+  orderSuggest.style.display='block';
+});
+orderSuggest.addEventListener('click', (e)=>{
+  const item = e.target.closest('.suggest-item');
+  if(!item || item.dataset.idx===undefined) return;
+  const idx = Number(item.dataset.idx);
+  const existing = orderCart.find(c=>c.idx===idx);
+  if(existing){ existing.qty = (Number(existing.qty)||0) + 1; }
+  else { orderCart.push({idx, qty:1, colorCode:''}); }
+  orderSearch.value = '';
+  orderSuggest.style.display = 'none';
+  renderOrderCart();
+});
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('#orderModalBg .search-wrap')) orderSuggest.style.display = 'none';
+});
+
+function renderOrderCart(){
+  const box = document.getElementById('orderCartList');
+  const summary = document.getElementById('orderSummaryRow');
+  if(!orderCart.length){
+    box.innerHTML = '<div class="empty">ยังไม่ได้เพิ่มสินค้า — ค้นหาด้านบนเพื่อเพิ่มรายการ</div>';
+    summary.style.display = 'none';
+    return;
+  }
+  box.innerHTML = orderCart.map((c,i)=>{
+    const r = PRODUCTS[c.idx];
+    if(!r) return '';
+    const skuHtml = r.sku
+      ? `<span>${ICONS.box} ${r.sku}</span>`
+      : `<span class="ord-no-sku">ไม่มีบาร์โค้ด</span>`;
+    return `
+    <div class="ord-row">
+      <div class="ord-top">
+        <div class="ord-info">
+          <div class="ord-name">${escapeHtml(r.name)} ${escapeHtml(r.size||'')} ${escapeHtml(r.base||'')}</div>
+          <div class="ord-meta">${skuHtml}</div>
+        </div>
+        <button class="del-btn" data-ordrm="${i}">${ICONS.close}</button>
+      </div>
+      <div class="ord-bottom">
+        <input type="text" class="ord-cc" placeholder="รหัสสี (ถ้ามี)" data-ordcc="${i}" value="${escapeHtml(c.colorCode||'')}">
+        <div class="ord-qty">
+          <button type="button" data-ordminus="${i}">−</button>
+          <input type="number" min="1" data-ordqty="${i}" value="${c.qty}">
+          <button type="button" data-ordplus="${i}">+</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('[data-ordcc]').forEach(inp=>{
+    inp.addEventListener('input', ()=>{ orderCart[Number(inp.dataset.ordcc)].colorCode = inp.value; });
+  });
+  box.querySelectorAll('[data-ordqty]').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      const v = Math.max(1, Number(inp.value)||1);
+      orderCart[Number(inp.dataset.ordqty)].qty = v;
+      updateOrderSummary();
+    });
+  });
+  box.querySelectorAll('[data-ordminus]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const i = Number(b.dataset.ordminus);
+      orderCart[i].qty = Math.max(1, (Number(orderCart[i].qty)||1) - 1);
+      renderOrderCart();
+    });
+  });
+  box.querySelectorAll('[data-ordplus]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const i = Number(b.dataset.ordplus);
+      orderCart[i].qty = (Number(orderCart[i].qty)||0) + 1;
+      renderOrderCart();
+    });
+  });
+  box.querySelectorAll('[data-ordrm]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      orderCart.splice(Number(b.dataset.ordrm),1);
+      renderOrderCart();
+    });
+  });
+  updateOrderSummary();
+}
+function updateOrderSummary(){
+  const summary = document.getElementById('orderSummaryRow');
+  if(!orderCart.length){ summary.style.display='none'; return; }
+  const totalQty = orderCart.reduce((s,c)=>s+(Number(c.qty)||0),0);
+  document.getElementById('orderSummaryVal').textContent = `${orderCart.length} ชนิด · ${totalQty} ชิ้น`;
+  summary.style.display = 'flex';
+}
+
+document.getElementById('orderShareBtn').addEventListener('click', async ()=>{
+  if(!orderCart.length){ toast('กรุณาเพิ่มสินค้าที่ต้องการสั่งอย่างน้อย 1 รายการ'); return; }
+  await shareOrderImage();
+});
+
+async function shareOrderImage(){
+  const btn = document.getElementById('orderShareBtn');
+  const originalHTML = btn.innerHTML;
+  btn.disabled = true; btn.style.opacity = '0.7'; btn.textContent = 'กำลังสร้างรูปภาพ...';
+  try{
+    const node = buildOrderCaptureNode();
+    document.body.appendChild(node);
+    // let JsBarcode-drawn canvases fully paint before snapshotting
+    await new Promise(r=>setTimeout(r, 60));
+    const canvas = await html2canvas(node, {backgroundColor:getComputedStyle(document.documentElement).getPropertyValue('--ink').trim()||'#101d38', scale:2});
+    document.body.removeChild(node);
+    const filename = `ใบสั่งสินค้า-${todayISO()}.png`;
+    canvas.toBlob(async (blob)=>{
+      if(!blob){ toast('สร้างรูปภาพไม่สำเร็จ'); return; }
+      try{
+        const file = new File([blob], filename, {type:'image/png'});
+        if(navigator.canShare && navigator.canShare({files:[file]})){
+          await navigator.share({files:[file], title: filename});
+        }else{
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+          document.body.removeChild(a); URL.revokeObjectURL(url);
+          toast('บันทึกรูปภาพแล้ว');
+        }
+      }catch(shareErr){
+        if(shareErr && shareErr.name==='AbortError'){ /* user cancelled share sheet */ }
+        else toast('แชร์ไม่สำเร็จ: '+shareErr.message);
+      }
+    }, 'image/png');
+  }catch(err){
+    toast('สร้างรูปภาพไม่สำเร็จ: '+err.message);
+  }finally{
+    btn.disabled = false; btn.style.opacity = ''; btn.innerHTML = originalHTML;
+  }
+}
+
+function buildOrderCaptureNode(){
+  const node = document.createElement('div');
+  node.className = 'order-capture';
+  const byName = document.getElementById('orderByName').value.trim();
+  const note = document.getElementById('orderNote').value.trim();
+  const totalQty = orderCart.reduce((s,c)=>s+(Number(c.qty)||0),0);
+
+  const rowsHtml = orderCart.map(c=>{
+    const r = PRODUCTS[c.idx];
+    if(!r) return '';
+    const barcodeCellId = 'ordbc-'+Math.random().toString(36).slice(2,9);
+    const metaSpans = [
+      r.size ? `<span>${escapeHtml(r.size)}</span>` : '',
+      r.base ? `<span>เบส ${escapeHtml(r.base)}</span>` : '',
+      c.colorCode ? `<span>รหัสสี ${escapeHtml(c.colorCode)}</span>` : ''
+    ].join('');
+    return `<div class="ord-cap-row">
+      <div class="ord-cap-barcode" data-barcode-cell="${barcodeCellId}" data-sku="${escapeHtml(r.sku||'')}"></div>
+      <div class="ord-cap-info">
+        <div class="nm">${escapeHtml(r.name)}</div>
+        <div class="meta">${metaSpans}</div>
+      </div>
+      <div class="ord-cap-qty"><div class="n">${c.qty}</div><div class="u">ชิ้น</div></div>
+    </div>`;
+  }).join('');
+
+  node.innerHTML = `
+    <div class="cap-hdr">
+      <div class="cap-mark">NS</div>
+      <div>
+        <div class="cap-name">NIPPON SALE</div>
+        <div class="cap-sub">Nippon Paint · Global House เลย</div>
+      </div>
+    </div>
+    <div class="cap-title">ใบสั่งสินค้า</div>
+    <div class="cap-date">${new Date().toLocaleString('th-TH')}</div>
+    ${byName ? `<div class="cap-by">ผู้สั่ง: ${escapeHtml(byName)}</div>` : ''}
+    ${note ? `<div class="cap-note-box">${escapeHtml(note)}</div>` : ''}
+    ${rowsHtml}
+    <div class="cap-total">
+      <span>รวมทั้งหมด</span>
+      <span class="v">${orderCart.length} ชนิด · ${totalQty} ชิ้น</span>
+    </div>
+    <div class="cap-foot">สร้างจากแอป NIPPON SALE · ${new Date().toLocaleString('th-TH')}</div>
+  `;
+
+  // render an actual scannable barcode into each row so the supplier/หัวหน้า can scan directly
+  node.querySelectorAll('[data-barcode-cell]').forEach(cell=>{
+    const sku = cell.dataset.sku;
+    if(!sku){
+      cell.innerHTML = '<div class="no-code">ไม่มี<br>บาร์โค้ด</div>';
+      return;
+    }
+    const canvas = document.createElement('canvas');
+    cell.appendChild(canvas);
+    try{
+      const format = /^\d{13}$/.test(sku) ? 'EAN13' : (/^\d{12}$/.test(sku) ? 'UPC' : 'CODE128');
+      JsBarcode(canvas, sku, {format, displayValue:false, margin:0, height:44, width:2});
+      const codeTxt = document.createElement('div');
+      codeTxt.className = 'code-txt';
+      codeTxt.textContent = sku;
+      cell.appendChild(codeTxt);
+    }catch(e){
+      cell.innerHTML = `<div class="no-code">${escapeHtml(sku)}</div>`;
+    }
+  });
+
+  return node;
+}
 
 /* ================= products / price management ================= */
 document.getElementById('productSearch2').addEventListener('input', renderProductsList);
