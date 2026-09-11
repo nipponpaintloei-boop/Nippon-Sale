@@ -281,13 +281,17 @@
   .order-capture .cap-note-box{margin-top:12px; padding:11px 13px; background:var(--surface2); border-radius:10px; font-size:13.5px; color:var(--paper-dim); font-style:italic;}
   .order-capture .ord-cap-row{display:flex; align-items:center; gap:16px; padding:16px 2px; border-bottom:1px solid var(--line);}
   .order-capture .ord-cap-row:first-of-type{margin-top:18px;}
-  .order-capture .ord-cap-barcode{flex-shrink:0; width:150px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;}
-  .order-capture .ord-cap-barcode canvas{width:100%; height:auto; background:#fff; border-radius:4px; padding:4px;}
+  .order-capture .ord-cap-barcode{flex-shrink:0; width:110px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;}
+  .order-capture .ord-cap-barcode .code-box{
+    width:100%; background:var(--surface2); border:1px dashed var(--line); border-radius:8px;
+    padding:9px 4px; text-align:center;
+  }
+  .order-capture .ord-cap-barcode .code-box .code-eyebrow{font-size:9px; letter-spacing:0.5px; color:var(--paper-faint); text-transform:uppercase;}
+  .order-capture .ord-cap-barcode .code-box .code-val{font-family:var(--mono); font-weight:700; font-size:13.5px; color:var(--paper); margin-top:2px; word-break:break-all;}
   .order-capture .ord-cap-barcode .no-code{
     width:100%; height:50px; border-radius:4px; background:var(--surface2); color:var(--paper-faint);
     display:flex; align-items:center; justify-content:center; font-size:11px; text-align:center;
   }
-  .order-capture .ord-cap-barcode .code-txt{font-family:var(--mono); font-size:10.5px; color:var(--paper-faint); margin-top:3px;}
   .order-capture .ord-cap-info{flex:1; min-width:0;}
   .order-capture .ord-cap-info .nm{font-family:var(--disp); font-weight:600; font-size:15.5px; line-height:1.3;}
   .order-capture .ord-cap-info .meta{font-size:13.5px; color:var(--paper-dim); margin-top:5px; display:flex; gap:8px; flex-wrap:wrap;}
@@ -2039,6 +2043,10 @@
       <input type="text" id="orderSearch" placeholder="พิมพ์ชื่อสินค้าเพื่อเพิ่ม...">
       <div class="suggest" id="orderSuggest" style="display:none;"></div>
     </label>
+    <button type="button" class="btn btn-teal btn-sm" id="orderAddLowStockBtn" style="width:100%; margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:7px;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/></svg>
+      เพิ่มจากของใกล้หมด
+    </button>
     <div id="orderCartList" style="margin:12px 0;"></div>
     <div class="order-summary-row" id="orderSummaryRow" style="display:none;">
       <span>รวมทั้งหมด</span>
@@ -2198,7 +2206,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
 <script src="/supabase-config.js"></script>
 <script src="/auth.js"></script>
 <script>
@@ -5612,6 +5619,26 @@ document.getElementById('orderClearBtn').addEventListener('click', ()=>{
   orderCart = [];
   renderOrderCart();
 });
+document.getElementById('orderAddLowStockBtn').addEventListener('click', ()=>{
+  // pull products that are out of stock or running low (สถานะ "หมด"/"ใกล้หมด" จากหน้าสต็อก) into the order cart
+  const lowRows = PRODUCTS
+    .map((r,idx)=>({r,idx}))
+    .filter(x=>x.r.name && (statusOf(x.r.remain)==='low' || statusOf(x.r.remain)==='out'));
+  if(!lowRows.length){ toast('ตอนนี้ไม่มีสินค้าใกล้หมดหรือหมดสต็อก'); return; }
+  let added = 0, bumped = 0;
+  lowRows.forEach(({r,idx})=>{
+    const existing = orderCart.find(c=>c.idx===idx);
+    if(existing){ bumped++; return; } // already in cart — leave qty as the user set it
+    const remain = Number(r.remain)||0;
+    const suggestedQty = Math.max(1, 3 - remain); // top up to a small buffer of 3
+    orderCart.push({idx, qty:suggestedQty, colorCode:''});
+    added++;
+  });
+  renderOrderCart();
+  if(added && bumped) toast(`เพิ่มสินค้าใกล้หมด ${added} รายการ (มีอยู่แล้ว ${bumped} รายการ)`);
+  else if(added) toast(`เพิ่มสินค้าใกล้หมด ${added} รายการแล้ว`);
+  else toast('สินค้าใกล้หมดทั้งหมดอยู่ในรายการแล้ว');
+});
 
 orderSearch.addEventListener('input', ()=>{
   const q = orderSearch.value.trim().toLowerCase();
@@ -5727,7 +5754,7 @@ async function shareOrderImage(){
   try{
     const node = buildOrderCaptureNode();
     document.body.appendChild(node);
-    // let JsBarcode-drawn canvases fully paint before snapshotting
+    // small delay so layout settles before snapshotting
     await new Promise(r=>setTimeout(r, 60));
     const canvas = await html2canvas(node, {backgroundColor:getComputedStyle(document.documentElement).getPropertyValue('--ink').trim()||'#101d38', scale:2});
     document.body.removeChild(node);
@@ -5802,25 +5829,14 @@ function buildOrderCaptureNode(){
     <div class="cap-foot">สร้างจากแอป NIPPON SALE · ${new Date().toLocaleString('th-TH')}</div>
   `;
 
-  // render an actual scannable barcode into each row so the supplier/หัวหน้า can scan directly
+  // show just the product code (SKU) as text — no need for a real scannable barcode image
   node.querySelectorAll('[data-barcode-cell]').forEach(cell=>{
     const sku = cell.dataset.sku;
     if(!sku){
-      cell.innerHTML = '<div class="no-code">ไม่มี<br>บาร์โค้ด</div>';
+      cell.innerHTML = '<div class="no-code">ไม่มี<br>รหัสสินค้า</div>';
       return;
     }
-    const canvas = document.createElement('canvas');
-    cell.appendChild(canvas);
-    try{
-      const format = /^\d{13}$/.test(sku) ? 'EAN13' : (/^\d{12}$/.test(sku) ? 'UPC' : 'CODE128');
-      JsBarcode(canvas, sku, {format, displayValue:false, margin:0, height:44, width:2});
-      const codeTxt = document.createElement('div');
-      codeTxt.className = 'code-txt';
-      codeTxt.textContent = sku;
-      cell.appendChild(codeTxt);
-    }catch(e){
-      cell.innerHTML = `<div class="no-code">${escapeHtml(sku)}</div>`;
-    }
+    cell.innerHTML = `<div class="code-box"><div class="code-eyebrow">รหัสสินค้า</div><div class="code-val">${escapeHtml(sku)}</div></div>`;
   });
 
   return node;
