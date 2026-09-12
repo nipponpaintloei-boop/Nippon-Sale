@@ -6374,6 +6374,12 @@ function prevPeriodRange(fromIso,toIso){
   return {prevFrom,prevTo};
 }
 
+/* ---- generic debounce helper (used for MKS auto-save while typing) ---- */
+function debounce(fn, delay){
+  let t;
+  return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), delay); };
+}
+
 /* ---- daily ---- */
 let mksDayState=null; // {date, rows:{BRAND:{pc,sales,note}}}
 function newMksDayEntry(date){
@@ -6409,12 +6415,21 @@ function renderMksDayRows(){
   }).join('');
   box.querySelectorAll('.mks-row').forEach(row=>{
     const key=row.dataset.brand;
-    row.querySelector('.m-pc').addEventListener('input', e=>{ mksDayState.rows[key].pc=e.target.value; });
-    row.querySelector('.m-sales').addEventListener('input', e=>{ mksDayState.rows[key].sales=Number(e.target.value)||0; updateMksDayPercents(); });
-    row.querySelector('.m-note').addEventListener('input', e=>{ mksDayState.rows[key].note=e.target.value; });
+    row.querySelector('.m-pc').addEventListener('input', e=>{ mksDayState.rows[key].pc=e.target.value; autosaveMksDay(); });
+    row.querySelector('.m-sales').addEventListener('input', e=>{ mksDayState.rows[key].sales=Number(e.target.value)||0; updateMksDayPercents(); autosaveMksDay(); });
+    row.querySelector('.m-note').addEventListener('input', e=>{ mksDayState.rows[key].note=e.target.value; autosaveMksDay(); });
   });
   updateMksDayPercents();
 }
+/* auto-save the daily entry to history a moment after the person stops typing,
+   so data already typed in survives a refresh even if "save" was never tapped */
+const autosaveMksDay = debounce(async ()=>{
+  if(!mksDayState) return;
+  const date=document.getElementById('mksDayDate').value||mksDayState.date||todayISO();
+  mksDayState.date=date;
+  MKS_DAY_HISTORY[date]=JSON.parse(JSON.stringify(mksDayState));
+  try{ await saveMksDayHistory(); }catch(e){ console.error('autosaveMksDay failed:', e); }
+}, 800);
 function updateMksDayPercents(){
   const total=computeMksDayTotal();
   MKS_BRANDS.forEach(b=>{
@@ -6490,14 +6505,25 @@ function renderMksWeekRows(){
   }).join('');
   box.querySelectorAll('.mks-row').forEach(row=>{
     const key=row.dataset.brand;
-    row.querySelector('.m-pcreg').addEventListener('input', e=>{ mksWeekState.rows[key].pcReg=e.target.value; });
-    row.querySelector('.m-pcpro').addEventListener('input', e=>{ mksWeekState.rows[key].pcPro=e.target.value; });
-    row.querySelector('.m-target').addEventListener('input', e=>{ mksWeekState.rows[key].target=Number(e.target.value)||0; updateMksWeekPercents(); });
-    row.querySelector('.m-sales').addEventListener('input', e=>{ mksWeekState.rows[key].sales=Number(e.target.value)||0; updateMksWeekPercents(); });
-    row.querySelector('.m-note').addEventListener('input', e=>{ mksWeekState.rows[key].note=e.target.value; });
+    row.querySelector('.m-pcreg').addEventListener('input', e=>{ mksWeekState.rows[key].pcReg=e.target.value; autosaveMksWeek(); });
+    row.querySelector('.m-pcpro').addEventListener('input', e=>{ mksWeekState.rows[key].pcPro=e.target.value; autosaveMksWeek(); });
+    row.querySelector('.m-target').addEventListener('input', e=>{ mksWeekState.rows[key].target=Number(e.target.value)||0; updateMksWeekPercents(); autosaveMksWeek(); });
+    row.querySelector('.m-sales').addEventListener('input', e=>{ mksWeekState.rows[key].sales=Number(e.target.value)||0; updateMksWeekPercents(); autosaveMksWeek(); });
+    row.querySelector('.m-note').addEventListener('input', e=>{ mksWeekState.rows[key].note=e.target.value; autosaveMksWeek(); });
   });
   updateMksWeekPercents();
 }
+/* auto-save the weekly entry to history a moment after the person stops typing,
+   so data already typed in survives a refresh even if "save" was never tapped */
+const autosaveMksWeek = debounce(async ()=>{
+  if(!mksWeekState) return;
+  const from=document.getElementById('mksWeekFrom').value||mksWeekState.from;
+  const to=document.getElementById('mksWeekTo').value||mksWeekState.to;
+  if(!from||!to) return;
+  mksWeekState.from=from; mksWeekState.to=to;
+  MKS_WEEK_HISTORY[mksWeekKey(from,to)]=JSON.parse(JSON.stringify(mksWeekState));
+  try{ await saveMksWeekHistory(); }catch(e){ console.error('autosaveMksWeek failed:', e); }
+}, 800);
 function updateMksWeekPercents(){
   const {totalTarget,totalSales}=computeMksWeekTotals();
   MKS_BRANDS.forEach(b=>{
