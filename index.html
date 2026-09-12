@@ -306,24 +306,33 @@
   }
   .order-capture .doc-note-box .lbl{font-weight:700; flex-shrink:0;}
   .order-capture .doc-table{margin-top:28px;}
+  /* NOTE: uses flexbox with fixed-width columns rather than CSS grid — html2canvas
+     does not reliably measure grid-template-columns, which was causing the c-code
+     (SKU) column to collapse/disappear in the captured image. */
   .order-capture .doc-table-head{
-    display:grid; grid-template-columns:38px 1fr 132px 78px; gap:14px; align-items:center;
+    display:flex; align-items:center;
     padding:0 4px 12px; border-bottom:2px solid #101d38;
     font-size:10.5px; letter-spacing:0.8px; text-transform:uppercase; color:#69748e; font-weight:700;
   }
+  .order-capture .doc-table-head .c-no{width:38px; flex:0 0 38px; margin-right:14px; text-align:center;}
+  .order-capture .doc-table-head .c-item{flex:1 1 auto; margin-right:14px;}
   .order-capture .doc-table-head .c-qty, .order-capture .doc-table-head .c-code{text-align:center;}
+  .order-capture .doc-table-head .c-code{width:132px; flex:0 0 132px; margin-right:14px;}
+  .order-capture .doc-table-head .c-qty{width:78px; flex:0 0 78px;}
   .order-capture .doc-row{
-    display:grid; grid-template-columns:38px 1fr 132px 78px; gap:14px; align-items:center;
+    display:flex; align-items:center;
     padding:16px 4px; border-bottom:1px solid #e7eaf2;
   }
   .order-capture .doc-row:nth-child(even){background:#fafbfd;}
-  .order-capture .doc-row .c-no{font-family:var(--mono); font-weight:700; font-size:14px; color:#9aa4bd; text-align:center;}
+  .order-capture .doc-row .c-no{width:38px; flex:0 0 38px; margin-right:14px; font-family:var(--mono); font-weight:700; font-size:14px; color:#9aa4bd; text-align:center;}
+  .order-capture .doc-row .c-item{flex:1 1 auto; margin-right:14px; min-width:0;}
   .order-capture .doc-row .nm{font-family:var(--disp); font-weight:600; font-size:15.5px; color:#101d38; line-height:1.35;}
   .order-capture .doc-row .meta{font-size:12.5px; color:#69748e; margin-top:4px; display:flex; gap:7px; flex-wrap:wrap;}
   .order-capture .doc-row .meta span{background:#eef1f8; border-radius:6px; padding:2px 8px; font-family:var(--mono);}
-  .order-capture .c-code{text-align:center;}
+  .order-capture .c-code{width:132px; flex:0 0 132px; margin-right:14px; text-align:center;}
+  .order-capture .doc-row .c-qty{width:78px; flex:0 0 78px;}
   .order-capture .code-box{
-    display:inline-block; width:100%; background:#f4f6fb; border:1px dashed #c7cee0; border-radius:8px; padding:8px 6px;
+    display:block; width:100%; box-sizing:border-box; background:#f4f6fb; border:1px dashed #c7cee0; border-radius:8px; padding:8px 6px;
   }
   .order-capture .code-box .code-eyebrow{font-size:8.5px; letter-spacing:0.5px; color:#9aa4bd; text-transform:uppercase;}
   .order-capture .code-box .code-val{font-family:var(--mono); font-weight:700; font-size:12.5px; color:#101d38; margin-top:2px; word-break:break-all;}
@@ -5820,9 +5829,9 @@ async function shareOrderImage(){
       document.body.appendChild(node);
       // small delay so layout settles before snapshotting
       await new Promise(r=>setTimeout(r, 60));
-      const canvas = await html2canvas(node, {backgroundColor:'#ffffff', scale:2});
+      const canvas = await html2canvas(node, {backgroundColor:'#ffffff', scale:3, useCORS:true, imageTimeout:0, logging:false});
       document.body.removeChild(node);
-      const blob = await new Promise(res=>canvas.toBlob(res, 'image/png'));
+      const blob = await new Promise(res=>canvas.toBlob(res, 'image/png', 1.0));
       if(!blob) throw new Error(`สร้างรูปภาพไม่สำเร็จ (หน้า ${p+1})`);
       const filename = totalPages>1
         ? `ใบสั่งสินค้า-${todayISO()}-หน้า${p+1}จาก${totalPages}.png`
