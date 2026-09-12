@@ -731,50 +731,63 @@
   .mks-actions button{flex:1; margin-top:0;}
   .mks-actions button svg{width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2;}
 
-  /* hidden capture card used to render the shareable image */
+  /* hidden capture card used to render the shareable image — A4 landscape, professional report layout */
   .mks-capture{
-    position:fixed; left:-9999px; top:0; width:430px; background:var(--ink); color:var(--paper);
-    font-family:var(--body); padding:26px 22px 22px; box-sizing:border-box;
+    position:fixed; left:-9999px; top:0; width:1754px; background:#ffffff; color:var(--paper);
+    font-family:var(--body); padding:64px 72px 56px; box-sizing:border-box;
+    background-image:
+      radial-gradient(ellipse 700px 460px at 100% -6%, rgba(47,111,237,0.05), transparent 60%),
+      radial-gradient(ellipse 600px 420px at -4% 100%, rgba(47,111,237,0.035), transparent 60%);
   }
-  .mks-capture .cap-hdr{display:flex; align-items:center; gap:10px; margin-bottom:20px;}
-  .mks-capture .cap-mark{width:38px; height:38px; border-radius:10px; background:var(--surface2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-family:var(--disp); font-weight:700; color:var(--accent); font-size:14px;}
-  .mks-capture .cap-name{font-family:var(--disp); font-weight:700; font-size:17px;}
-  .mks-capture .cap-sub{font-size:12px; color:var(--paper-faint); margin-top:1px;}
-  .mks-capture .cap-title{font-family:var(--disp); font-weight:600; font-size:19px; margin:2px 0 3px;}
-  .mks-capture .cap-date{font-size:13.5px; color:var(--paper-faint); margin-bottom:16px; font-family:var(--mono);}
-  .mks-capture .cap-row{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding:12px 2px; border-bottom:1px solid var(--line);}
-  .mks-capture .cap-row.us{background:rgba(47,111,237,0.08); margin:0 -10px; padding:12px 12px; border-radius:10px; border-bottom-color:rgba(47,111,237,0.18);}
+  .mks-capture .cap-hdr{display:flex; align-items:flex-start; justify-content:space-between; gap:24px; padding-bottom:28px; margin-bottom:36px; border-bottom:2px solid var(--paper);}
+  .mks-capture .cap-hdr-left{display:flex; align-items:center; gap:18px;}
+  .mks-capture .cap-mark{width:58px; height:58px; border-radius:15px; background:linear-gradient(155deg, var(--accent), #1c4bb0); display:flex; align-items:center; justify-content:center; font-family:var(--disp); font-weight:800; color:#fff; font-size:20px; letter-spacing:0.3px; box-shadow:0 10px 26px -10px rgba(47,111,237,0.55);}
+  .mks-capture .cap-name{font-family:var(--disp); font-weight:700; font-size:25px; letter-spacing:0.2px;}
+  .mks-capture .cap-sub{font-size:15px; color:var(--paper-faint); margin-top:3px;}
+  .mks-capture .cap-hdr-right{text-align:right; flex-shrink:0;}
+  .mks-capture .cap-title{font-family:var(--disp); font-weight:600; font-size:23px;}
+  .mks-capture .cap-date{font-size:15px; color:var(--paper-faint); margin-top:5px; font-family:var(--mono);}
+
+  .mks-capture .cap-body{display:grid; grid-template-columns:1.7fr 1fr; gap:52px; align-items:start;}
+  .mks-capture .cap-list{display:flex; flex-direction:column;}
+  .mks-capture .cap-row{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; padding:19px 4px; border-bottom:1px solid var(--line);}
+  .mks-capture .cap-row:first-child{padding-top:2px;}
+  .mks-capture .cap-row.us{background:rgba(47,111,237,0.06); margin:0 -16px; padding:19px 16px; border-radius:12px; border-bottom-color:rgba(47,111,237,0.16);}
   .mks-capture .cap-rank{
-    flex-shrink:0; width:25px; height:25px; border-radius:7px; background:var(--surface2); border:1px solid var(--line);
-    display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-weight:700; font-size:13px; color:var(--paper-dim); margin-top:1px;
+    flex-shrink:0; width:32px; height:32px; border-radius:9px; background:var(--surface2); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-weight:700; font-size:15px; color:var(--paper-dim); margin-top:2px;
   }
   .mks-capture .cap-row.rank1 .cap-rank{background:var(--accent); border-color:var(--accent); color:var(--accent-ink);}
   .mks-capture .cap-left{min-width:0; flex:1;}
-  .mks-capture .cap-brand{font-family:var(--disp); font-weight:600; font-size:15.5px; display:flex; align-items:center; gap:6px;}
-  .mks-capture .cap-brand .tag-us{font-size:9.5px; font-family:var(--body); font-weight:700; color:var(--accent-ink); background:var(--accent); padding:2px 6px; border-radius:5px;}
-  .mks-capture .cap-meta{font-size:15px; color:var(--paper-dim); margin-top:4px; font-weight:500;}
-  .mks-capture .cap-note{font-size:13.5px; color:var(--paper-dim); margin-top:4px; font-style:italic;}
-  .mks-capture .cap-bar-track{width:100%; height:5px; border-radius:4px; background:var(--surface2); margin-top:8px; overflow:hidden;}
+  .mks-capture .cap-brand{font-family:var(--disp); font-weight:600; font-size:19px; display:flex; align-items:center; gap:8px;}
+  .mks-capture .cap-brand .tag-us{font-size:11px; font-family:var(--body); font-weight:700; color:var(--accent-ink); background:var(--accent); padding:3px 8px; border-radius:6px;}
+  .mks-capture .cap-meta{font-size:16px; color:var(--paper-dim); margin-top:5px; font-weight:500;}
+  .mks-capture .cap-note{font-size:15px; color:var(--paper-dim); margin-top:5px; font-style:italic;}
+  .mks-capture .cap-bar-track{width:100%; max-width:340px; height:6px; border-radius:4px; background:var(--surface2); margin-top:9px; overflow:hidden;}
   .mks-capture .cap-bar-fill{height:100%; border-radius:4px; background:var(--accent);}
   .mks-capture .cap-bar-fill.hit{background:var(--moss);}
-  .mks-capture .cap-right{text-align:right; flex-shrink:0; padding-left:10px; min-width:118px;}
-  .mks-capture .cap-sales{font-family:var(--mono); font-weight:600; font-size:15.5px; display:flex; align-items:baseline; justify-content:flex-end; gap:5px;}
-  .mks-capture .cap-wow{font-family:var(--mono); font-size:11.5px; font-weight:600; padding:1px 5px; border-radius:5px;}
+  .mks-capture .cap-right{text-align:right; flex-shrink:0; padding-left:12px; min-width:150px;}
+  .mks-capture .cap-sales{font-family:var(--mono); font-weight:600; font-size:19px; display:flex; align-items:baseline; justify-content:flex-end; gap:6px;}
+  .mks-capture .cap-wow{font-family:var(--mono); font-size:13px; font-weight:600; padding:2px 6px; border-radius:6px;}
   .mks-capture .cap-wow.up{color:var(--moss); background:rgba(31,174,108,0.12);}
   .mks-capture .cap-wow.down{color:var(--clay); background:rgba(239,90,76,0.12);}
   .mks-capture .cap-wow.flat{color:var(--paper-faint); background:var(--surface2);}
-  .mks-capture .cap-target{font-family:var(--mono); font-size:14.5px; color:var(--paper-dim); margin-top:5px; font-weight:600;}
+  .mks-capture .cap-target{font-family:var(--mono); font-size:15.5px; color:var(--paper-dim); margin-top:6px; font-weight:600;}
   .mks-capture .cap-target .hit{color:var(--moss); font-weight:700;}
-  .mks-capture .cap-mks{font-family:var(--mono); font-size:13px; color:var(--accent); margin-top:2px;}
-  .mks-capture .cap-total{display:flex; align-items:center; justify-content:space-between; margin-top:14px; padding-top:14px; border-top:1px solid var(--line); font-family:var(--disp); font-weight:700; font-size:16px;}
-  .mks-capture .cap-total .v{font-family:var(--mono); color:var(--accent);}
-  .mks-capture .cap-summary{margin-top:12px; padding:12px 14px; background:var(--surface2); border-radius:12px;}
-  .mks-capture .cap-summary-row{display:flex; align-items:center; justify-content:space-between; font-size:14.5px; color:var(--paper-dim); padding:4px 0;}
+  .mks-capture .cap-mks{font-family:var(--mono); font-size:14px; color:var(--accent); margin-top:3px;}
+
+  .mks-capture .cap-side{background:var(--surface2); border-radius:20px; padding:30px 28px; border:1px solid var(--line);}
+  .mks-capture .cap-total{padding-bottom:22px; margin-bottom:22px; border-bottom:1px solid var(--line);}
+  .mks-capture .cap-total .k{font-family:var(--disp); font-weight:500; font-size:13px; letter-spacing:0.6px; text-transform:uppercase; color:var(--paper-faint);}
+  .mks-capture .cap-total .v{font-family:var(--mono); font-weight:700; color:var(--accent); font-size:34px; margin-top:8px; display:block;}
+  .mks-capture .cap-summary{display:flex; flex-direction:column; gap:2px;}
+  .mks-capture .cap-summary-row{display:flex; align-items:center; justify-content:space-between; font-size:15.5px; color:var(--paper-dim); padding:9px 0; border-bottom:1px solid var(--line-soft);}
+  .mks-capture .cap-summary-row:last-child{border-bottom:none;}
   .mks-capture .cap-summary-row .k{color:var(--paper-dim); font-weight:500;}
   .mks-capture .cap-summary-row .v{font-family:var(--mono); font-weight:600; color:var(--paper);}
   .mks-capture .cap-summary-row .v.good{color:var(--moss);}
-  .mks-capture .cap-lead{margin-top:8px; font-size:14.5px; color:var(--paper-dim); text-align:center; font-weight:600;}
-  .mks-capture .cap-foot{margin-top:20px; text-align:center; font-size:11px; color:var(--paper-faint); font-family:var(--mono); letter-spacing:0.3px;}
+  .mks-capture .cap-lead{margin-top:20px; padding-top:20px; border-top:1px solid var(--line); font-size:15.5px; color:var(--paper); text-align:left; font-weight:600; line-height:1.5;}
+  .mks-capture .cap-foot{margin-top:40px; padding-top:18px; border-top:1px solid var(--line); text-align:right; font-size:13px; color:var(--paper-faint); font-family:var(--mono); letter-spacing:0.2px;}
 
   /* ================= AUTH GATE ================= */
   .auth-gate{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:24px;background:var(--ink);background-image:radial-gradient(ellipse 600px 400px at 50% -10%, rgba(47,111,237,0.10), transparent 60%);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
@@ -6548,7 +6561,7 @@ async function shareMksImage(type){
   try{
     const node=buildMksCaptureNode(type);
     document.body.appendChild(node);
-    const canvas=await html2canvas(node, {backgroundColor:getComputedStyle(document.documentElement).getPropertyValue('--ink').trim()||'#121310', scale:2});
+    const canvas=await html2canvas(node, {backgroundColor:'#ffffff', scale:2});
     document.body.removeChild(node);
     const filename = type==='day'
       ? `MKS-รายวัน-${mksDayState.date}.png`
@@ -6675,22 +6688,30 @@ function buildMksCaptureNode(type){
 
   node.innerHTML = `
     <div class="cap-hdr">
-      <div class="cap-mark">NS</div>
-      <div>
-        <div class="cap-name">NIPPON SALE</div>
-        <div class="cap-sub">Nippon Paint · Global House เลย</div>
+      <div class="cap-hdr-left">
+        <div class="cap-mark">NS</div>
+        <div>
+          <div class="cap-name">NIPPON SALE</div>
+          <div class="cap-sub">Nippon Paint · Global House เลย</div>
+        </div>
+      </div>
+      <div class="cap-hdr-right">
+        <div class="cap-title">${title}</div>
+        <div class="cap-date">${dateLabel}</div>
       </div>
     </div>
-    <div class="cap-title">${title}</div>
-    <div class="cap-date">${dateLabel}</div>
-    ${rowsHtml}
-    <div class="cap-total">
-      <span>ยอดรวมทั้งแผนก</span>
-      <span class="v">${fmt(totalSales)}฿</span>
+    <div class="cap-body">
+      <div class="cap-list">${rowsHtml}</div>
+      <div class="cap-side">
+        <div class="cap-total">
+          <span class="k">ยอดรวมทั้งแผนก</span>
+          <span class="v">${fmt(totalSales)}฿</span>
+        </div>
+        ${summaryHtml || '<div class="cap-summary"></div>'}
+        ${leadHtml?`<div class="cap-lead">${leadHtml}</div>`:''}
+      </div>
     </div>
-    ${summaryHtml}
-    ${leadHtml?`<div class="cap-lead">${leadHtml}</div>`:''}
-    <div class="cap-foot">สร้างจากแอป NIPPON SALE · ${new Date().toLocaleString('th-TH')}</div>
+    <div class="cap-foot">${new Date().toLocaleString('th-TH')}</div>
   `;
   return node;
 }
