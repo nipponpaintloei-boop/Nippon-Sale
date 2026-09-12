@@ -5812,18 +5812,22 @@ document.getElementById('orderPdfBtn').addEventListener('click', async ()=>{
 
 const ORDER_ROWS_PER_PAGE = 10; // max order rows per A4 page before splitting into another sheet
 
-// Renders the order cart to one full-resolution canvas per A4 page. Shared by
-// both the image-share and PDF-share flows so the two stay visually identical.
-async function renderOrderCanvases(btn){
+// Renders the order cart page by page, calling onPage(canvas, pageIndex, totalPages)
+// for each page as soon as it's captured, then lets that canvas go out of scope
+// before starting the next page. This matters a lot on phones: holding several
+// full-resolution canvases in memory at once (e.g. for a 9-page order) was
+// exhausting memory on Android and silently freezing mid-export with no error.
+async function renderOrderPages(btn, scale, onPage){
   const chunks = [];
   for(let i=0;i<orderCart.length;i+=ORDER_ROWS_PER_PAGE) chunks.push(orderCart.slice(i, i+ORDER_ROWS_PER_PAGE));
   const totalPages = chunks.length;
   const now = new Date();
   const grandTotalQty = orderCart.reduce((s,c)=>s+(Number(c.qty)||0),0);
 
-  const canvases = [];
   for(let p=0; p<totalPages; p++){
-    btn.textContent = totalPages>1 ? `กำลังสร้างรูปภาพ... (${p+1}/${totalPages})` : 'กำลังสร้างรูปภาพ...';
+    btn.textContent = totalPages>1 ? `กำลังสร้างเอกสาร... (${p+1}/${totalPages})` : 'กำลังสร้างเอกสาร...';
+    // yield so the "กำลังสร้าง..." text actually repaints before the heavy work below
+    await new Promise(r=>setTimeout(r, 0));
     const node = buildOrderCaptureNode({
       pageItems: chunks[p],
       startIndex: p*ORDER_ROWS_PER_PAGE,
@@ -5836,11 +5840,13 @@ async function renderOrderCanvases(btn){
     document.body.appendChild(node);
     // small delay so layout settles before snapshotting
     await new Promise(r=>setTimeout(r, 60));
-    const canvas = await html2canvas(node, {backgroundColor:'#ffffff', scale:3, useCORS:true, imageTimeout:0, logging:false});
+    const canvas = await html2canvas(node, {backgroundColor:'#ffffff', scale, useCORS:true, imageTimeout:0, logging:false});
     document.body.removeChild(node);
-    canvases.push(canvas);
+    await onPage(canvas, p, totalPages);
+    // let the browser breathe / release this page's canvas before rendering the next
+    await new Promise(r=>setTimeout(r, 0));
   }
-  return {canvases, totalPages};
+  return totalPages;
 }
 
 async function shareOrderImage(){
@@ -5848,19 +5854,17 @@ async function shareOrderImage(){
   const originalHTML = btn.innerHTML;
   btn.disabled = true; btn.style.opacity = '0.7';
   try{
-    const {canvases, totalPages} = await renderOrderCanvases(btn);
-
     // Each page stays a separate full-resolution PNG file (not stitched into one
     // long image) so every page keeps full sharpness and stays easy to view on its own.
     const blobs = [];
-    for(let p=0; p<canvases.length; p++){
-      const blob = await new Promise(res=>canvases[p].toBlob(res, 'image/png', 1.0));
+    const totalPages = await renderOrderPages(btn, 3, async (canvas, p, totalPagesInner)=>{
+      const blob = await new Promise(res=>canvas.toBlob(res, 'image/png', 1.0));
       if(!blob) throw new Error(`สร้างรูปภาพไม่สำเร็จ (หน้า ${p+1})`);
-      const filename = totalPages>1
-        ? `ใบสั่งสินค้า-${todayISO()}-หน้า${p+1}จาก${totalPages}.png`
+      const filename = totalPagesInner>1
+        ? `ใบสั่งสินค้า-${todayISO()}-หน้า${p+1}จาก${totalPagesInner}.png`
         : `ใบสั่งสินค้า-${todayISO()}.png`;
       blobs.push(new File([blob], filename, {type:'image/png'}));
-    }
+    });
 
     try{
       if(navigator.canShare && navigator.canShare({files: blobs})){
@@ -5902,20 +5906,26 @@ async function shareOrderPdf(){
   const originalHTML = btn.innerHTML;
   btn.disabled = true; btn.style.opacity = '0.7';
   try{
-    const {canvases, totalPages} = await renderOrderCanvases(btn);
-
-    btn.textContent = 'กำลังสร้าง PDF...';
     const { jsPDF } = window.jspdf;
-    // A4 portrait in mm — each canvas (already an A4-shaped capture) fills one page exactly.
+    // A4 portrait in mm — each page-canvas fills one page exactly.
     const pdf = new jsPDF({unit:'mm', format:'a4', orientation:'portrait'});
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
-    canvases.forEach((canvas, i)=>{
-      if(i>0) pdf.addPage('a4','portrait');
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
-      pdf.addImage(imgData, 'JPEG', 0, 0, pageW, pageH, undefined, 'FAST');
+
+    // Scale 2 (not 3) for the PDF specifically: a multi-page PDF embeds every page's
+    // full bitmap, so on a 9+ page order the higher scale was enough to exhaust memory
+    // on Android Chrome and freeze silently. Scale 2 (~192dpi) is still sharp for a
+    // printed/read document, just lighter — and each page's canvas is fed straight
+    // into the PDF and discarded immediately rather than kept around.
+    let pageIndex = 0;
+    const totalPages = await renderOrderPages(btn, 2, async (canvas)=>{
+      if(pageIndex > 0) pdf.addPage('a4', 'portrait');
+      pdf.addImage(canvas, 'JPEG', 0, 0, pageW, pageH, undefined, 'FAST');
+      pageIndex++;
     });
 
+    btn.textContent = 'กำลังบันทึกไฟล์...';
+    await new Promise(r=>setTimeout(r, 0));
     const filename = totalPages>1
       ? `ใบสั่งสินค้า-${todayISO()}-${totalPages}หน้า.pdf`
       : `ใบสั่งสินค้า-${todayISO()}.pdf`;
