@@ -3489,7 +3489,7 @@ function selectSeries(series){
   colorNoSelect.disabled = false;
   colorNoSelect.innerHTML = colorNos.map(c=>`<option value="${c.replace(/"/g,'&quot;')}">${c}</option>`).join('');
   colorNoSelect.value = colorNos[0];
-  handleColorNoChange(true);
+  handleColorNoChange(false);
 }
 function handleColorNoChange(autoFocusQty){
   if(!currentSeries) return;
@@ -3507,7 +3507,7 @@ function selectProduct(name){
   colorNoField.style.display = 'none';
   colorNoSelect.disabled = true;
   colorNoSelect.innerHTML = '<option>—</option>';
-  resolveProductName(name, true);
+  resolveProductName(name, false);
 }
 
 // Shared tail end of both flows above: once the real product `name` (the same
