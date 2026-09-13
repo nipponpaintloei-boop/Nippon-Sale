@@ -3073,6 +3073,7 @@ async function handleImportProductsFile(file){
     const headers = Object.keys(json[0]);
     const col = {
       name: findImportColKey(headers, ['สินค้า','ชื่อสินค้า','product_name','name']),
+      film: findImportColKey(headers, ['ฟิล์มสี','ฟิล์ม','sheen','finish']),
       size: findImportColKey(headers, ['ขนาด','size','pack_size']),
       base: findImportColKey(headers, ['เบส','base']),
       colorNo: findImportColKey(headers, ['เบอร์สี','เบอร์','colorno','color_no','color']),
@@ -3085,12 +3086,17 @@ async function handleImportProductsFile(file){
       const size = col.size ? String(r[col.size]||'').trim() : '';
       const base = col.base ? String(r[col.base]||'').trim() : '';
       const sku = col.sku ? String(r[col.sku]||'').trim() : '';
-      // Some price lists split out a "เบอร์สี" (color code) column instead of
-      // embedding it in the product name (e.g. VINILEX ALL IN ONE S900/S914/...).
-      // The app itself only tracks color variants via a trailing "(เบอร์สี)" in
-      // the name (see parseSeriesColorNo / SERIES_INDEX below), so fold it in
-      // here — otherwise rows that only differ by เบอร์สี would collide on
-      // name+size+base and silently overwrite each other on import.
+      // Some price lists split variant info into its own column instead of embedding
+      // it in the product name — a "ฟิล์มสี" (sheen/finish, e.g. กึ่งเงา/ด้าน) column,
+      // a "เบอร์สี" (color code, e.g. S900/S914) column, or both at once. The app
+      // itself only tracks these via trailing "(...)" segments in the name (see
+      // parseSeriesColorNo / SERIES_INDEX below), so fold them in here in that
+      // order — ฟิล์มสี first, then เบอร์สี — otherwise rows that only differ by
+      // one of these would collide on name+size+base and silently overwrite each
+      // other on import (and disappear from Products/Stock/sales-entry alike,
+      // since all three read from the same PRODUCT_INDEX/SERIES_INDEX).
+      const film = col.film ? String(r[col.film]||'').trim() : '';
+      if(film) name = `${name} (${film})`;
       const colorNo = col.colorNo ? String(r[col.colorNo]||'').trim() : '';
       if(colorNo && !base) name = `${name} (${colorNo})`;
       const priceRaw = r[col.price];
