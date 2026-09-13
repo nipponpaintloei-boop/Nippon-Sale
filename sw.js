@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nippon-sale-auth-v2-persistent';
+const CACHE_NAME = 'nippon-sale-auth-v3-persistent';
 const SHELL = [
   '/', '/index.html', '/manifest.json', '/auth.js', '/supabase-config.js',
   '/icon-192.png', '/icon-512.png', '/icon-maskable-192.png', '/icon-maskable-512.png',
