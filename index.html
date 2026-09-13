@@ -2401,6 +2401,60 @@ const APP_VERSION = 'NIPPON-SALE-SECURE-2.1-PERSISTENT';
 
 let PRODUCTS = [];      // live, mutable — {sku,name,size,base,price,init,inflow,sold,remain}
 let SALES = [];         // full sales log (seed history + app-entered), each {id,date,name,size,base,price,colorCode,tintPrice,qty,total,sku,seed}
+
+/* ================= month index cache =================
+   Every dashboard/report render used to do SALES.filter(...) over the FULL
+   history (every sale ever entered) just to pull out one month or one day's
+   worth of rows — that scan only gets slower as more history piles up.
+   MONTH_INDEX buckets sales by month (mKey -> Map(id -> saleRow)) so look-ups
+   for "this month" / "today" are bounded by that month's size instead of the
+   whole history. Kept in sync incrementally at every SALES mutation point;
+   rebuildMonthIndex() is the fallback used after any full reload/replace. */
+let MONTH_INDEX = {};
+function midxBucket(mKey){
+  let b = MONTH_INDEX[mKey];
+  if(!b){ b = MONTH_INDEX[mKey] = new Map(); }
+  return b;
+}
+function midxAdd(s){
+  if(!s || !s.date) return;
+  midxBucket(monthKey(s.date)).set(String(s.id), s);
+}
+function midxRemove(s){
+  if(!s || !s.date) return;
+  const b = MONTH_INDEX[monthKey(s.date)];
+  if(b) b.delete(String(s.id));
+}
+function midxRemoveById(id, mKey){
+  const b = MONTH_INDEX[mKey];
+  if(b) b.delete(String(id));
+}
+function rebuildMonthIndex(){
+  MONTH_INDEX = {};
+  SALES.forEach(midxAdd);
+}
+function getMonthSales(mKey){
+  const b = MONTH_INDEX[mKey];
+  return b ? Array.from(b.values()) : [];
+}
+function getDaySales(dateStr){
+  return getMonthSales(monthKey(dateStr)).filter(s=>s.date===dateStr);
+}
+// Bounded range helpers: a 14-day or 1-week lookback never spans more than the
+// current month plus the previous one, so gather just those buckets instead
+// of scanning every month ever recorded.
+function getSalesSince(cutoffDateStr){
+  const mkeys = new Set([monthKey(todayISO()), monthKey(cutoffDateStr)]);
+  let out = [];
+  mkeys.forEach(mk=>out.push(...getMonthSales(mk)));
+  return out.filter(s=>s.date >= cutoffDateStr);
+}
+function getSalesInRange(fromStr, toStr){
+  const mkeys = new Set([monthKey(fromStr), monthKey(toStr)]);
+  let out = [];
+  mkeys.forEach(mk=>out.push(...getMonthSales(mk)));
+  return out.filter(s=>s.date>=fromStr && s.date<=toStr);
+}
 let DASH_MONTH = monthKey(todayISO()); // month currently browsed in the dashboard header month-selector
 let SETTINGS = { targets:{}, defaultTarget: DEFAULT_TARGET };
 const MKS_BRANDS = [
@@ -2612,21 +2666,30 @@ async function resyncSalesTableFull(){
     return true;
   }catch(e){ console.warn('resyncSalesTableFull failed:', e); return false; }
 }
+let _salesRowChangeRerenderTimer = null;
 function applySalesRowChange(payload){
   if(payload.eventType==='DELETE'){
     const id = payload.old && payload.old.id;
     if(!id) return;
     const idx = SALES.findIndex(s=>String(s.id)===String(id));
-    if(idx>=0) SALES.splice(idx,1);
+    if(idx>=0){ midxRemove(SALES[idx]); SALES.splice(idx,1); }
   }else{
     const entry = fromSalesRow(payload.new);
     const idx = SALES.findIndex(s=>String(s.id)===String(entry.id));
-    if(idx>=0) SALES[idx]=entry; else SALES.push(entry);
+    if(idx>=0){ midxRemove(SALES[idx]); SALES[idx]=entry; } else { SALES.push(entry); }
+    midxAdd(entry);
   }
-  try{ localStorage.setItem(LOCAL_STORAGE_PREFIX + STORE_KEYS.sales, JSON.stringify(SALES)); }catch(e){}
-  renderRecent(); renderGauge(); renderDashboard(); renderStock();
-  renderHistMonthOptions(); renderHistMonth(); renderHistDay();
-  if(document.getElementById('view-yearly').classList.contains('active')) renderYearly();
+  // Multiple rows often land back-to-back (e.g. someone at the other counter
+  // saving a multi-item bill fires one event per line). Coalesce the persist +
+  // full re-render into a single pass after the burst settles, instead of
+  // redoing the whole dashboard/stock/history render for every single row.
+  clearTimeout(_salesRowChangeRerenderTimer);
+  _salesRowChangeRerenderTimer = setTimeout(()=>{
+    try{ localStorage.setItem(LOCAL_STORAGE_PREFIX + STORE_KEYS.sales, JSON.stringify(SALES)); }catch(e){}
+    renderRecent(); renderGauge(); renderDashboard(); renderStock();
+    renderHistMonthOptions(); renderHistMonth(); renderHistDay();
+    if(document.getElementById('view-yearly').classList.contains('active')) renderYearly();
+  }, 400);
 }
 
 /* ================= realtime sync across devices ================= */
@@ -2653,7 +2716,7 @@ async function reloadKeyAndRerender(key){
   if(!s || typeof s.value !== 'string') return;
   try{
     if(key===STORE_KEYS.products){ PRODUCTS = JSON.parse(s.value); buildProductIndex(); }
-    else if(key===STORE_KEYS.sales){ SALES = JSON.parse(s.value); }
+    else if(key===STORE_KEYS.sales){ SALES = JSON.parse(s.value); rebuildMonthIndex(); }
     else if(key===STORE_KEYS.settings){
       SETTINGS = JSON.parse(s.value);
     }
@@ -2708,6 +2771,7 @@ async function loadAll(){
     SALES = seedSales();
     await storageSet(STORE_KEYS.sales, JSON.stringify(SALES));
   }
+  rebuildMonthIndex();
 
   try{
     const s = await storageGet(STORE_KEYS.settings);
@@ -2887,7 +2951,7 @@ function daysInMonth(y,m){ return new Date(y,m,0).getDate(); }
 async function checkGoalNotification(){
   const now=new Date(), mKey=monthKey(todayISO()), last=daysInMonth(now.getFullYear(),now.getMonth()+1), day=now.getDate();
   if(day<last-4 || SETTINGS.notifiedMonth===mKey) return;
-  const total=SALES.filter(s=>monthKey(s.date)===mKey).reduce((a,s)=>a+s.total,0), target=getMonthTarget(mKey), pct=target?total/target:0;
+  const total=getMonthSales(mKey).reduce((a,s)=>a+s.total,0), target=getMonthTarget(mKey), pct=target?total/target:0;
   if(pct>=0.8) return;
   const msg=`ใกล้สิ้นเดือนแล้ว: ยอดขาย ${Math.round(pct*100)}% ยังไม่ถึงเป้า 80%`; toast(msg);
   if('Notification' in window){ try{ if(Notification.permission==='default') await Notification.requestPermission(); if(Notification.permission==='granted') new Notification('NIPPON SALE — แจ้งเตือนเป้ายอดขาย',{body:msg}); }catch(e){} }
@@ -2932,7 +2996,7 @@ async function exportExcelFile(isAuto){
     'ขายสะสม':Number(p.sold)||0,'คงเหลือ':Number(p.remain)||0
   }));
   const months=[...new Set(SALES.map(s=>monthKey(s.date)))].sort();
-  const summaryRows=months.map(m=>{const rows=SALES.filter(s=>monthKey(s.date)===m);const total=rows.reduce((a,s)=>a+(Number(s.total)||0),0);return {'เดือน':formatMonthTH(m),'รหัสเดือน':m,'จำนวนรายการ':rows.length,'ยอดขายรวม':total,'เป้าหมาย':getMonthTarget(m),'% เป้า':getMonthTarget(m)?total/getMonthTarget(m):0};});
+  const summaryRows=months.map(m=>{const rows=getMonthSales(m);const total=rows.reduce((a,s)=>a+(Number(s.total)||0),0);return {'เดือน':formatMonthTH(m),'รหัสเดือน':m,'จำนวนรายการ':rows.length,'ยอดขายรวม':total,'เป้าหมาย':getMonthTarget(m),'% เป้า':getMonthTarget(m)?total/getMonthTarget(m):0};});
   const auditRows=(SETTINGS.auditLog||[]).map((x,i)=>({'ลำดับ':i+1,'เวลา':x.time,'การทำรายการ':x.action,'รายละเอียด':x.detail}));
   const add=(data,name,widths)=>{const ws=XLSX.utils.json_to_sheet(data.length?data:[{}]); if(widths) ws['!cols']=widths.map(w=>({wch:w})); XLSX.utils.book_append_sheet(wb,ws,name);};
   add(salesRows,'ประวัติการขาย',[8,14,32,12,8,16,14,14,10,16,18,22]);
@@ -3711,6 +3775,7 @@ document.getElementById('saveSaleBtn').addEventListener('click', async ()=>{
 
   items.forEach(entry=>{
     SALES.push(entry);
+    midxAdd(entry);
     const row = findProductRow(entry.sku, entry.name, entry.size, entry.base);
     if(row){ row.sold = (Number(row.sold)||0) + entry.qty; row.remain = (Number(row.remain)||0) - entry.qty; }
   });
@@ -3996,6 +4061,7 @@ async function deleteSaleEntry(id){
     row.remain = (Number(row.remain)||0) + entry.qty;
   }
   SALES.splice(idx,1);
+  midxRemove(entry);
   await saveSales(); await saveProducts();
   toast('ลบรายการแล้ว');
   renderRecent(); renderGauge(); renderDashboard();
@@ -4004,7 +4070,7 @@ async function deleteSaleEntry(id){
 /* ================= share / copy summary ================= */
 document.getElementById('shareBtn').addEventListener('click', ()=>{
   const today = todayISO();
-  const todays = SALES.filter(s=>s.date===today);
+  const todays = getDaySales(today);
   if(!todays.length){ toast('ยังไม่มีรายการขายวันนี้'); return; }
   let text = `สรุปยอดขาย ${formatDateTH(today)}\n`;
   todays.forEach((s,i)=>{
@@ -4029,7 +4095,7 @@ function fallbackCopy(text){
 function renderGauge(){
   const today = todayISO();
   const mKey = monthKey(today);
-  const monthTotal = SALES.filter(s=>monthKey(s.date)===mKey).reduce((a,s)=>a+s.total,0);
+  const monthTotal = getMonthSales(mKey).reduce((a,s)=>a+s.total,0);
   const target = getMonthTarget(mKey);
   const pct = target > 0 ? Math.min(1, monthTotal/target) : 0;
   document.getElementById('monthTotal').textContent = fmt(monthTotal);
@@ -4058,7 +4124,7 @@ function renderGauge(){
   const now = new Date();
   const dim = daysInMonth(now.getFullYear(), now.getMonth()+1);
   const dailyTarget = target>0 ? target/dim : 0;
-  const todayTotal = SALES.filter(s=>s.date===today).reduce((a,s)=>a+s.total,0);
+  const todayTotal = getDaySales(today).reduce((a,s)=>a+s.total,0);
   const reached = target>0 && monthTotal>=target;
   const gap = Math.max(0, target - monthTotal);
   const daysLeft = Math.max(1, dim - now.getDate() + 1); // includes today
@@ -4106,7 +4172,7 @@ function renderGauge(){
 /* ================= target celebration (confetti) ================= */
 function maybeCelebrateTarget(){
   const mKey = monthKey(todayISO());
-  const monthTotal = SALES.filter(s=>monthKey(s.date)===mKey).reduce((a,s)=>a+s.total,0);
+  const monthTotal = getMonthSales(mKey).reduce((a,s)=>a+s.total,0);
   const target = getMonthTarget(mKey);
   if(target>0 && monthTotal>=target && SETTINGS.celebratedMonth!==mKey){
     launchConfetti();
@@ -4259,7 +4325,7 @@ function enableSwipeToDelete(container, onDelete){
 /* ================= recent list (today, entry tab) ================= */
 function renderRecent(){
   const today = todayISO();
-  const todays = SALES.filter(s=>s.date===today).slice().reverse();
+  const todays = getDaySales(today).slice().reverse();
   const box = document.getElementById('recentList');
   if(!todays.length){ box.innerHTML = '<div class="empty">ยังไม่มีรายการขายวันนี้</div>'; return; }
   box.innerHTML = renderBillGroupedRows(todays, {mode:'simple'});
@@ -4272,12 +4338,12 @@ function renderDashboard(){
   const today = todayISO();
   const mKey = monthKey(today);
   const dashMKey = DASH_MONTH || mKey; // month picked in the header selector; defaults to current month
-  const todaySales = SALES.filter(s=>s.date===today);
-  const monthSales = SALES.filter(s=>monthKey(s.date)===mKey);
+  const todaySales = getDaySales(today);
+  const monthSales = getMonthSales(mKey);
   const monthTotal = monthSales.reduce((a,s)=>a+s.total,0);
   const target = getMonthTarget(mKey);
 
-  const overviewSales = SALES.filter(s=>monthKey(s.date)===dashMKey);
+  const overviewSales = getMonthSales(dashMKey);
   const overviewTotal = overviewSales.reduce((a,s)=>a+s.total,0);
   const overviewTarget = getMonthTarget(dashMKey);
 
@@ -4349,7 +4415,7 @@ function renderDashboard(){
   const now = new Date();
   const lastMonthDate = new Date(now.getFullYear(), now.getMonth()-1, 1);
   const lastMKey = lastMonthDate.getFullYear()+'-'+String(lastMonthDate.getMonth()+1).padStart(2,'0');
-  const lastMonthSales = SALES.filter(s=>monthKey(s.date)===lastMKey);
+  const lastMonthSales = getMonthSales(lastMKey);
   const lastAgg = {};
   lastMonthSales.forEach(s=>{
     const key = s.name+'|'+s.size+'|'+s.base;
@@ -4383,7 +4449,7 @@ function renderDashboard(){
   const recentCutoff = new Date(); recentCutoff.setDate(recentCutoff.getDate()-14);
   const recentCutoffStr = recentCutoff.getFullYear()+'-'+String(recentCutoff.getMonth()+1).padStart(2,'0')+'-'+String(recentCutoff.getDate()).padStart(2,'0');
   const recentSold = {}; // sku|name|size|base -> qty sold in last 14 days
-  SALES.filter(s=>s.date >= recentCutoffStr).forEach(s=>{
+  getSalesSince(recentCutoffStr).forEach(s=>{
     const key = s.sku||(s.name+'|'+s.size+'|'+s.base);
     recentSold[key] = (recentSold[key]||0) + s.qty;
   });
@@ -4431,7 +4497,7 @@ function computeSalesPaceStatus(mKeyParam){
   const daily = [];
   for(let d=1; d<=dim; d++){
     const dateStr = mKey+'-'+String(d).padStart(2,'0');
-    const total = SALES.filter(s=>s.date===dateStr).reduce((a,s)=>a+s.total,0);
+    const total = getDaySales(dateStr).reduce((a,s)=>a+s.total,0);
     daily.push({d, total, isFuture: isCurrentMonth && d>todayNum});
   }
   const soFar = daily.filter(x=>!x.isFuture);
@@ -4510,7 +4576,7 @@ function categorizeProduct(name){
 function renderProductDonut(mKey){
   const box = document.getElementById('productDonutCard');
   if(!box) return;
-  const sales = SALES.filter(s=>monthKey(s.date)===mKey && s.total>0);
+  const sales = getMonthSales(mKey).filter(s=>s.total>0);
   const totals = {};
   sales.forEach(s=>{
     const cat = categorizeProduct(s.name);
@@ -4705,7 +4771,7 @@ function computeActionItems(){
   const recentCutoff = new Date(); recentCutoff.setDate(recentCutoff.getDate()-14);
   const recentCutoffStr = recentCutoff.getFullYear()+'-'+String(recentCutoff.getMonth()+1).padStart(2,'0')+'-'+String(recentCutoff.getDate()).padStart(2,'0');
   const recentSold = {};
-  SALES.filter(s=>s.date >= recentCutoffStr).forEach(s=>{
+  getSalesSince(recentCutoffStr).forEach(s=>{
     const key = s.sku||(s.name+'|'+s.size+'|'+s.base);
     recentSold[key] = (recentSold[key]||0) + s.qty;
   });
@@ -4728,7 +4794,7 @@ function computeActionItems(){
   if(dueCust.length) items.push({priority:2, icon:ICONS.user, view:'customers', title:`ลูกค้าใกล้ถึงรอบซื้อ ${dueCust.length} คน`, detail:dueCust.slice(0,3).map(c=>c.name||'(ไม่ระบุชื่อ)').join(', ')});
 
   // commission pass-threshold proximity
-  const monthSales = SALES.filter(s=>monthKey(s.date)===mKey);
+  const monthSales = getMonthSales(mKey);
   const monthTotal = monthSales.reduce((a,s)=>a+s.total,0);
   const target = getMonthTarget(mKey);
   const passTarget = Math.round(target*0.8);
@@ -4766,13 +4832,13 @@ async function maybeShowDailyBrief(){
   if(SETTINGS.lastDailyBriefDate === today) return;
   const items = computeActionItems();
   const mKey = monthKey(today);
-  const monthSales = SALES.filter(s=>monthKey(s.date)===mKey);
+  const monthSales = getMonthSales(mKey);
   const monthTotal = monthSales.reduce((a,s)=>a+s.total,0);
   const target = getMonthTarget(mKey);
   const pct = target>0 ? (monthTotal/target*100) : 0;
   const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
   const yStr = yesterday.getFullYear()+'-'+String(yesterday.getMonth()+1).padStart(2,'0')+'-'+String(yesterday.getDate()).padStart(2,'0');
-  const yTotal = SALES.filter(s=>s.date===yStr).reduce((a,s)=>a+s.total,0);
+  const yTotal = getDaySales(yStr).reduce((a,s)=>a+s.total,0);
 
   document.getElementById('briefDate').textContent = formatDateTH(today);
   document.getElementById('briefYesterday').textContent = fmt(yTotal)+'฿';
@@ -4811,8 +4877,8 @@ function renderWeeklyReview(){
   const lastWeekAnchor = new Date(today+'T00:00:00'); lastWeekAnchor.setDate(lastWeekAnchor.getDate()-7);
   const lastWeek = isoWeekRange(lastWeekAnchor.getFullYear()+'-'+String(lastWeekAnchor.getMonth()+1).padStart(2,'0')+'-'+String(lastWeekAnchor.getDate()).padStart(2,'0'));
 
-  const thisWeekSales = SALES.filter(s=>s.date>=thisWeek.from && s.date<=thisWeek.to);
-  const lastWeekSales = SALES.filter(s=>s.date>=lastWeek.from && s.date<=lastWeek.to);
+  const thisWeekSales = getSalesInRange(thisWeek.from, thisWeek.to);
+  const lastWeekSales = getSalesInRange(lastWeek.from, lastWeek.to);
   const thisTotal = thisWeekSales.reduce((a,s)=>a+s.total,0);
   const lastTotal = lastWeekSales.reduce((a,s)=>a+s.total,0);
   const changePct = lastTotal>0 ? ((thisTotal-lastTotal)/lastTotal*100) : (thisTotal>0?100:0);
@@ -5016,7 +5082,7 @@ function renderCommission(){
   } else {
     mKey = document.getElementById('commMonthSelect').value || monthKey(todayISO());
     target = getMonthTarget(mKey);
-    sales = SALES.filter(s=>monthKey(s.date)===mKey).reduce((a,s)=>a+s.total,0);
+    sales = getMonthSales(mKey).reduce((a,s)=>a+s.total,0);
   }
   const headcountInput = document.getElementById('commHeadcount');
   if(!headcountInput.value) headcountInput.value = Math.min(5, Math.max(1, SETTINGS.commHeadcount || 2));
@@ -5084,7 +5150,7 @@ function renderCommission(){
 /* ================= gallon incentive (per-month product incentive rules) ================= */
 function calcGallonIncentive(mKey, headcount){
   const rules = (SETTINGS.gallonIncentives && SETTINGS.gallonIncentives[mKey]) || [];
-  const monthSales = SALES.filter(s=>monthKey(s.date)===mKey);
+  const monthSales = getMonthSales(mKey);
   const rows = rules.map(rule=>{
     const qty = monthSales
       .filter(s=> s.name===rule.name && s.size===rule.size &&
@@ -5398,7 +5464,7 @@ document.getElementById('histDate').addEventListener('change', renderHistDay);
 
 function renderHistDay(){
   const date = document.getElementById('histDate').value || todayISO();
-  const rows = SALES.filter(s=>s.date===date).slice().sort((a,b)=> (a.id>b.id?1:-1));
+  const rows = getDaySales(date).slice().sort((a,b)=> (a.id>b.id?1:-1));
   const total = rows.reduce((a,s)=>a+s.total,0);
   document.getElementById('histDayTotal').textContent = fmt(total);
   document.getElementById('histDayCount').textContent = rows.length;
@@ -5425,13 +5491,13 @@ function renderHistMonth(){
   const mKey=document.getElementById('histMonth').value; if(!mKey) return;
   const q=(document.getElementById('histMonthSearch').value||'').trim().toLowerCase();
   const sort=document.getElementById('histMonthSort').value;
-  let rows=SALES.filter(s=>monthKey(s.date)===mKey);
+  let rows=getMonthSales(mKey);
   if(q) rows=rows.filter(s=>`${s.name} ${s.sku||''} ${s.colorCode||''}`.toLowerCase().includes(q));
   if(sort==='dateAsc') rows.sort((a,b)=>a.date.localeCompare(b.date));
   else if(sort==='amountDesc') rows.sort((a,b)=>b.total-a.total);
   else if(sort==='amountAsc') rows.sort((a,b)=>a.total-b.total);
   else rows.sort((a,b)=>b.date.localeCompare(a.date));
-  const allMonth=SALES.filter(s=>monthKey(s.date)===mKey);
+  const allMonth=getMonthSales(mKey);
   const monthTotalAmt=allMonth.reduce((a,s)=>a+s.total,0);
   document.getElementById('histMonthTotal').textContent=fmt(monthTotalAmt);
   document.getElementById('histMonthCount').textContent=allMonth.length;
@@ -5503,7 +5569,10 @@ document.getElementById('saveEditSaleBtn').addEventListener('click', async ()=>{
     row.sold+=qty;
     row.remain-=qty;
   }
+  const oldMKey = monthKey(s.date);
   s.date=date; s.price=price; s.qty=qty; s.tintPrice=tint; s.colorCode=color||''; s.total=(price+tint)*qty;
+  if(monthKey(s.date) !== oldMKey) midxRemoveById(s.id, oldMKey);
+  midxAdd(s);
   await saveSalesIncremental({updated:[s]}); await saveProducts();
   const editBackdated = Math.abs(daysBetween(date, todayISO())) > 2;
   await addAudit('แก้ไขประวัติขาย',`${s.seed?'[Excel] ':''}${s.name} ${s.size} x${qty} วันที่ ${date}`, editBackdated);
@@ -5528,6 +5597,7 @@ async function deleteSaleEntry(id){
     row.remain=(Number(row.remain)||0)+Number(s.qty);
   }
   SALES.splice(idx,1);
+  midxRemove(s);
   await saveSalesIncremental({deletedIds:[s.id]}); await saveProducts();
   const delBackdated = Math.abs(daysBetween(s.date, todayISO())) > 2;
   await addAudit('ลบประวัติขาย',`${s.seed?'[Excel] ':''}${s.name} ${s.size} x${s.qty} วันที่ ${s.date}`, delBackdated);
@@ -6398,7 +6468,7 @@ function renderYearly(){
   const monthTotals = [];
   for(let m=1; m<=12; m++){
     const mKey = y + '-' + String(m).padStart(2,'0');
-    const total = SALES.filter(s=>monthKey(s.date)===mKey).reduce((a,s)=>a+s.total,0);
+    const total = getMonthSales(mKey).reduce((a,s)=>a+s.total,0);
     monthTotals.push({mKey, m, total, has: SALES.some(s=>monthKey(s.date)===mKey)});
   }
   const yearTotal = monthTotals.reduce((a,x)=>a+x.total,0);
@@ -6452,7 +6522,7 @@ function renderYearly(){
 
   const listBox = document.getElementById('yearMonthList');
   listBox.innerHTML = monthTotals.filter(x=>x.has).slice().reverse().map(x=>{
-    const cnt = SALES.filter(s=>monthKey(s.date)===x.mKey).length;
+    const cnt = getMonthSales(x.mKey).length;
     let tag = '';
     const idx = monthTotals.indexOf(x);
     if(idx===bestIdx) tag = ' ●';
@@ -6509,6 +6579,7 @@ document.getElementById('confirmResetBtn').addEventListener('click', async ()=>{
   if(resetConfirm!=='RESET') return;
   PRODUCTS = seedProducts();
   SALES = seedSales();
+  rebuildMonthIndex();
   SETTINGS = { targets: Object.assign({}, TARGETS_SEED), defaultTarget: DEFAULT_TARGET, auditLog:[], pinhash:SETTINGS.pinhash||'', notifiedMonth:'' };
   await saveProducts(); await resyncSalesTableFull(); await saveSales(); await saveSettings();
   buildProductIndex();
