@@ -3075,15 +3075,24 @@ async function handleImportProductsFile(file){
       name: findImportColKey(headers, ['สินค้า','ชื่อสินค้า','product_name','name']),
       size: findImportColKey(headers, ['ขนาด','size','pack_size']),
       base: findImportColKey(headers, ['เบส','base']),
+      colorNo: findImportColKey(headers, ['เบอร์สี','เบอร์','colorno','color_no','color']),
       price: findImportColKey(headers, ['ราคา (บาท)','ราคา','price','unit_price']),
       sku: findImportColKey(headers, ['sku','รหัส','product_id','barcode']),
     };
     if(!col.name || !col.price){ toast('ไม่พบคอลัมน์ "ชื่อสินค้า" หรือ "ราคา" ในไฟล์ กรุณาตรวจสอบหัวตาราง'); return; }
     const rows = json.map((r,i)=>{
-      const name = String(r[col.name]||'').trim();
+      let name = String(r[col.name]||'').trim();
       const size = col.size ? String(r[col.size]||'').trim() : '';
       const base = col.base ? String(r[col.base]||'').trim() : '';
       const sku = col.sku ? String(r[col.sku]||'').trim() : '';
+      // Some price lists split out a "เบอร์สี" (color code) column instead of
+      // embedding it in the product name (e.g. VINILEX ALL IN ONE S900/S914/...).
+      // The app itself only tracks color variants via a trailing "(เบอร์สี)" in
+      // the name (see parseSeriesColorNo / SERIES_INDEX below), so fold it in
+      // here — otherwise rows that only differ by เบอร์สี would collide on
+      // name+size+base and silently overwrite each other on import.
+      const colorNo = col.colorNo ? String(r[col.colorNo]||'').trim() : '';
+      if(colorNo && !base) name = `${name} (${colorNo})`;
       const priceRaw = r[col.price];
       const price = Number(String(priceRaw).replace(/,/g,'').trim());
       let error = '';
