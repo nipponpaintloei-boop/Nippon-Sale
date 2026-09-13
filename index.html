@@ -1867,16 +1867,11 @@
 <div class="modal-bg" id="gallonRuleModalBg">
   <div class="modal">
     <h3>เพิ่มรายการอินเซนทีฟรายแกลลอน</h3>
-    <label class="field">
+    <label class="field search-wrap">
       <span class="lbl">สินค้า</span>
-      <div class="pc-select cselect">
-        <select id="ruleNameSelect" class="cselect-native"></select>
-        <button type="button" class="pc-select-trigger" aria-haspopup="listbox" aria-expanded="false">
-          <span class="pc-select-value"></span>
-          <svg class="pc-select-chevron" width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="pc-select-menu" role="listbox"></div>
-      </div>
+      <input type="text" id="ruleNameSearch" placeholder="พิมพ์ชื่อสินค้า...">
+      <div class="suggest" id="ruleNameSuggest" style="display:none;"></div>
+      <select id="ruleNameSelect" style="display:none;"></select>
     </label>
     <div class="row2">
       <label class="field">
@@ -4993,7 +4988,7 @@ function enhanceCSelect(selectId){
   syncDisplay();
   window.CSELECT_API[selectId] = {open:openMenu, close:closeMenu};
 }
-['sizeSelect','baseSelect','colorNoSelect','histMonth','histMonthSort','commMonthSelect','commModeSelect','targetMonthSelect','ruleNameSelect','ruleSizeSelect'].forEach(enhanceCSelect);
+['sizeSelect','baseSelect','colorNoSelect','histMonth','histMonthSort','commMonthSelect','commModeSelect','targetMonthSelect','ruleSizeSelect'].forEach(enhanceCSelect);
 function openCSelect(selectId){
   const api = window.CSELECT_API[selectId];
   if(api) api.open();
@@ -5291,10 +5286,42 @@ document.getElementById('ruleBaseChips').addEventListener('click', (e)=>{
 document.getElementById('ruleNameSelect').addEventListener('change', populateRuleSizeOptions);
 document.getElementById('ruleSizeSelect').addEventListener('change', populateRuleBaseOptions);
 
+const ruleNameSearch = document.getElementById('ruleNameSearch');
+const ruleNameSuggest = document.getElementById('ruleNameSuggest');
+function pickRuleName(name){
+  ruleNameSearch.value = name;
+  ruleNameSuggest.style.display = 'none';
+  const sel = document.getElementById('ruleNameSelect');
+  sel.innerHTML = `<option value="${name.replace(/"/g,'&quot;')}">${name}</option>`;
+  sel.value = name;
+  sel.dispatchEvent(new Event('change'));
+}
+ruleNameSearch.addEventListener('input', ()=>{
+  const q = ruleNameSearch.value.trim().toLowerCase();
+  document.getElementById('ruleNameSelect').innerHTML = '';
+  populateRuleSizeOptions();
+  if(!q){ ruleNameSuggest.style.display = 'none'; return; }
+  const matches = Object.keys(PRODUCT_INDEX).filter(n=>n.toLowerCase().includes(q)).sort().slice(0,20);
+  if(!matches.length){ ruleNameSuggest.innerHTML = '<div class="suggest-item">ไม่พบสินค้า</div>'; ruleNameSuggest.style.display = 'block'; return; }
+  ruleNameSuggest.innerHTML = matches.map(n=>{
+    const sizes = Object.keys(PRODUCT_INDEX[n]);
+    return `<div class="suggest-item" data-name="${n.replace(/"/g,'&quot;')}">${n}<div class="meta">${sizes.length} ขนาด</div></div>`;
+  }).join('');
+  ruleNameSuggest.style.display = 'block';
+});
+ruleNameSuggest.addEventListener('click', (e)=>{
+  const item = e.target.closest('.suggest-item');
+  if(!item || !item.dataset.name) return;
+  pickRuleName(item.dataset.name);
+});
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('#ruleNameSearch') && !e.target.closest('#ruleNameSuggest')) ruleNameSuggest.style.display = 'none';
+});
+
 document.getElementById('addGallonRuleBtn').addEventListener('click', ()=>{
-  const nameSel = document.getElementById('ruleNameSelect');
-  const names = Object.keys(PRODUCT_INDEX).sort();
-  nameSel.innerHTML = names.map(n=>`<option value="${n.replace(/"/g,'&quot;')}">${n}</option>`).join('');
+  document.getElementById('ruleNameSelect').innerHTML = '';
+  ruleNameSearch.value = '';
+  ruleNameSuggest.style.display = 'none';
   populateRuleSizeOptions();
   setGallonRuleMode('perUnit');
   document.getElementById('ruleBundleSizeInput').value = '';
