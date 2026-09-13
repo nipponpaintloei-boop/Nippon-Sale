@@ -3248,9 +3248,12 @@ function buildProductIndex(){
     if(!SERIES_INDEX[parsed.series]) SERIES_INDEX[parsed.series] = {};
     SERIES_INDEX[parsed.series][parsed.colorNo] = name;
   });
-  // only keep series that actually have 2+ เบอร์ — a single match isn't worth an extra step
+  // Keep every series that has at least 1 เบอร์สี recorded — even just one — so the
+  // entry form always surfaces the saved เบอร์สี as its own step instead of only
+  // baking it silently into the product name. (Previously this required 2+ เบอร์สี
+  // per series, which hid the field entirely for most single-color products.)
   Object.keys(SERIES_INDEX).forEach(series=>{
-    if(Object.keys(SERIES_INDEX[series]).length < 2) delete SERIES_INDEX[series];
+    if(Object.keys(SERIES_INDEX[series]).length < 1) delete SERIES_INDEX[series];
   });
   NAME_TO_SERIES = {};
   Object.keys(SERIES_INDEX).forEach(series=>{
