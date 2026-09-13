@@ -58,6 +58,7 @@
   input:focus, select:focus, button:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
 
   header.top{
+    position:relative;
     padding:20px 18px 16px;
     display:flex; align-items:center; justify-content:space-between;
     border-bottom:1px solid var(--line-soft);
@@ -947,7 +948,7 @@
   }
   .hdr-bell.has-alerts .bell-dot{display:block;}
   .hdr-bell-pop{
-    position:absolute; top:calc(100% + 8px); right:0; width:min(320px,86vw); z-index:45;
+    position:absolute; top:calc(100% + 8px); right:0; width:min(320px, calc(100vw - 24px)); z-index:45;
     background:var(--surface); border:1px solid var(--line); border-radius:14px;
     box-shadow:0 16px 40px rgba(30,58,120,0.2); padding:6px; display:none; max-height:360px; overflow-y:auto;
   }
@@ -1160,7 +1161,7 @@
     </div>
     <div class="auth-user"><span id="authUserBadge">ผู้ใช้</span></div>
     <div class="hdr-actions">
-      <div style="position:relative;">
+      <div>
         <button class="icon-btn hdr-bell" id="bellBtn" title="การแจ้งเตือน">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
           <span class="bell-dot"></span>
