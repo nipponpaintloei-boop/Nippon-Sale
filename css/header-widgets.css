@@ -1,0 +1,208 @@
+/* NIPPON SALE — css/header-widgets.css (moved verbatim from index.html; order matters) */
+  /* ================= HEADER: search bar / month selector / notification bell (desktop) ================= */
+  .hdr-right{display:flex; align-items:center; gap:12px; flex-shrink:0;}
+  .hdr-search, .hdr-month{display:none;}
+  .hdr-search{position:relative;}
+  .hdr-search input{
+    width:100%; background:var(--surface2); border:1px solid var(--line); border-radius:11px;
+    padding:10px 14px 10px 36px; font-size:13.5px; color:var(--paper);
+  }
+  .hdr-search .search-ic{position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--paper-faint); display:flex; pointer-events:none;}
+  .hdr-search .search-ic svg{width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:1.8;}
+  .hdr-search-results{
+    position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:40;
+    background:var(--surface); border:1px solid var(--line); border-radius:12px;
+    box-shadow:0 14px 34px rgba(30,58,120,0.18); max-height:320px; overflow-y:auto; display:none;
+  }
+  .hdr-search-results.show{display:block;}
+  .hdr-search-result{padding:10px 14px; border-bottom:1px solid var(--line); cursor:pointer;}
+  .hdr-search-result:last-child{border-bottom:none;}
+  .hdr-search-result:hover{background:var(--surface2);}
+  .hdr-search-result .r-name{font-size:13px; font-weight:500; color:var(--paper);}
+  .hdr-search-result .r-meta{font-size:11px; color:var(--paper-faint); margin-top:2px; font-family:var(--mono);}
+  .hdr-search-empty{padding:14px; font-size:12.5px; color:var(--paper-faint); text-align:center;}
+  .hdr-month{
+    align-items:center; gap:7px; background:var(--surface); border:1px solid var(--line);
+    border-radius:11px; padding:8px 12px; flex-shrink:0;
+  }
+  .hdr-month svg{width:14px; height:14px; stroke:var(--paper-dim); fill:none; stroke-width:1.8; flex-shrink:0;}
+  .hdr-month select{border:none; background:none; padding:0; font-size:13px; font-weight:500; color:var(--paper); cursor:pointer;}
+  .hdr-bell{position:relative;}
+  .hdr-bell .bell-dot{
+    position:absolute; top:6px; right:6px; width:8px; height:8px; border-radius:50%;
+    background:var(--clay); border:1.5px solid var(--surface); display:none;
+  }
+  .hdr-bell.has-alerts .bell-dot{display:block;}
+  .hdr-bell-pop{
+    position:absolute; top:calc(100% + 8px); right:0; width:min(320px, calc(100vw - 24px)); z-index:45;
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    box-shadow:0 16px 40px rgba(30,58,120,0.2); padding:6px; display:none; max-height:360px; overflow-y:auto;
+  }
+  .hdr-bell-pop.show{display:block;}
+  .hdr-bell-pop .bp-title{font-family:var(--disp); font-weight:600; font-size:12px; padding:8px 8px 4px; color:var(--paper-dim); text-transform:uppercase; letter-spacing:0.4px;}
+  .hdr-bell-pop .bp-empty{padding:16px 8px; font-size:12.5px; color:var(--paper-faint); text-align:center;}
+  @media (min-width: 860px){
+    header.top{gap:18px; justify-content:flex-start;}
+    .hdr-search{display:block; flex:1; min-width:0; max-width:440px;}
+    .hdr-month{display:flex; margin-left:auto;}
+  }
+
+  /* ================= stat card icon badges ================= */
+  .stat-card{position:relative; padding-right:52px;}
+  .stat-card .stat-ic{
+    position:absolute; top:14px; right:14px; width:32px; height:32px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center; font-size:15px;
+  }
+  .stat-card .stat-ic svg{width:17px; height:17px;}
+  .stat-ic.c-blue{background:rgba(47,111,237,0.14); color:var(--accent);}
+  .stat-ic.c-orange{background:rgba(232,135,74,0.16); color:#c9711f;}
+  .stat-ic.c-green{background:rgba(31,174,108,0.14); color:var(--moss);}
+  .stat-ic.c-purple{background:rgba(154,127,216,0.16); color:#7a5fc9;}
+
+  /* ================= product donut chart (dashboard) ================= */
+  .donut-card{display:flex; flex-direction:column; align-items:center; gap:16px; max-width:480px; margin-left:0; margin-right:auto;}
+  .donut-wrap{position:relative; width:168px; height:168px; flex-shrink:0;}
+  .donut-wrap svg{width:100%; height:100%; transform:rotate(-90deg);}
+  .donut-center{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;}
+  .donut-center .dc-val{font-family:var(--mono); font-weight:700; font-size:15px; color:var(--paper);}
+  .donut-center .dc-lbl{font-size:10px; color:var(--paper-faint); margin-top:2px;}
+  .donut-legend{width:100%; display:flex; flex-direction:column; gap:9px;}
+  .donut-legend .dl-row{display:flex; align-items:center; gap:8px; font-size:12px;}
+  .donut-legend .dl-sw{width:9px; height:9px; border-radius:50%; flex-shrink:0;}
+  .donut-legend .dl-name{flex:1; min-width:0; color:var(--paper-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .donut-legend .dl-pct{font-family:var(--mono); font-weight:600; color:var(--paper); flex-shrink:0;}
+  .donut-legend .dl-amt{font-family:var(--mono); font-size:10.5px; color:var(--paper-faint); flex-shrink:0; margin-left:6px;}
+
+  /* ================= full-width recent sales table (dashboard) ================= */
+  .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch;}
+  table.data-table{width:100%; border-collapse:collapse; font-size:12.5px; min-width:640px;}
+  table.data-table th{
+    text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.4px; color:var(--paper-faint);
+    font-weight:500; padding:0 10px 10px; border-bottom:1px solid var(--line);
+  }
+  table.data-table td{padding:11px 10px; border-bottom:1px solid var(--line-soft); color:var(--paper); white-space:nowrap;}
+  table.data-table tr:last-child td{border-bottom:none;}
+  table.data-table .bill-link{color:var(--accent); font-family:var(--mono); font-weight:600; font-size:12px;}
+  .status-badge{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; padding:4px 9px; border-radius:999px;}
+  .status-badge.status-ok{background:rgba(31,174,108,0.14); color:var(--moss);}
+  .table-action-btn{background:none; border:1px solid var(--line); color:var(--paper-dim); font-size:11.5px; border-radius:8px; padding:6px 10px; cursor:pointer;}
+  .table-action-btn:active{background:var(--surface2);}
+
+  /* ================= EXTRA: history target row ================= */
+  .hist-target-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--surface); border:1px solid var(--line); border-radius:12px;
+    padding:11px 14px; margin-bottom:14px; font-size:11.5px; color:var(--paper-dim); font-family:var(--mono);
+  }
+  .hist-target-row b{color:var(--paper); font-weight:600;}
+  .hist-target-row button{
+    background:var(--surface2); border:1px solid var(--line); color:var(--accent); font-family:var(--disp);
+    font-weight:600; font-size:11px; cursor:pointer; padding:7px 12px; border-radius:9px; flex-shrink:0; white-space:nowrap;
+  }
+
+  /* ================= EXTRA: bill cart ================= */
+  .bill-group{border:1px dashed var(--line); border-radius:12px; padding:2px 0; margin:8px 0;}
+  .bill-ghead{display:flex; justify-content:space-between; font-size:10px; color:var(--accent); font-family:var(--mono); padding:7px 6px 4px; letter-spacing:0.3px;}
+
+  /* ================= EXTRA: today target chip ================= */
+  .today-target-chip{
+    margin-top:7px; text-align:center; font-family:var(--mono); font-weight:600; font-size:9.5px; color:var(--accent);
+    background:rgba(47,111,237,0.14); border:1px solid rgba(47,111,237,0.32); border-radius:12px; padding:4px 6px;
+    line-height:1.4; white-space:normal;
+  }
+  .today-target-chip.hit{color:var(--moss); background:rgba(31,174,108,0.16); border-color:rgba(31,174,108,0.4);}
+
+  /* ================= EXTRA: gap-to-target & daily-pace highlights ================= */
+  .gap-highlight{
+    margin-top:12px;
+    font-family:var(--disp); font-weight:600; font-size:13px; line-height:1.55;
+    padding:10px 14px; border-radius:11px;
+    background:rgba(47,111,237,0.16); color:var(--accent); border:1px solid rgba(47,111,237,0.3);
+  }
+  .gap-highlight b{font-family:var(--mono); font-weight:700; font-size:14.5px; white-space:nowrap;}
+  .gap-highlight.done{background:rgba(31,174,108,0.18); color:var(--moss); border-color:rgba(31,174,108,0.38);}
+  .pace-highlight{
+    margin-top:8px;
+    font-size:11px; line-height:1.5; color:var(--paper-dim); font-family:var(--body);
+    background:var(--surface2); border:1px solid var(--line); border-radius:11px; padding:10px 14px;
+  }
+  .pace-highlight .p-lbl{display:block; color:var(--paper-faint); font-size:11px; margin-bottom:4px;}
+  .pace-highlight .p-val{font-family:var(--mono); font-weight:700; font-size:17px; color:var(--paper);}
+  .pace-highlight .p-unit{font-family:var(--mono); font-size:11px; color:var(--paper-dim); margin-left:5px;}
+  .pace-highlight .p-days{display:block; margin-top:3px; font-size:10.5px; color:var(--paper-faint);}
+  .pace-highlight.urgent{background:rgba(239,90,76,0.14); border-color:rgba(239,90,76,0.34);}
+  .pace-highlight.urgent .p-val{color:var(--clay);}
+  .days-left-badge{
+    display:flex; align-items:baseline; gap:7px; margin-top:10px; padding:8px 12px;
+    border-radius:10px; background:var(--surface2); border:1px solid var(--line); width:fit-content;
+  }
+  .days-left-badge .dl-num{font-family:var(--mono); font-weight:700; font-size:20px; color:var(--teal);}
+  .days-left-badge .dl-lbl{font-size:11px; color:var(--paper-dim);}
+  .days-left-badge.warn{background:rgba(47,111,237,0.12); border-color:rgba(47,111,237,0.35);}
+  .days-left-badge.warn .dl-num{color:var(--accent);}
+  .days-left-badge.urgent{background:rgba(239,90,76,0.14); border-color:rgba(239,90,76,0.34);}
+  .days-left-badge.urgent .dl-num{color:var(--clay);}
+  .days-left-badge.done{background:rgba(31,174,108,0.16); border-color:rgba(31,174,108,0.4);}
+  .days-left-badge.done .dl-num{color:var(--moss);}
+
+  /* ================= EXTRA: recent-edits warning badge & daily trend bars ================= */
+  .warn-badge{
+    display:inline-block; font-family:var(--body); font-weight:600; font-size:9.5px; letter-spacing:0.3px;
+    color:var(--clay); background:rgba(239,90,76,0.16); border:1px solid rgba(239,90,76,0.34);
+    border-radius:999px; padding:2px 7px; margin-right:5px; vertical-align:middle;
+  }
+  .time-tag{font-family:var(--mono); font-size:10.5px; color:var(--paper-faint); white-space:nowrap;}
+  .bars.daily-bars{gap:2px;}
+  .bars.daily-bars .bar-col .bar{max-width:14px; border-radius:2px 2px 1px 1px;}
+  .bars.daily-bars .bar-col .mlabel{font-size:8px; margin-top:5px;}
+
+  /* ================= EXTRA: premium PC headcount dropdown ================= */
+  .pc-select{position:relative;}
+  .pc-select-trigger{
+    width:100%; display:flex; align-items:center; justify-content:space-between;
+    background:var(--surface2); border:1px solid var(--line); color:var(--paper);
+    border-radius:10px; padding:12px 14px; font-size:15px; font-family:var(--body);
+    cursor:pointer; transition:border-color .15s ease, background .15s ease; text-align:left;
+  }
+  .pc-select-trigger:active{background:var(--surface);}
+  .pc-select.open .pc-select-trigger{border-color:var(--accent); background:var(--surface);}
+  .pc-select-value{font-family:var(--mono); font-weight:600; letter-spacing:0.2px; color:var(--paper);}
+  .pc-select-chevron{color:var(--paper-faint); transition:transform .2s ease; flex-shrink:0; margin-left:8px;}
+  .pc-select.open .pc-select-chevron{transform:rotate(180deg); color:var(--accent);}
+
+  .pc-select-menu{
+    position:absolute; z-index:30; top:calc(100% + 8px); left:0; right:0;
+    background:linear-gradient(180deg, var(--surface2), var(--surface));
+    border:1px solid var(--line); border-radius:14px;
+    box-shadow:0 16px 36px rgba(30,58,120,0.2), 0 2px 8px rgba(30,58,120,0.12);
+    padding:6px; opacity:0; visibility:hidden; pointer-events:none;
+    transform:translateY(-6px) scale(0.98); transform-origin:top center;
+    transition:opacity .16s ease, transform .16s ease, visibility .16s;
+    max-height:280px; overflow-y:auto;
+  }
+  .pc-select.open .pc-select-menu{opacity:1; visibility:visible; pointer-events:auto; transform:translateY(0) scale(1);}
+
+  .pc-select-option{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:11px 13px; border-radius:9px; font-size:14.5px; font-family:var(--body);
+    color:var(--paper-dim); cursor:pointer; transition:background .12s ease, color .12s ease;
+  }
+  .pc-select-option + .pc-select-option{margin-top:2px;}
+  .pc-select-option:active{background:rgba(47,111,237,0.10);}
+  .pc-select-option.active{background:rgba(47,111,237,0.14); color:var(--accent); font-weight:600;}
+  .pc-select-option .pc-select-check{opacity:0; color:var(--accent); transition:opacity .12s ease; flex-shrink:0; margin-left:8px;}
+  .pc-select-option.active .pc-select-check{opacity:1;}
+
+  /* ================= EXTRA: generic custom-select (wraps native <select> app-wide, same style as PC dropdown) ================= */
+  .cselect-native{display:none !important;}
+  .pc-select-trigger:disabled{opacity:0.45; cursor:not-allowed;}
+  .pc-select-trigger .pc-select-value:empty::before{content:'\00a0';}
+
+  /* ================= EXTRA: yearly MoM badge ================= */
+  .mom-badge{font-size:10.5px; font-family:var(--mono); margin-top:5px; color:var(--paper-faint);}
+  .mom-badge.up{color:var(--moss);}
+  .mom-badge.down{color:var(--clay);}
+
+  /* ================= EXTRA: confetti ================= */
+  .confetti-piece{position:absolute; will-change:transform, opacity;}
+

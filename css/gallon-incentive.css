@@ -1,0 +1,92 @@
+/* NIPPON SALE — css/gallon-incentive.css (moved verbatim from index.html; order matters) */
+  /* ================= EXTRA: gallon incentive (per-month product rules) ================= */
+  .tier-row .gdel{background:none; border:none; color:var(--clay); font-size:18px; cursor:pointer; padding:2px 6px; flex-shrink:0; line-height:1;}
+  .gtoggle-row{
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    padding:11px 14px; cursor:pointer; font-size:12px; color:var(--paper-dim);
+    font-family:var(--body); background:var(--surface2);
+  }
+  .gtoggle-row:active{background:var(--surface);}
+  .gtoggle-row svg{width:10px; height:10px; transition:transform .2s ease;}
+  .gtoggle-row.open svg{transform:rotate(180deg);}
+  .sec-title .collapse-btn{
+    background:none; border:none; color:var(--paper-dim); display:flex; align-items:center; justify-content:center;
+    width:22px; height:22px; cursor:pointer; padding:0;
+  }
+  .sec-title .collapse-btn svg{width:12px; height:12px; transition:transform .2s ease;}
+  .sec-title .collapse-btn.open svg{transform:rotate(180deg);}
+  #gallonRuleList.section-collapsed{display:none;}
+  .gcollapsed-summary{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:13px 14px; margin-bottom:12px; font-size:12px; color:var(--paper-dim); cursor:pointer;
+  }
+  .gcollapsed-summary b{color:var(--paper); font-family:var(--mono);}
+  .gcollapsed-summary svg{width:12px; height:12px; flex-shrink:0; color:var(--paper-faint);}
+  .mode-toggle{display:flex; gap:8px; margin-bottom:14px;}
+  .mode-toggle button{flex:1; padding:11px; border-radius:10px; border:1px solid var(--line); background:var(--surface2); color:var(--paper-dim); font-family:var(--body); font-size:13px; cursor:pointer;}
+  .mode-toggle button.active{border-color:var(--accent); color:var(--accent); background:rgba(47,111,237,0.10); font-weight:600;}
+
+  /* history */
+  .day-group{margin-bottom:18px;}
+  .day-group .dhead{
+    display:flex; justify-content:space-between; align-items:baseline; margin:0 2px 7px;
+    font-family:var(--disp); font-size:12.5px; font-weight:600; color:var(--paper-dim);
+  }
+  .day-group .dhead .dsum{font-family:var(--mono); font-size:11.5px; color:var(--paper-faint); font-weight:400;}
+
+  /* yearly chart */
+  .chart-card{background:linear-gradient(160deg, #ffffff, #f8fafe); border:1px solid var(--line); border-radius:var(--radius-lg); padding:20px 14px 12px; margin-bottom:14px; box-shadow:0 10px 24px -20px rgba(30,58,120,0.2);}
+  .bars{display:flex; align-items:flex-end; gap:6px; height:150px; padding:0 2px;}
+  .bar-col{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; min-width:0;}
+  .bar-col .bar{width:100%; max-width:24px; border-radius:4px 4px 2px 2px; background:var(--surface2); transition:height .4s ease; position:relative;}
+  .bar-col .bar.best{background:var(--moss); box-shadow:0 0 10px rgba(31,174,108,0.45);}
+  .bar-col .bar.worst{background:var(--clay);}
+  .bar-col .bar.has{background:linear-gradient(180deg, #7fb8ff, var(--accent)); box-shadow:0 0 10px var(--accent-glow);}
+  .bar-col .bar.future{background:var(--surface2); border:1px dashed var(--line);}
+  .bar-col .mlabel{font-size:9.5px; color:var(--paper-faint); margin-top:7px; font-family:var(--mono); text-align:center;}
+  .bar-col .mval{font-size:8.5px; color:var(--paper-faint); margin-top:1px; font-family:var(--mono); opacity:0.7;}
+  .legend-row{display:flex; gap:14px; justify-content:center; margin-top:14px; font-size:10.5px; color:var(--paper-faint);}
+  .legend-row .lg{display:flex; align-items:center; gap:5px;}
+  .legend-row .sw{width:8px;height:8px;border-radius:3px;}
+
+  /* product edit rows */
+  .prod-row{background:var(--surface); border:1px solid var(--line); border-radius:13px; padding:13px 14px; margin-bottom:8px; display:flex; align-items:center; gap:12px;}
+  .prod-row .info{flex:1; min-width:0;}
+  .prod-row .name{font-size:13.5px; font-weight:400;}
+  .prod-row .meta{font-size:11px; color:var(--paper-faint); margin-top:2px; font-family:var(--mono);}
+  .prod-row .edit-btn{background:transparent; border:1px solid var(--line); color:var(--paper-dim); font-size:12px; border-radius:8px; padding:8px 11px; cursor:pointer; flex-shrink:0;}
+
+  nav.tabs{
+    position:fixed; bottom:0; left:0; right:0; z-index:30;
+    background:rgba(255,255,255,0.97);
+    border-top:1px solid var(--line);
+    box-shadow:0 -8px 24px -18px rgba(30,58,120,0.25);
+    display:flex; padding:9px 4px calc(9px + env(safe-area-inset-bottom));
+  }
+  nav.tabs button{
+    flex:1; background:none; border:none; color:var(--paper-faint);
+    display:flex; flex-direction:column; align-items:center; gap:5px; padding:4px 0; cursor:pointer;
+    font-size:9.5px; font-family:var(--body); font-weight:500; position:relative;
+  }
+  nav.tabs button .ic{width:19px; height:19px; display:flex; align-items:center; justify-content:center; border-radius:8px; transition:background .15s ease, box-shadow .15s ease;}
+  nav.tabs button .ic svg{width:19px; height:19px; stroke:currentColor; fill:none; stroke-width:1.6;}
+  nav.tabs button.active{color:var(--paper);}
+  nav.tabs button.active .ic{background:rgba(47,111,237,0.12); box-shadow:none;}
+  nav.tabs button.active .ic svg{stroke:var(--accent); filter:none;}
+
+  /* elevated center FAB (บันทึกขาย) */
+  nav.tabs button.fab-btn{color:var(--paper-dim); gap:6px;}
+  nav.tabs button.fab-btn .ic{
+    width:48px; height:48px; border-radius:50%; margin-top:-26px;
+    background:linear-gradient(160deg,#5c93f5,var(--accent));
+    box-shadow:0 10px 26px rgba(47,111,237,0.4), 0 3px 10px rgba(30,58,120,0.25);
+    border:3px solid var(--surface);
+  }
+  nav.tabs button.fab-btn .ic svg{width:21px; height:21px; stroke:var(--accent-ink); stroke-width:2.1;}
+  nav.tabs button.fab-btn .fab-txt{font-weight:600;}
+  nav.tabs button.fab-btn.active{color:var(--paper);}
+  nav.tabs button.fab-btn:active .ic{transform:scale(0.94);}
+  /* extra sidebar-only items + profile footer: hidden on the mobile bottom bar by default */
+  nav.tabs button.nav-extra, nav.tabs .nav-divider, .nav-footer{display:none;}
+

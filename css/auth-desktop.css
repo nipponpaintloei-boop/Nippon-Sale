@@ -1,0 +1,124 @@
+/* NIPPON SALE — css/auth-desktop.css (moved verbatim from index.html; order matters) */
+  /* ================= AUTH GATE ================= */
+  .auth-gate{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:24px;background:var(--ink);background-image:radial-gradient(ellipse 600px 400px at 50% -10%, rgba(47,111,237,0.10), transparent 60%);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+  .auth-gate.show{display:flex}
+  .auth-card{width:min(400px,100%);background:linear-gradient(160deg, #ffffff, #f8fafe);border:1px solid var(--line);border-radius:var(--radius-lg);padding:30px 24px 24px;box-shadow:0 0 0 1px rgba(255,255,255,0.5) inset, 0 20px 50px -25px rgba(30,58,120,0.3)}
+  .auth-brand{display:flex;align-items:center;gap:13px;margin-bottom:28px}
+  .auth-brand .brand-mark{width:44px;height:44px;border-radius:12px;font-family:var(--disp);font-weight:700;font-size:15px}
+  .auth-title{font-family:var(--disp);font-size:21px;font-weight:600;line-height:1.2;letter-spacing:0.2px}
+  .auth-subtitle{font-size:12px;color:var(--paper-faint);margin-top:3px}
+  .auth-label{display:block;font-size:11.5px;color:var(--paper-faint);margin:14px 0 6px;letter-spacing:0.3px}
+  .auth-input{width:100%;margin:0!important;background:var(--surface2)!important;border:1px solid var(--line)!important;color:var(--paper)!important;border-radius:11px!important;padding:13px 14px!important;font-size:16px!important}
+  .auth-submit{width:100%;margin-top:20px!important;padding:13px!important;border-radius:11px!important;font-weight:600;font-size:14.5px!important;background:var(--accent)!important;color:var(--accent-ink)!important;border:none!important}
+  .auth-submit:disabled{opacity:.5}
+  .auth-status{min-height:20px;margin-top:12px;font-size:12px;line-height:1.5;color:var(--paper-faint);text-align:center}
+  .auth-status.error{color:var(--clay)}.auth-status.success{color:var(--moss)}
+  .auth-note{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);font-size:11px;line-height:1.6;color:var(--paper-faint);text-align:center}
+  .auth-user{display:inline-flex;align-items:center;gap:6px;color:var(--paper-faint);font-size:11px;font-family:var(--mono)}
+
+  /* ================= DESKTOP LAYOUT ================= */
+  nav.tabs::before{content:"NIPPON SALE"; display:none;}
+  @media (min-width: 860px){
+    body{padding-bottom:0;}
+    /* fluid main: fills all space to the right of the fixed sidebar, no hard cap */
+    main{margin-left:210px; max-width:1360px; width:calc(100% - 210px); padding:0 36px 48px; box-sizing:border-box;}
+    header.top{margin-left:210px; padding:26px 36px 18px; max-width:1360px; width:calc(100% - 210px); box-sizing:border-box;}
+    nav.tabs{
+      top:0; bottom:0; left:0; right:auto; width:210px; height:100vh;
+      flex-direction:column; justify-content:flex-start; align-items:stretch;
+      padding:26px 14px; gap:2px; overflow-y:auto;
+      background:var(--surface); border-top:none; border-right:1px solid var(--line-soft);
+      backdrop-filter:none;
+    }
+    nav.tabs::before{
+      display:block; font-family:var(--disp); font-weight:600; font-size:13px; letter-spacing:0.6px;
+      color:var(--paper); padding:4px 12px 22px; text-transform:uppercase;
+    }
+    nav.tabs button{
+      flex-direction:row; justify-content:flex-start; gap:12px; padding:11px 12px; border-radius:9px;
+      font-size:13px;
+    }
+    nav.tabs button.active{background:var(--surface2);}
+    nav.tabs button .ic{width:18px; height:18px;}
+    nav.tabs button .ic svg{width:18px; height:18px;}
+    nav.tabs button.fab-btn{flex-direction:row;}
+    nav.tabs button.fab-btn .ic{width:18px; height:18px; margin-top:0; border-radius:9px; border:none; box-shadow:none; background:var(--surface2);}
+    nav.tabs button.fab-btn .ic svg{width:18px; height:18px; stroke:var(--accent);}
+    nav.tabs button.fab-btn.active .ic{background:var(--accent); }
+    nav.tabs button.fab-btn.active .ic svg{stroke:var(--accent-ink);}
+    /* extra menu items (report / commission / customers / settings) — sidebar only, hidden from the mobile bottom bar */
+    nav.tabs button.nav-extra{display:flex;}
+    nav.tabs .nav-divider{display:block; height:1px; background:var(--line-soft); margin:10px 6px;}
+    /* profile + logout footer pinned to the bottom of the sidebar */
+    .nav-footer{
+      display:flex; flex-direction:column; gap:10px; margin-top:auto;
+      padding:14px 10px 4px; border-top:1px solid var(--line-soft);
+    }
+    .nav-profile{display:flex; align-items:center; gap:10px;}
+    .nav-avatar{
+      width:34px; height:34px; border-radius:50%; flex-shrink:0; overflow:hidden;
+      background:linear-gradient(160deg,#5c93f5,var(--accent)); color:var(--accent-ink);
+      display:flex; align-items:center; justify-content:center; font-family:var(--disp); font-weight:600; font-size:13px;
+    }
+    .nav-avatar img{width:100%; height:100%; object-fit:cover; display:block;}
+    .nav-profile-txt{min-width:0;}
+    .nav-profile-name{font-family:var(--disp); font-weight:600; font-size:13px; color:var(--paper); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .nav-profile-sub{font-size:10.5px; color:var(--paper-faint); margin-top:1px;}
+    .nav-logout-btn{
+      display:flex; align-items:center; gap:8px; background:none; border:1px solid var(--line);
+      color:var(--paper-dim); border-radius:9px; padding:9px 10px; font-size:12.5px; font-family:var(--body);
+      cursor:pointer; width:100%;
+    }
+    .nav-logout-btn:active{background:var(--surface2);}
+    .nav-logout-btn svg{width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:1.8; flex-shrink:0;}
+    .toast{bottom:32px;}
+    .drawer{width:320px;}
+    .modal-bg{align-items:center;}
+    .modal{border-radius:18px; max-width:460px; border:1px solid var(--line); max-height:80vh;}
+    /* stat cards: fixed card size on desktop — more columns appear as the window widens, cards never stretch */
+    .stat-grid{grid-template-columns:repeat(auto-fill, 220px); justify-content:start;}
+    .gauge-card{padding:26px 26px; max-width:760px;}
+    /* trend chart (left, wide) + side card (right, narrow) sit side by side instead of stacking */
+    .dash-2col{display:grid; grid-template-columns:minmax(0,2fr) minmax(240px,1fr); gap:20px; align-items:stretch;}
+    .dash-2col .sec-title{margin-top:0;}
+    /* top row: gauge card (wide) + 2x2 stat quad (narrower, fixed-ish width) side by side */
+    .dash-top-row{grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr); align-items:start;}
+    .dash-top-row .stat-quad{height:100%;}
+    /* the narrow side card is almost always shorter than its partner — stretch the column to match height, then let the card (not the heading) absorb the extra space, so it never overflows past the row */
+    .dash-2col .dash-col{display:flex; flex-direction:column; min-height:0;}
+    .dash-2col .dash-col .chart-card, .dash-2col .dash-col .card{margin-bottom:0; flex:1; min-height:0; box-sizing:border-box; display:flex; flex-direction:column; justify-content:center;}
+    /* บันทึกยอดขาย: form cards (left, wide) + sticky summary card (right, narrow) instead of one stretched mobile card */
+    .entry-grid{display:grid; grid-template-columns:minmax(0,1.65fr) minmax(280px,1fr); gap:22px; align-items:start;}
+    .entry-col-side{position:sticky; top:24px;}
+
+    /* ================= APPLIES TO EVERY VIEW: stop desktop from just stretching mobile boxes wider ================= */
+    /* segmented tab control (รายวัน/รายเดือน etc.) shouldn't become one giant stretched bar */
+    .subtab-row{max-width:420px;}
+    /* a lone filter field (date picker, single select, search box) keeps a sane width instead of filling the whole pane */
+    .field-tight{max-width:320px;}
+    .history-tools{max-width:640px;}
+    /* "วันนี้ควรทำอะไร?" action list: keep a readable card width instead of stretching edge-to-edge */
+    #actionTodayCard{max-width:640px;}
+    /* buttons hug their label instead of becoming full-width bars — grid/flex containers (.row2, .mks-actions) still stretch them as needed */
+    .view .btn{width:auto; padding-left:22px; padding-right:22px;}
+    /* pair a filter field with its action button on one row instead of stacking two full-width blocks */
+    .controls-row{display:flex; align-items:flex-end; gap:12px; flex-wrap:wrap; margin-bottom:14px;}
+    .controls-row > label.field{flex:1 1 320px; max-width:400px; margin-bottom:0;}
+    .controls-row > .btn{flex:0 0 auto; margin:0;}
+    /* 3 small cards side by side instead of stacked full-width (dashboard details, etc.) — fixed size, no stretch */
+    .detail-3col{display:grid; grid-template-columns:repeat(auto-fill, 260px); justify-content:start; gap:20px; align-items:start;}
+    .detail-3col .sec-title{margin-top:0;}
+    .detail-3col .card{margin-bottom:0; height:100%;}
+
+    /* a lone card / chart-card / tier-table outside any grid keeps a comfortable reading width instead of stretching the full column — grid children (dash-2col, entry-grid, stat-grid, detail-3col) are exempted so they still fill their track */
+    .card, .chart-card, .tier-table, #stockList, #productsList{max-width:820px;}
+    .dash-2col .card, .dash-2col .chart-card,
+    .entry-grid .card, .entry-grid .chart-card,
+    .stat-grid .card, .stat-grid .chart-card,
+    .detail-3col .card, .detail-3col .chart-card{max-width:none;}
+  }
+  @media (min-width: 1180px){
+    main{padding:0 48px 48px;}
+    header.top{padding:26px 48px 18px;}
+  }
+
